@@ -106,8 +106,7 @@
 /* ===== MOBILE NAVIGATION OVERLAY (no layout shift) ===== */
     #sidebarBackdrop { position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 55; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
     #sidebarBackdrop.active { opacity: 1; pointer-events: auto; }
-    @media (min-width: 1024px) { #sidebarBackdrop { display: none !important; } }
-    @media (max-width: 1023px) {
+    @media (min-width: 0) {
       #sidebar { position: fixed !important; top: 0; left: 0; height: 100vh !important; width: 16rem; z-index: 60 !important; transform: translateX(-100%); transition: transform 0.3s ease; box-shadow: 2px 0 14px rgba(0,0,0,0.25); }
       #sidebar:not(.hidden) { transform: translateX(0); display: flex !important; }
     }
@@ -321,7 +320,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
       </div>
     </header>
     <div class="flex flex-grow relative"><div id="sidebarBackdrop" onclick="toggleSidebar()"></div>
-      <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 transition-all duration-300 z-20 flex flex-col border-r border-slate-800 hidden lg:flex">
+      <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 transition-all duration-300 z-20 flex flex-col border-r border-slate-800 hidden">
         <div class="p-4 border-b border-slate-800 flex items-center justify-between"><span class="text-xs font-extrabold uppercase tracking-widest text-slate-400">Navigation</span><button onclick="toggleSidebar()" class="text-slate-400 hover:text-white lg:hidden"><i class="fa-solid fa-xmark"></i></button></div>
         <nav class="p-3 space-y-1 flex-grow overflow-y-auto">
           <button onclick="switchTab('overview')" id="side-tab-overview" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold bg-indigo-600 text-white flex items-center space-x-3 transition"><i class="fa-solid fa-chart-pie w-5 text-center"></i><span>Financial Overview</span></button><button onclick="switchTab('accounts-spending')" id="side-tab-accounts-spending" class="w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white flex items-center space-x-3 transition"><i class="fa-solid fa-wallet w-5 text-center"></i><span>Accounts &amp; Spending</span></button>
@@ -418,7 +417,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
   <div id="modalPerson" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="font-bold text-base mb-4">Person Entry</h3><form id="personForm" onsubmit="savePerson(event)" class="space-y-3 text-xs"><input type="hidden" id="personId"><div><label class="block font-bold text-slate-600 mb-1">Person Name</label><input type="text" id="personName" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter person name"></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalPerson')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-rose-600 text-white font-bold rounded-lg">Save Person</button></div></form></div></div>
   <div id="modalFriendSettlement" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Record Friend Settlement</h3><form id="friendSettlementForm" onsubmit="saveFriendSettlement(event)" class="space-y-3 text-xs"><input type="hidden" id="fsLedgerId"><div><label class="block font-bold text-slate-600 mb-1">Friend</label><select id="fsFriend" required onchange="updateFsPreview(); ftUpdateStlLabels()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div><div><label class="block font-bold text-slate-600 mb-1">Type / Direction</label><select id="fsType" onchange="onFriendStlTypeChange()" class="fintrack-field p-2 border rounded-lg font-bold"><option value="i_paid">I paid them</option><option value="they_paid">They paid me</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="fsDate" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="fsAmount" required class="fintrack-field p-2 border rounded-lg" oninput="updateFsPreview()"></div></div><div id="fsCurrencyWrap"><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="fsCurrency" onchange="updateFsPreview()" class="fintrack-field p-2 border rounded-lg font-bold"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="UZS">UZS</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div><div id="fsAccountWrap" class="hidden p-3 bg-emerald-50 border border-emerald-100 rounded-lg space-y-2"><label class="block font-bold text-emerald-900" id="fsAccountLabel">Received Into Account</label><select id="fsAccount" onchange="updateFsPreview()" class="fintrack-field p-2 border rounded-lg bg-white"></select><p class="text-[10px] text-emerald-700" id="fsAccountHint">The amount will automatically be added to this account's balance.</p></div><div><label class="block font-bold text-slate-600 mb-1">Notes / Description</label><input type="text" id="fsNotes" class="fintrack-field p-2 border rounded-lg"></div><div id="fsPreview" class="p-3 bg-violet-50 border border-violet-100 rounded-lg text-xs text-slate-700 font-medium"></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalFriendSettlement')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-violet-600 text-white font-bold rounded-lg">Save Settlement</button></div></form></div></div>
 
-  <div id="modalHouseholdMember" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Invite Household Member</h3><form id="householdMemberForm" onsubmit="sendHouseholdInvite(event)" class="space-y-3 text-xs"><input type="hidden" id="hhMemberId"><div><label class="block font-bold text-slate-600 mb-1">Select Friend</label><select id="hhMemberName" required class="fintrack-field p-2 border rounded-lg font-bold"></select><p class="text-[10px] text-slate-500 mt-1">Select a connected friend to invite. They must accept to join your household.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdMember')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg">Send Invitation</button></div></form></div></div><div id="modalHouseholdExpense" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Add Household Expense</h3><form id="householdExpenseForm" onsubmit="saveHouseholdExpense(event)" class="space-y-3 text-xs"><input type="hidden" id="hhExpId"><input type="hidden" id="hhExpPaymentMethod" value=""><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="hhExpDate" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="hhExpCurrency" onchange="ftUpdateHhExpAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Category</label><select id="hhExpCategory" class="fintrack-field p-2 border rounded-lg font-bold"><option value="Rent">Rent</option><option value="Utilities">Utilities</option><option value="Groceries">Groceries</option><option value="Internet">Internet</option><option value="Gas">Gas</option><option value="Maintenance">Maintenance</option><option value="Other">Other</option></select></div><div><label class="block font-bold text-slate-600 mb-1">Description</label><input type="text" id="hhExpDesc" required class="fintrack-field p-2 border rounded-lg" placeholder="e.g. Monthly rent, Electricity bill"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="hhExpAmount" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Paid By</label><select id="hhExpPaidBy" onchange="ftUpdateHhExpAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div></div><div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2"><label class="block font-bold text-indigo-900">Payment Method <span class="text-red-500">*</span></label><div class="flex flex-wrap gap-2"><button type="button" data-pm="bank" onclick="ftSelectHhExpPaymentMethod('bank')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-building-columns mr-1"></i>Bank Account</button><button type="button" data-pm="cash" onclick="ftSelectHhExpPaymentMethod('cash')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-wallet mr-1"></i>Cash in Hand</button><button type="button" data-pm="credit" onclick="ftSelectHhExpPaymentMethod('credit')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-credit-card mr-1"></i>Credit Card</button></div><div id="hhExpAccountWrap" style="display:none"><label class="block font-bold text-indigo-900 mb-1" id="hhExpAccountLabel">Deduct From</label><select id="hhExpAccount" class="fintrack-field p-2 border rounded-lg bg-white w-full"></select><p class="text-[10px] text-indigo-700" id="hhExpBalanceHint"></p></div><div id="hhExpPmError" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg p-2"><i class="fa-solid fa-circle-exclamation mr-1"></i>Please choose a payment method.</div></div><div><label class="block font-bold text-slate-600 mb-1">Split Among (select members)</label><div id="hhExpSplitAmong" class="space-y-1 max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2"></div><p class="text-[10px] text-slate-500 mt-1">Equal split among selected members. Leave empty to split among all.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdExpense')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg">Save Expense</button></div></form></div></div><div id="modalHouseholdSettlement" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Record Household Settlement</h3><form id="householdSettlementForm" onsubmit="saveHouseholdSettlement(event)" class="space-y-3 text-xs"><input type="hidden" id="hhSetId"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="hhSetDate" required class="fintrack-field p-2 border rounded-lg"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">From (payer)</label><select id="hhSetFrom" onchange="ftHhSetFromChanged()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div><div><label class="block font-bold text-slate-600 mb-1">To (receiver)</label><select id="hhSetTo" onchange="ftUpdateHhSetAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="hhSetCurrency" onchange="ftUpdateHhSetAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="hhSetAmount" required class="fintrack-field p-2 border rounded-lg"></div></div><div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg space-y-2"><div><label class="block font-bold text-emerald-900 mb-1">Deducting Account of Payee</label><select id="hhSetFromAccount" class="fintrack-field p-2 border rounded-lg bg-white"></select><p class="text-[10px] text-emerald-700" id="hhSetFromAccHint"></p></div><div><label class="block font-bold text-emerald-900 mb-1">Receiver Account</label><select id="hhSetToAccount" class="fintrack-field p-2 border rounded-lg bg-white"></select><p class="text-[10px] text-emerald-700" id="hhSetToAccHint"></p></div></div><div><label class="block font-bold text-slate-600 mb-1">Notes</label><input type="text" id="hhSetNotes" class="fintrack-field p-2 border rounded-lg"></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdSettlement')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-violet-600 text-white font-bold rounded-lg">Save Settlement</button></div></form></div></div><div id="modalEditMobile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[80] p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Edit Mobile Number</h3><form id="editMobileForm" onsubmit="handleSaveMobile(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Country Code</label><select id="editMobileCountryCode" class="fintrack-field p-2 border rounded-lg font-bold"><option value="+91">+91 (India)</option><option value="+966">+966 (KSA)</option><option value="+971">+971 (UAE)</option><option value="+973">+973 (Bahrain)</option><option value="+968">+968 (Oman)</option><option value="+974">+974 (Qatar)</option><option value="+965">+965 (Kuwait)</option><option value="+998">+998 (Uzbekistan)</option><option value="+1">+1 (USA)</option><option value="+44">+44 (UK)</option><option value="+1">+1 (Canada)</option><option value="+61">+61 (Australia)</option></select></div><div><label class="block font-bold text-slate-600 mb-1">New Mobile Number</label><input type="tel" id="editMobileNumber" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter new mobile number"></div><div><label class="block font-bold text-slate-600 mb-1">Current Password (for verification)</label><input type="password" id="editMobilePassword" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter your current password"></div><div class="p-3 bg-amber-50 border border-amber-200 rounded-lg"><p class="text-[10px] text-amber-700"><i class="fa-solid fa-shield-halved mr-1"></i> Your password is verified securely through Firebase Authentication and is never stored.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalEditMobile')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg">Update Mobile</button></div></form></div></div>
+  <div id="modalHouseholdMember" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Invite Household Member</h3><form id="householdMemberForm" onsubmit="sendHouseholdInvite(event)" class="space-y-3 text-xs"><input type="hidden" id="hhMemberId"><div><label class="block font-bold text-slate-600 mb-1">Select Friend</label><select id="hhMemberName" required class="fintrack-field p-2 border rounded-lg font-bold"></select><p class="text-[10px] text-slate-500 mt-1">Select a connected friend to invite. They must accept to join your household.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdMember')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg">Send Invitation</button></div></form></div></div><div id="modalHouseholdExpense" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4" id="hhExpModalTitle">Add Household Expense</h3><form id="householdExpenseForm" onsubmit="saveHouseholdExpense(event)" class="space-y-3 text-xs"><input type="hidden" id="hhExpId"><input type="hidden" id="hhExpPaymentMethod" value=""><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="hhExpDate" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="hhExpCurrency" onchange="ftUpdateHhExpAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Category</label><select id="hhExpCategory" class="fintrack-field p-2 border rounded-lg font-bold"><option value="Rent">Rent</option><option value="Utilities">Utilities</option><option value="Groceries">Groceries</option><option value="Internet">Internet</option><option value="Gas">Gas</option><option value="Maintenance">Maintenance</option><option value="Other">Other</option></select></div><div><label class="block font-bold text-slate-600 mb-1">Description</label><input type="text" id="hhExpDesc" required class="fintrack-field p-2 border rounded-lg" placeholder="e.g. Monthly rent, Electricity bill"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="hhExpAmount" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Paid By</label><select id="hhExpPaidBy" onchange="ftUpdateHhExpAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div></div><div class="p-3 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2"><label class="block font-bold text-indigo-900">Payment Method <span class="text-red-500">*</span></label><div class="flex flex-wrap gap-2"><button type="button" data-pm="bank" onclick="ftSelectHhExpPaymentMethod('bank')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-building-columns mr-1"></i>Bank Account</button><button type="button" data-pm="cash" onclick="ftSelectHhExpPaymentMethod('cash')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-wallet mr-1"></i>Cash in Hand</button><button type="button" data-pm="credit" onclick="ftSelectHhExpPaymentMethod('credit')" class="hh-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-credit-card mr-1"></i>Credit Card</button></div><div id="hhExpAccountWrap" style="display:none"><label class="block font-bold text-indigo-900 mb-1" id="hhExpAccountLabel">Deduct From</label><select id="hhExpAccount" class="fintrack-field p-2 border rounded-lg bg-white w-full"></select><p class="text-[10px] text-indigo-700" id="hhExpBalanceHint"></p></div><div id="hhExpPmError" class="hidden text-xs font-bold text-red-600 bg-red-50 border border-red-200 rounded-lg p-2"><i class="fa-solid fa-circle-exclamation mr-1"></i>Please choose a payment method.</div></div><div><label class="block font-bold text-slate-600 mb-1">Split Among (select members)</label><div id="hhExpSplitAmong" class="space-y-1 max-h-32 overflow-y-auto border border-slate-200 rounded-lg p-2"></div><p class="text-[10px] text-slate-500 mt-1">Equal split among selected members. Leave empty to split among all.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdExpense')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-teal-600 text-white font-bold rounded-lg">Save Expense</button></div></form></div></div><div id="modalHouseholdSettlement" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Record Household Settlement</h3><form id="householdSettlementForm" onsubmit="saveHouseholdSettlement(event)" class="space-y-3 text-xs"><input type="hidden" id="hhSetId"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="hhSetDate" required class="fintrack-field p-2 border rounded-lg"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">From (payer)</label><select id="hhSetFrom" onchange="ftHhSetFromChanged()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div><div><label class="block font-bold text-slate-600 mb-1">To (receiver)</label><select id="hhSetTo" onchange="ftUpdateHhSetAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="hhSetCurrency" onchange="ftUpdateHhSetAccountOptions()" class="fintrack-field p-2 border rounded-lg font-bold"></select></div><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="hhSetAmount" required class="fintrack-field p-2 border rounded-lg"></div></div><div class="p-3 bg-emerald-50 border border-emerald-100 rounded-lg space-y-2"><div><label class="block font-bold text-emerald-900 mb-1">Deducting Account of Payee</label><select id="hhSetFromAccount" class="fintrack-field p-2 border rounded-lg bg-white"></select><p class="text-[10px] text-emerald-700" id="hhSetFromAccHint"></p></div><div><label class="block font-bold text-emerald-900 mb-1">Receiver Account</label><select id="hhSetToAccount" class="fintrack-field p-2 border rounded-lg bg-white"></select><p class="text-[10px] text-emerald-700" id="hhSetToAccHint"></p></div></div><div><label class="block font-bold text-slate-600 mb-1">Notes</label><input type="text" id="hhSetNotes" class="fintrack-field p-2 border rounded-lg"></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalHouseholdSettlement')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-violet-600 text-white font-bold rounded-lg">Save Settlement</button></div></form></div></div><div id="modalEditMobile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[80] p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Edit Mobile Number</h3><form id="editMobileForm" onsubmit="handleSaveMobile(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Country Code</label><select id="editMobileCountryCode" class="fintrack-field p-2 border rounded-lg font-bold"><option value="+91">+91 (India)</option><option value="+966">+966 (KSA)</option><option value="+971">+971 (UAE)</option><option value="+973">+973 (Bahrain)</option><option value="+968">+968 (Oman)</option><option value="+974">+974 (Qatar)</option><option value="+965">+965 (Kuwait)</option><option value="+998">+998 (Uzbekistan)</option><option value="+1">+1 (USA)</option><option value="+44">+44 (UK)</option><option value="+1">+1 (Canada)</option><option value="+61">+61 (Australia)</option></select></div><div><label class="block font-bold text-slate-600 mb-1">New Mobile Number</label><input type="tel" id="editMobileNumber" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter new mobile number"></div><div><label class="block font-bold text-slate-600 mb-1">Current Password (for verification)</label><input type="password" id="editMobilePassword" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter your current password"></div><div class="p-3 bg-amber-50 border border-amber-200 rounded-lg"><p class="text-[10px] text-amber-700"><i class="fa-solid fa-shield-halved mr-1"></i> Your password is verified securely through Firebase Authentication and is never stored.</p></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalEditMobile')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg">Update Mobile</button></div></form></div></div>
   <div id="modalProfileUpdate" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-[60] p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><div class="flex items-center space-x-2 mb-1 text-indigo-700 font-black"><i class="fa-solid fa-user-gear"></i><span>One-Time Profile Update</span></div><p class="text-xs text-slate-500 mb-4">Your account is being upgraded to secure Email-based login. Please complete this one-time update. This will appear only once.</p><form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">1. Full Name</label><input type="text" id="puName" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Enter your full name"></div><div><label class="block font-bold text-slate-600 mb-1">2. Email ID</label><input type="email" id="puEmail" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="This becomes your login ID"></div><div><label class="block font-bold text-slate-600 mb-1">3. Mobile Number</label><div class="flex gap-2"><select id="puCountryCode" class="w-32 px-2 py-2 border rounded-lg font-bold"><option value="+91">+91 (India)</option><option value="+966">+966 (KSA)</option><option value="+971">+971 (UAE)</option><option value="+973">+973 (Bahrain)</option><option value="+968">+968 (Oman)</option><option value="+974">+974 (Qatar)</option><option value="+965">+965 (Kuwait)</option><option value="+998">+998 (Uzbekistan)</option><option value="+1">+1 (USA)</option><option value="+44">+44 (UK)</option><option value="+1">+1 (Canada)</option><option value="+61">+61 (Australia)</option></select><input type="tel" id="puMobile" required class="flex-1 p-2 border rounded-lg font-bold" placeholder="Mobile number"></div></div><div><label class="block font-bold text-slate-600 mb-1">4. Password</label><input type="password" id="puPass" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Choose a password (min 6 chars)"></div><div><label class="block font-bold text-slate-600 mb-1">5. Confirm Password</label><input type="password" id="puPassConfirm" required class="fintrack-field p-2 border rounded-lg font-bold" placeholder="Re-enter password"></div><div class="flex justify-end space-x-2 pt-2"><button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-lg">Save &amp; Update</button></div></form></div></div>
   <div id="modalSharedSplit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Shared Friends Split (Registered User)</h3><form id="sharedSplitForm" onsubmit="saveSharedSplit(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Find registered user by mobile</label><div class="flex gap-2"><select id="ssSearchCC" class="w-32 px-2 py-2 border rounded-lg font-bold"><option value="+91">+91</option><option value="+966">+966</option><option value="+971">+971</option><option value="+973">+973</option><option value="+968">+968</option><option value="+974">+974</option><option value="+965">+965</option><option value="+998">+998</option><option value="+1">+1</option><option value="+44">+44</option><option value="+61">+61</option></select><input type="tel" id="ssSearchMobile" class="flex-1 p-2 border rounded-lg" placeholder="Their mobile number"><button type="button" onclick="searchForSharedUser()" class="px-3 py-2 bg-slate-700 text-white rounded-lg font-bold">Find</button></div><div id="ssSearchResult" class="mt-2 text-xs"></div><input type="hidden" id="ssOtherUid"><input type="hidden" id="ssOtherName"></div><div class="grid grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="ssDate" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="ssCurrency" class="fintrack-field p-2 border rounded-lg font-bold"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="UZS">UZS</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Description</label><input type="text" id="ssDesc" required class="fintrack-field p-2 border rounded-lg"></div><div class="grid grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="ssAmount" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Paid By</label><select id="ssPaidBy" class="fintrack-field p-2 border rounded-lg font-bold"><option value="me">Me</option><option value="them">Other user</option></select></div></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalSharedSplit')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-amber-600 text-white font-bold rounded-lg">Save Shared Split</button></div></form></div></div>
   <div id="modalSharedSettlement" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"><h3 class="font-bold text-base mb-4">Shared Settlement (Registered User)</h3><form id="sharedSettlementForm" onsubmit="saveSharedSettlement(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Select Registered Friend</label><select id="sseFriendSelect" onchange="ftSseFriendChanged()" class="fintrack-field w-full p-2 border rounded-lg font-bold max-h-40 overflow-y-auto"><option value="">— Select a friend —</option></select><input type="hidden" id="sseOtherUid"><input type="hidden" id="sseOtherName"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="sseDate" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="sseCurrency" class="fintrack-field p-2 border rounded-lg font-bold"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="UZS">UZS</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="sseAmount" required class="fintrack-field p-2 border rounded-lg"></div><div><label class="block font-bold text-slate-600 mb-1">Direction</label><select id="sseDirection" class="fintrack-field p-2 border rounded-lg font-bold"><option value="i_paid">I paid them</option><option value="they_paid">They paid me</option></select></div><div><label class="block font-bold text-slate-600 mb-1">Notes</label><input type="text" id="sseNotes" class="fintrack-field p-2 border rounded-lg"></div><div class="flex justify-end space-x-2 pt-2"><button type="button" onclick="closeModal('modalSharedSettlement')" class="px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="px-4 py-2 bg-violet-600 text-white font-bold rounded-lg">Save</button></div></form></div></div>
@@ -897,7 +896,7 @@ onAuthStateChanged(auth, async (fbUser) => {
 async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { dataLoaded = true; const val = snapshot.val(); if (val) { normalizeState(val); } else { if (loginId === 'US' && isFirstLoad) { await migrateExistingData(loginId); } else { Object.assign(state, { rates: { ...DEFAULT_RATES }, displayCurrency: 'INR', banks: [], debts: [], gold: [], sips: [], expenses: {}, settlements: {}, transfers: [], friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }); } } isFirstLoad = false; if (currentUser && currentUser.name) { const _dn = currentUser.name.trim().split(/\s+/).slice(0,2).join(' '); if (_dn && (!state.settings.people || state.settings.people.length === 0)) { if(!state.settings.people) state.settings.people = []; state.settings.people.push(_dn); saveData(); } } /* PATCH: permanently include logged-in user as a household member */ if (currentUser && getPeople()[0]) { const _hhMe = getPeople()[0]; if (!Array.isArray(state.householdMembers)) state.householdMembers = []; const _hhHasMe = state.householdMembers.some(function(m){ return m.name === _hhMe; }); if (!_hhHasMe) { state.householdMembers.unshift({ id: 'hh_self_' + (currentUser.uid || 'me'), name: _hhMe, isSelf: true }); window._ftNeedHhSave = true; } else { const _sm = state.householdMembers.find(function(m){ return m.name === _hhMe; }); if (_sm && !_sm.isSelf) { _sm.isSelf = true; window._ftNeedHhSave = true; } } } if (currentUser && !state.settings.firstTimeSetupDone && (state.banks||[]).length === 0 && Object.keys(state.expenses||{}).length === 0) { if (typeof window.showFirstTimeGuidance === 'function') window.showFirstTimeGuidance(); } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const _rc = (window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'); liveRateInput.value = (state.rates[_rc] || DEFAULT_RATES[_rc] || 1).toFixed(2); } const displaySelect = document.getElementById('displayCurrencySelect'); if (displaySelect) displaySelect.value = state.displayCurrency || 'INR'; if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect(); if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput(); if (typeof window.setCommonGoldPurity === 'function') window.setCommonGoldPurity(activeCommonPurity); const cm = currentMonthStr(); ['expenseMonthSelect','friendSplitMonthSelect','settlementMonthSelect','transferMonthSelect','bankMonthSelect','bankMonthSelect2','cashMonthSelect','creditCardMonthSelect','cashbookMonthSelect','cashbookPdfMonthSelect','householdMonthSelect'].forEach(id => { const el = document.getElementById(id); if (el) el.value = cm; }); updateAllMonthNavLabels(); applyVisibilitySettings(); if (typeof window.renderAll === 'function') window.renderAll(); renderCreditCardReminders(); setTimeout(function(){ if (window._ftNeedHhSave) { window._ftNeedHhSave = false; saveData(); } if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar(); if (typeof window.ftApplyDescriptionVisibility === 'function') window.ftApplyDescriptionVisibility(); if (typeof window.ftSubscribePremiumSettings === 'function') window.ftSubscribePremiumSettings(); if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); applyAdminBranding(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true); if (typeof window.fetchLiveRates === 'function') { try { window.fetchLiveRates(true); } catch(_fe){} } }, 50); }, (error) => { console.error('Data load error:', error); alert('Could not load your saved data from the server (' + (error && error.message ? error.message : 'permission denied') + '). Your data has NOT been changed.'); }); }
 async function migrateExistingData(loginId) { try { const snapshot = await get(ref(db, 'fintrack_data')); const oldData = snapshot.val(); if (oldData) { const migratedState = { rates: { ...DEFAULT_RATES, ...(oldData.liveRate ? { SAR: oldData.liveRate } : {}), ...(oldData.rates || {}) }, displayCurrency: 'INR', banks: Array.isArray(oldData.banks) ? oldData.banks : (oldData.banks ? Object.values(oldData.banks) : []), debts: Array.isArray(oldData.debts) ? oldData.debts : (oldData.debts ? Object.values(oldData.debts) : []), gold: Array.isArray(oldData.gold) ? oldData.gold : (oldData.gold ? Object.values(oldData.gold) : []), sips: Array.isArray(oldData.sips) ? oldData.sips : (oldData.sips ? Object.values(oldData.sips) : []), expenses: oldData.expenses || {}, settlements: oldData.settlements || {}, transfers: Array.isArray(oldData.transfers) ? oldData.transfers : (oldData.transfers ? Object.values(oldData.transfers) : []), friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }; migratedState.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.date) b.date = ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; }); migratedState.gold.forEach(g => { if (g.date) g.date = convertGoldDate(g.date); }); migratedState.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); }); await set(ref(db, `userData/${loginId}`), migratedState); const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } console.log("Migration complete: existing data moved to user-specific path."); } else { const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } } } catch(err) { console.error("Migration error:", err); } }
 function normalizeState(val) { if (!val) return; state.rates = val.rates || { ...DEFAULT_RATES }; state.displayCurrency = val.displayCurrency || 'INR'; state.banks = Array.isArray(val.banks) ? val.banks : (val.banks ? Object.values(val.banks) : []); state.debts = Array.isArray(val.debts) ? val.debts : (val.debts ? Object.values(val.debts) : []); state.gold = Array.isArray(val.gold) ? val.gold : (val.gold ? Object.values(val.gold) : []); state.sips = Array.isArray(val.sips) ? val.sips : (val.sips ? Object.values(val.sips) : []); state.transfers = Array.isArray(val.transfers) ? val.transfers : (val.transfers ? Object.values(val.transfers) : []); state.expenses = val.expenses || {}; state.settlements = val.settlements || {}; state.friends = Array.isArray(val.friends) ? val.friends : (val.friends ? Object.values(val.friends) : []); state.friendSplits = val.friendSplits || {}; state.friendLedger = Array.isArray(val.friendLedger) ? val.friendLedger : []; state.settings = val.settings || { people: [] }; if (!state.settings.people) state.settings.people = []; if (!state.settings.bankType1) state.settings.bankType1 = DEFAULT_BANK_TYPE1; if (!state.settings.bankType2) state.settings.bankType2 = DEFAULT_BANK_TYPE2; if (state.settings.showSecondaryAccount === undefined) state.settings.showSecondaryAccount = true; if (state.settings.showLiabilities === undefined) state.settings.showLiabilities = false; if (state.settings.showGoldSip === undefined) state.settings.showGoldSip = true; if (state.settings.showTransfers === undefined) state.settings.showTransfers = false; if (state.settings.showCreditCard === undefined) state.settings.showCreditCard = true; if (state.settings.showPendingPayments === undefined) state.settings.showPendingPayments = true; if (state.settings.showIndividualSummary === undefined) state.settings.showIndividualSummary = true; if (!state.settings.allowedCurrencies) state.settings.allowedCurrencies = []; if (state.settings.adminLogo === undefined) state.settings.adminLogo = ''; if (state.settings.adminTagline === undefined) state.settings.adminTagline = 'Financial Planning & Portfolio'; if (state.settings.showTotalLiabilities === undefined) state.settings.showTotalLiabilities = false; if (state.settings.showTotalSavingsGold === undefined) state.settings.showTotalSavingsGold = false; if (state.settings.showMonthlyCashbook === undefined) state.settings.showMonthlyCashbook = true; state.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.owner) b.owner = getPeople()[0] || ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; if (!b.date) b.date = ''; }); state.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); if (!d.currency) d.currency = 'INR'; }); state.gold.forEach(g => { if (!g.currency) g.currency = 'SAR'; }); state.sips.forEach(s => { if (!s.currency) s.currency = 'INR'; }); if (state.settings.people.length === 0 && state.banks.length > 0) { const owners = []; state.banks.forEach(b => { if (b.owner && !owners.includes(b.owner)) owners.push(b.owner); }); if (owners.length > 0) { state.settings.people = owners; saveData(); } } if (typeof val.liveRate === 'number' && !state.rates.SAR) state.rates.SAR = val.liveRate; }
-window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, householdExpenses: state.householdExpenses, householdSettlements: state.householdSettlements, settings: state.settings })); set(ref(db, `userData/${currentUser.loginId}`), _save).catch(err => console.error("Firebase sync error:", err)); } catch(e) { console.error("saveData serialize error:", e); } } };
+window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, settings: state.settings })); set(ref(db, `userData/${currentUser.loginId}`), _save).catch(err => console.error("Firebase sync error:", err)); } catch(e) { console.error("saveData serialize error:", e); } } };
 window.updateExchangeRate = function(val) { const c = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; state.rates[c] = parseFloat(val) || DEFAULT_RATES[c] || 1; saveData(); };
 window.changeDisplayCurrency = function(curr) { state.displayCurrency = curr; saveData(); };
 window.fetchLiveRates = async function(silent) { try { const res = await fetch('https://api.exchangerate-api.com/v4/latest/INR'); const data = await res.json(); if (data && data.rates) { for (const curr of Object.keys(CURRENCIES)) { if (curr === 'INR') { state.rates.INR = 1; continue; } if (data.rates[curr]) state.rates[curr] = 1 / data.rates[curr]; } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const sc = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; liveRateInput.value = (state.rates[sc] || DEFAULT_RATES[sc] || 1).toFixed(2); } saveData(); if (!silent) alert("Live rates fetched successfully!"); if (typeof window.renderAll === 'function') window.renderAll(); } } catch(e) { console.warn("Live rate API error, retaining current rates.", e); if (!silent) alert("Unable to fetch live rates. You can enter rates manually in Settings."); } };
@@ -1403,7 +1402,7 @@ function renderHouseholdSettlement() {
     else { const limited = allExpenses.slice(0, getDisplayLimit('hhExpenses'));
       limited.forEach(function(e) { const splitAmong = (e.splitAmong && e.splitAmong.length > 0 ? e.splitAmong : (state.householdMembers || []).map(function(m){return m.name;})).join(', ');
         const catColor = e.isCrossSplit ? 'bg-amber-50 text-amber-700' : 'bg-teal-50 text-teal-700';
-        const delBtn = e.isCrossSplit ? '<span class="text-slate-300 text-[10px]" title="Managed in Splits section">synced</span>' : '<button onclick="deleteHouseholdExpense(\'' + e.id + '\')" class="hover:text-red-600"><i class="fa-solid fa-trash"></i></button>';
+        const delBtn = e.isCrossSplit ? '<span class="text-slate-300 text-[10px]" title="Managed in Splits section">synced</span>' : '<button onclick="editHouseholdExpense(\'' + e.id + '\')" class="hover:text-teal-600 mr-2" title="Edit"><i class="fa-solid fa-pen"></i></button><button onclick="deleteHouseholdExpense(\'' + e.id + '\')" class="hover:text-red-600" title="Delete"><i class="fa-solid fa-trash"></i></button>';
         expTbody.innerHTML += '<tr><td class="p-3">' + (e.date || '') + '</td><td class="p-3 font-bold">' + (e.description || '') + '</td><td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ' + catColor + '">' + (e.category || 'Other') + '</span></td><td class="p-3">' + (e.paidBy || '') + '</td><td class="p-3 text-right font-bold money-neutral">' + formatCurrency(Number(e.amount || 0), e.currency || 'INR') + '</td><td class="p-3 text-[11px] text-slate-500">' + splitAmong + '</td><td class="p-3 text-center text-slate-400">' + delBtn + '</td></tr>'; }); }
     const vmc = document.getElementById('hhExpensesViewMoreContainer'); if (vmc) vmc.classList.toggle('hidden', !shouldShowViewMore('hhExpenses', allExpenses.length));
   }
@@ -3379,6 +3378,411 @@ window.ftUpdateFooterStatus = function() {
   window.alert=function(msg){ pushOrShow({msg:String(msg==null?'':msg),confirm:false}); };
   window.ftConfirm=function(msg,cb){ pushOrShow({msg:String(msg==null?'':msg),confirm:true,cb:cb}); };
   window.ftPrompt=function(msg,def,cb){ pushOrShow({msg:String(msg==null?'':msg),prompt:true,def:def,cb:cb}); };
+})();
+</script>
+
+<script>
+/* ===== FinTrack Household Real-Time Sync + Member Management (pinpoint patch) ===== */
+(function(){
+  function _uid(){ return (currentUser && currentUser.uid) || ''; }
+  function _meName(){ return getPeople()[0] || (currentUser && currentUser.name) || 'Me'; }
+
+  window.ftHhEnsure = function(){
+    if (!currentUser || !currentUser.uid) return;
+    if (!state.householdOwnerUid) {
+      state.householdOwnerUid = currentUser.uid;
+      state.householdId = 'hh_' + currentUser.uid;
+    } else {
+      state.householdId = 'hh_' + state.householdOwnerUid;
+    }
+    if (state.householdOwnerUid === currentUser.uid) {
+      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid),
+        { uid: currentUser.uid, name: currentUser.name || _meName(), isOwner: true, joinedAt: new Date().toISOString() })
+        .catch(function(e){ console.error(e); });
+    }
+    if (!window._ftHhInit) {
+      window._ftHhInit = true;
+      window.ftHhSubscribe();
+    }
+  };
+
+  window.ftHhSubscribe = function(){
+    var hid = state.householdId;
+    if (!hid) return;
+    if (window._ftHhUnsub) { try { window._ftHhUnsub(); } catch(e){} window._ftHhUnsub = null; }
+    var migrated = false;
+    window._ftHhUnsub = onValue(ref(db, 'households/' + hid), function(snap){
+      var data = snap.val() || {};
+      var exps = data.expenses ? Object.values(data.expenses) : [];
+      var sets = data.settlements ? Object.values(data.settlements) : [];
+      var members = data.members || {};
+      var exits = data.exitRequests || {};
+      if (!migrated && exps.length === 0 && sets.length === 0) {
+        var lExps = state.householdExpenses || [];
+        var lSets = state.householdSettlements || [];
+        if (lExps.length || lSets.length) {
+          migrated = true;
+          var upd = {};
+          lExps.forEach(function(e){ if (e && e.id) upd['households/' + hid + '/expenses/' + e.id] = e; });
+          lSets.forEach(function(s){ if (s && s.id) upd['households/' + hid + '/settlements/' + s.id] = s; });
+          update(ref(db), upd).catch(function(e){ console.error(e); });
+          return;
+        }
+      }
+      migrated = true;
+      var myUid = _uid();
+      if (state.householdOwnerUid && state.householdOwnerUid !== myUid && members && Object.keys(members).length > 0 && !members[myUid]) {
+        if (window._ftHhSawSelf) {
+          window._ftHhSawSelf = false;
+          window._ftHhInit = false;
+          state.householdOwnerUid = '';
+          state.householdId = '';
+          state.householdExpenses = [];
+          state.householdSettlements = [];
+          state.householdMembers = (state.householdMembers || []).filter(function(m){ return m.isSelf; });
+          window._ftHhExitReqs = {};
+          if (window._ftHhUnsub) { try { window._ftHhUnsub(); } catch(e){} window._ftHhUnsub = null; }
+          try { saveData(); } catch(e){}
+          try { ftToast('You have been removed from the household.'); } catch(e){}
+          try { if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement(); } catch(e){}
+          return;
+        } else {
+          set(ref(db, 'households/' + hid + '/members/' + myUid), { uid: myUid, name: currentUser.name || _meName(), joinedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
+        }
+      }
+      if (members && members[myUid]) window._ftHhSawSelf = true;
+      state.householdExpenses = exps;
+      state.householdSettlements = sets;
+      window._ftHhExitReqs = exits;
+      try { if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement(); } catch(e){}
+      try { if (typeof renderFriendsSplit === 'function') renderFriendsSplit(); } catch(e){}
+      try { if (typeof window.loadProfileNotifications === 'function') window.loadProfileNotifications(); } catch(e){}
+      try { if (typeof window.ftUpdateNotifBadge === 'function') window.ftUpdateNotifBadge(); } catch(e){}
+    }, function(err){ console.error('Household sync error:', err); });
+  };
+
+  window.ftHhNotifyOthers = function(message, type){
+    try {
+      if (!currentUser || !currentUser.uid) return;
+      var targets = {};
+      (state.householdMembers || []).forEach(function(m){ if (m.uid && m.uid !== currentUser.uid) targets[m.uid] = true; });
+      if (state.householdOwnerUid && state.householdOwnerUid !== currentUser.uid) targets[state.householdOwnerUid] = true;
+      var keys = Object.keys(targets);
+      if (keys.length === 0) return;
+      var now = new Date().toISOString();
+      var upd = {};
+      keys.forEach(function(uid){
+        var key = (type || 'household') + '_' + currentUser.uid + '_' + Date.now() + '_' + uid;
+        upd['users/' + uid + '/notifications/' + key] = { id: key, type: type || 'household', fromUid: currentUser.uid, fromName: currentUser.name || '', toUid: uid, message: message, createdAt: now, read: false };
+      });
+      update(ref(db), upd).catch(function(e){ console.error(e); });
+    } catch(e){ console.error(e); }
+  };
+
+  window.saveHouseholdExpense = function(e){
+    e.preventDefault();
+    var amount = parseFloat(document.getElementById('hhExpAmount').value) || 0;
+    if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+    var paidBy = document.getElementById('hhExpPaidBy').value;
+    if (!paidBy) { alert('Please select who paid.'); return; }
+    var splitAmong = Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){ return cb.value; });
+    if (splitAmong.length === 0) { alert('Please select at least one member to split among.'); return; }
+    var me = _meName();
+    var pm = document.getElementById('hhExpPaymentMethod').value;
+    var isMe = paidBy === me;
+    if (isMe && !pm) { document.getElementById('hhExpPmError').classList.remove('hidden'); alert('Please choose a payment method.'); return; }
+    var accountId = '', deductAmount = 0;
+    if (isMe && pm) {
+      var sel = document.getElementById('hhExpAccount');
+      if (sel && sel.value) { var bank = (state.banks || []).find(function(b){ return String(b.id) === String(sel.value); }); if (bank) { accountId = sel.value; deductAmount = amount; } }
+      if (!accountId) { alert('Please select an account to deduct from.'); return; }
+    }
+    var idVal = document.getElementById('hhExpId').value;
+    var id = idVal || String(Date.now());
+    var isEdit = !!idVal;
+    var entry = { id: id, date: document.getElementById('hhExpDate').value, description: document.getElementById('hhExpDesc').value, category: document.getElementById('hhExpCategory').value, amount: amount, currency: document.getElementById('hhExpCurrency').value, paidBy: paidBy, splitAmong: splitAmong, paymentMethod: pm || '', accountId: accountId, deductAmount: deductAmount, paidByUid: _uid() };
+    if (isMe) {
+      if (isEdit) {
+        var old = (state.householdExpenses || []).find(function(x){ return String(x.id) === String(id); });
+        if (old && old.accountId && old.deductAmount) { var ob = (state.banks || []).find(function(b){ return String(b.id) === String(old.accountId); }); if (ob) accountAdd(ob, old.deductAmount); }
+        if (accountId) { var nb = (state.banks || []).find(function(b){ return String(b.id) === String(accountId); }); if (nb) accountDeduct(nb, deductAmount); }
+      } else {
+        if (accountId) { var nb2 = (state.banks || []).find(function(b){ return String(b.id) === String(accountId); }); if (nb2) accountDeduct(nb2, deductAmount); }
+      }
+      try { saveData(); } catch(e){}
+    }
+    var hid = state.householdId;
+    if (hid) {
+      set(ref(db, 'households/' + hid + '/expenses/' + id), entry).catch(function(e){ console.error(e); });
+      window.ftHhNotifyOthers('Household expense ' + (isEdit ? 'updated' : 'added') + ': ' + (entry.description || '') + ' — ' + formatCurrency(amount, entry.currency), 'household');
+    } else {
+      if (!Array.isArray(state.householdExpenses)) state.householdExpenses = [];
+      if (isEdit) { var i = state.householdExpenses.findIndex(function(x){ return String(x.id) === String(id); }); if (i >= 0) state.householdExpenses[i] = entry; else state.householdExpenses.push(entry); }
+      else state.householdExpenses.push(entry);
+      try { saveData(); } catch(e){}
+    }
+    ftToast('Household Split ' + (isEdit ? 'updated' : 'added'));
+    closeModal('modalHouseholdExpense');
+  };
+
+  window.editHouseholdExpense = function(id){
+    var exp = (state.householdExpenses || []).find(function(x){ return String(x.id) === String(id); });
+    if (!exp) return;
+    openHouseholdExpenseModal();
+    document.getElementById('hhExpId').value = exp.id;
+    document.getElementById('hhExpDate').value = exp.date || '';
+    document.getElementById('hhExpDesc').value = exp.description || '';
+    document.getElementById('hhExpCategory').value = exp.category || 'Other';
+    document.getElementById('hhExpAmount').value = exp.amount || '';
+    document.getElementById('hhExpCurrency').value = exp.currency || 'INR';
+    document.getElementById('hhExpPaidBy').value = exp.paidBy || '';
+    document.querySelectorAll('#hhExpSplitAmong input').forEach(function(cb){ cb.checked = (exp.splitAmong || []).indexOf(cb.value) !== -1; });
+    document.getElementById('hhExpPaymentMethod').value = exp.paymentMethod || '';
+    document.querySelectorAll('.hh-pm-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.pm === exp.paymentMethod); });
+    if (typeof ftUpdateHhExpAccountOptions === 'function') ftUpdateHhExpAccountOptions();
+    if (exp.accountId) { var acc = document.getElementById('hhExpAccount'); if (acc) acc.value = exp.accountId; }
+    var t = document.getElementById('hhExpModalTitle'); if (t) t.innerText = 'Edit Household Expense';
+  };
+
+  window.deleteHouseholdExpense = function(id){
+    var exp = (state.householdExpenses || []).find(function(x){ return String(x.id) === String(id); });
+    if (!exp) return;
+    if (exp.paidBy !== _meName()) { alert('Only the person who paid can delete this household expense.'); return; }
+    if (!window.__ftok) { ftConfirm('Delete this household expense? Balances will be recalculated.', function(){ window.__ftok = 1; deleteHouseholdExpense(id); }); return; }
+    window.__ftok = 0;
+    if (exp.accountId && exp.deductAmount) { var bank = (state.banks || []).find(function(b){ return String(b.id) === String(exp.accountId); }); if (bank) accountAdd(bank, exp.deductAmount); try { saveData(); } catch(e){} }
+    var hid = state.householdId;
+    if (hid) {
+      remove(ref(db, 'households/' + hid + '/expenses/' + id)).catch(function(e){ console.error(e); });
+      window.ftHhNotifyOthers('Household expense deleted: ' + (exp.description || '') + ' — ' + formatCurrency(exp.amount, exp.currency), 'household');
+    }
+    ftToast('Household expense deleted');
+  };
+
+  window.saveHouseholdSettlement = function(e){
+    e.preventDefault();
+    var fromMember = document.getElementById('hhSetFrom').value;
+    var toMember = document.getElementById('hhSetTo').value;
+    if (!fromMember || !toMember) { alert('Please select both payer and receiver.'); return; }
+    if (fromMember === toMember) { alert('Payer and receiver must be different.'); return; }
+    var amount = parseFloat(document.getElementById('hhSetAmount').value) || 0;
+    if (amount <= 0) { alert('Please enter a valid amount.'); return; }
+    var currency = document.getElementById('hhSetCurrency').value;
+    var me = _meName();
+    var fromAccVal = document.getElementById('hhSetFromAccount').value;
+    var toAccVal = document.getElementById('hhSetToAccount').value;
+    var fromAccountId = '', fromAccountName = '', toAccountId = '', toAccountName = '';
+    if (fromMember === me && fromAccVal) { var acc = (state.banks || []).find(function(b){ return String(b.id) === String(fromAccVal); }); if (acc) { fromAccountId = acc.id; fromAccountName = acc.name + ' (' + acc.currency + ')'; accountDeduct(acc, amount); } }
+    else if (fromMember !== me && fromAccVal) { fromAccountName = fromAccVal.replace(fromMember + '_', fromMember + ' - '); }
+    if (toMember === me && toAccVal) { var acc2 = (state.banks || []).find(function(b){ return String(b.id) === String(toAccVal); }); if (acc2) { toAccountId = acc2.id; toAccountName = acc2.name + ' (' + acc2.currency + ')'; accountAdd(acc2, amount); } }
+    else if (toMember !== me && toAccVal) { toAccountName = toAccVal.replace(toMember + '_', toMember + ' - '); }
+    var id = String(Date.now());
+    var entry = { id: id, date: document.getElementById('hhSetDate').value, fromMember: fromMember, toMember: toMember, amount: amount, currency: currency, notes: document.getElementById('hhSetNotes').value, fromAccountId: fromAccountId, fromAccountName: fromAccountName, toAccountId: toAccountId, toAccountName: toAccountName, byUid: _uid() };
+    if (fromMember === me || toMember === me) { try { saveData(); } catch(e){} }
+    var hid = state.householdId;
+    if (hid) {
+      set(ref(db, 'households/' + hid + '/settlements/' + id), entry).catch(function(e){ console.error(e); });
+      window.ftHhNotifyOthers('Household settlement recorded: ' + fromMember + ' to ' + toMember + ' ' + formatCurrency(amount, currency), 'household');
+    } else {
+      if (!Array.isArray(state.householdSettlements)) state.householdSettlements = [];
+      state.householdSettlements.push(entry); try { saveData(); } catch(e){}
+    }
+    ftToast('Household Settlement added');
+    closeModal('modalHouseholdSettlement');
+  };
+
+  window.deleteHouseholdSettlement = function(id){
+    var s = (state.householdSettlements || []).find(function(x){ return String(x.id) === String(id); });
+    if (!s) return;
+    var me = _meName();
+    if (s.fromMember !== me && s.toMember !== me) { alert('Only the payer or receiver can delete this settlement.'); return; }
+    if (!window.__ftok) { ftConfirm('Delete this settlement record? Its account balance effect will be reversed.', function(){ window.__ftok = 1; deleteHouseholdSettlement(id); }); return; }
+    window.__ftok = 0;
+    if (s.fromAccountId) { var acc = (state.banks || []).find(function(b){ return String(b.id) === String(s.fromAccountId); }); if (acc) accountAdd(acc, s.amount); }
+    if (s.toAccountId) { var acc2 = (state.banks || []).find(function(b){ return String(b.id) === String(s.toAccountId); }); if (acc2) accountDeduct(acc2, s.amount); }
+    if (s.fromMember === me || s.toMember === me) { try { saveData(); } catch(e){} }
+    var hid = state.householdId;
+    if (hid) {
+      remove(ref(db, 'households/' + hid + '/settlements/' + id)).catch(function(e){ console.error(e); });
+      window.ftHhNotifyOthers('Household settlement deleted: ' + s.fromMember + ' to ' + s.toMember, 'household');
+    }
+    ftToast('Settlement deleted');
+  };
+
+  window.deleteHouseholdMember = function(id){
+    var m = (state.householdMembers || []).find(function(x){ return String(x.id) === String(id); });
+    if (!m) return;
+    if (m.isSelf) { alert('You cannot remove yourself. Use the Exit Household button to leave.'); return; }
+    if (!window.__ftok) { ftConfirm('Remove ' + (m.name || 'this member') + ' from the household?', function(){ window.__ftok = 1; deleteHouseholdMember(id); }); return; }
+    window.__ftok = 0;
+    state.householdMembers = (state.householdMembers || []).filter(function(x){ return String(x.id) !== String(id); });
+    try { saveData(); } catch(e){}
+    var hid = state.householdId;
+    var myUid = _uid();
+    if (m.uid && hid) {
+      remove(ref(db, 'households/' + hid + '/members/' + m.uid)).catch(function(e){ console.error(e); });
+      remove(ref(db, 'households/' + hid + '/exitRequests/' + m.uid)).catch(function(e){});
+      try { update(ref(db, 'publicProfiles/' + myUid), { ['householdConnections/' + m.uid]: null }); } catch(e){}
+      try { update(ref(db, 'publicProfiles/' + m.uid), { ['householdConnections/' + myUid]: null }); } catch(e){}
+      try {
+        var key = 'hh_removed_' + myUid + '_' + m.uid;
+        set(ref(db, 'users/' + m.uid + '/notifications/' + key), { id: key, type: 'household', fromUid: myUid, fromName: currentUser.name || '', toUid: m.uid, message: 'You have been removed from ' + (currentUser.name || '') + " household.", createdAt: new Date().toISOString(), read: false }).catch(function(e){ console.error(e); });
+      } catch(e){}
+    }
+    ftToast((m.name || 'Member') + ' removed from household');
+  };
+
+  window.ftHhMemberHasActivity = function(name){
+    var exps = state.householdExpenses || [];
+    var sets = state.householdSettlements || [];
+    var hasExp = exps.some(function(e){ return (e.splitAmong || []).indexOf(name) !== -1 || e.paidBy === name; });
+    var hasSet = sets.some(function(s){ return s.fromMember === name || s.toMember === name; });
+    return hasExp || hasSet;
+  };
+
+  window.exitHousehold = function(){
+    if (!currentUser || !currentUser.uid) { alert('Please log in again.'); return; }
+    var ownerUid = state.householdOwnerUid;
+    if (!ownerUid || ownerUid === currentUser.uid) { alert('You are the household owner. Use delete on members instead.'); return; }
+    var myName = _meName();
+    var hid = state.householdId;
+    var hasActivity = window.ftHhMemberHasActivity(myName);
+    if (!hasActivity) {
+      ftConfirm('Exit this household? You will no longer share expenses with its members.', function(){
+        try { update(ref(db, 'publicProfiles/' + ownerUid), { ['householdConnections/' + currentUser.uid]: null }); } catch(e){}
+        try { update(ref(db, 'publicProfiles/' + currentUser.uid), { ['householdConnections/' + ownerUid]: null }); } catch(e){}
+        if (hid) { remove(ref(db, 'households/' + hid + '/members/' + currentUser.uid)).catch(function(e){}); remove(ref(db, 'households/' + hid + '/exitRequests/' + currentUser.uid)).catch(function(e){}); }
+        try {
+          var key = 'hh_left_' + currentUser.uid + '_' + ownerUid;
+          set(ref(db, 'users/' + ownerUid + '/notifications/' + key), { id: key, type: 'household', fromUid: currentUser.uid, fromName: currentUser.name || '', toUid: ownerUid, message: (currentUser.name || myName) + ' has left your household.', createdAt: new Date().toISOString(), read: false }).catch(function(e){});
+        } catch(e){}
+        window._ftHhSawSelf = false;
+        window._ftHhInit = false;
+        if (window._ftHhUnsub) { try { window._ftHhUnsub(); } catch(e){} window._ftHhUnsub = null; }
+        state.householdOwnerUid = '';
+        state.householdId = '';
+        state.householdExpenses = [];
+        state.householdSettlements = [];
+        state.householdMembers = (state.householdMembers || []).filter(function(x){ return x.isSelf; });
+        window._ftHhExitReqs = {};
+        try { saveData(); } catch(e){}
+        try { if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement(); } catch(e){}
+        ftToast('You have exited the household.');
+      });
+    } else {
+      ftConfirm('You have pending expenses/settlements in this household. An exit request will be sent to the other members for approval.', function(){
+        if (!hid) return;
+        set(ref(db, 'households/' + hid + '/exitRequests/' + currentUser.uid), { uid: currentUser.uid, name: currentUser.name || myName, status: 'pending', requestedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
+        try {
+          var key = 'hh_exit_req_' + currentUser.uid;
+          set(ref(db, 'users/' + ownerUid + '/notifications/' + key), { id: key, type: 'household', fromUid: currentUser.uid, fromName: currentUser.name || '', toUid: ownerUid, message: (currentUser.name || myName) + ' requests to exit your household. Please approve from your notifications.', createdAt: new Date().toISOString(), read: false }).catch(function(e){});
+        } catch(e){}
+        ftToast('Exit request sent to household members for approval.');
+      });
+    }
+  };
+
+  window.approveHouseholdExit = function(memberUid, memberName){
+    var hid = state.householdId;
+    if (!hid) return;
+    if (!window.__ftok) { ftConfirm('Approve ' + (memberName || 'member') + ' exit? They will be removed from the household.', function(){ window.__ftok = 1; approveHouseholdExit(memberUid, memberName); }); return; }
+    window.__ftok = 0;
+    var myUid = _uid();
+    remove(ref(db, 'households/' + hid + '/members/' + memberUid)).catch(function(e){ console.error(e); });
+    remove(ref(db, 'households/' + hid + '/exitRequests/' + memberUid)).catch(function(e){});
+    try { update(ref(db, 'publicProfiles/' + myUid), { ['householdConnections/' + memberUid]: null }); } catch(e){}
+    try { update(ref(db, 'publicProfiles/' + memberUid), { ['householdConnections/' + myUid]: null }); } catch(e){}
+    state.householdMembers = (state.householdMembers || []).filter(function(m){ return m.uid !== memberUid; });
+    try { saveData(); } catch(e){}
+    try {
+      var key = 'hh_exit_ok_' + myUid + '_' + memberUid;
+      set(ref(db, 'users/' + memberUid + '/notifications/' + key), { id: key, type: 'household', fromUid: myUid, fromName: currentUser.name || '', toUid: memberUid, message: 'Your exit from ' + (currentUser.name || '') + ' household has been approved.', createdAt: new Date().toISOString(), read: false }).catch(function(e){});
+    } catch(e){}
+    try { remove(ref(db, 'users/' + myUid + '/notifications/hh_exit_req_' + memberUid)).catch(function(){}); } catch(e){}
+    ftToast((memberName || 'Member') + ' exit approved.');
+  };
+
+  window.rejectHouseholdExit = function(memberUid){
+    var hid = state.householdId;
+    if (!hid) return;
+    remove(ref(db, 'households/' + hid + '/exitRequests/' + memberUid)).catch(function(e){ console.error(e); });
+    try { remove(ref(db, 'users/' + _uid() + '/notifications/hh_exit_req_' + memberUid)).catch(function(){}); } catch(e){}
+    try {
+      var key = 'hh_exit_no_' + _uid() + '_' + memberUid;
+      set(ref(db, 'users/' + memberUid + '/notifications/' + key), { id: key, type: 'household', fromUid: _uid(), fromName: currentUser.name || '', toUid: memberUid, message: 'Your request to exit the household was declined.', createdAt: new Date().toISOString(), read: false }).catch(function(e){});
+    } catch(e){}
+    ftToast('Exit request declined.');
+  };
+
+  window.ftRenderHhExitNotifs = function(){
+    var list = document.getElementById('profileNotificationsList');
+    if (!list) return;
+    var reqs = window._ftHhExitReqs || {};
+    var isOwner = !state.householdOwnerUid || state.householdOwnerUid === _uid();
+    if (!isOwner) return;
+    Object.keys(reqs).forEach(function(uid){
+      var r = reqs[uid];
+      if (!r || r.status !== 'pending') return;
+      var safeName = (r.name || 'Member').replace(/'/g, '');
+      var card = document.createElement('div');
+      card.className = 'bg-teal-50 border border-teal-200 rounded-lg p-3 flex items-center justify-between gap-2';
+      card.innerHTML = '<div><p class="font-bold text-teal-800"><i class="fa-solid fa-door-open mr-1"></i>' + (r.name || 'Member') + '</p><p class="text-[11px] text-slate-600">Requests to exit your household. Approve to remove them and settle balances.</p></div><div class="flex gap-1"><button onclick="approveHouseholdExit(\'' + uid + '\', \'' + safeName + '\')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold">Approve</button><button onclick="rejectHouseholdExit(\'' + uid + '\')" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] font-bold">Decline</button></div>';
+      list.appendChild(card);
+    });
+  };
+
+  window.ftHhAddExitButton = function(){
+    var btn = document.getElementById('ftExitHhBtn');
+    if (btn) { btn.style.display = (state.householdOwnerUid && state.householdOwnerUid !== _uid()) ? '' : 'none'; return; }
+    var addBtn = document.querySelector('button[onclick="openHouseholdMemberModal()"]');
+    if (!addBtn) return;
+    var isMember = state.householdOwnerUid && state.householdOwnerUid !== _uid();
+    btn = document.createElement('button');
+    btn.id = 'ftExitHhBtn';
+    btn.className = 'px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-xs rounded-lg shadow';
+    btn.innerHTML = '<i class="fa-solid fa-door-open mr-1"></i> Exit Household';
+    btn.setAttribute('onclick', 'exitHousehold()');
+    btn.style.display = isMember ? '' : 'none';
+    addBtn.parentNode.insertBefore(btn, addBtn);
+  };
+
+  var _origRenderAll = window.renderAll;
+  window.renderAll = function(){ var r = _origRenderAll.apply(this, arguments); try { window.ftHhEnsure(); window.ftHhAddExitButton(); } catch(e){} return r; };
+
+  var _origLoadNotifs = window.loadProfileNotifications;
+  window.loadProfileNotifications = function(){ _origLoadNotifs.apply(this, arguments); try { window.ftRenderHhExitNotifs(); } catch(e){} };
+
+  var _origBadge = window.ftUpdateNotifBadge;
+  window.ftUpdateNotifBadge = function(){ _origBadge.apply(this, arguments); try { var ec = Object.keys(window._ftHhExitReqs || {}).filter(function(k){ return (window._ftHhExitReqs[k] || {}).status === 'pending'; }).length; if (ec > 0) { ['profileNotifBadge','ppNotifBadge'].forEach(function(id){ var b = document.getElementById(id); if (b) { b.classList.remove('hidden'); var cur = parseInt((b.innerText || '').replace(/[^0-9]/g, ''), 10) || 0; var tot = cur + ec; b.innerText = tot > 9 ? '9+' : String(tot); } }); } } catch(e){} };
+
+  var _origAccept = window.acceptHouseholdInvite;
+  window.acceptHouseholdInvite = async function(fromUid, fromName){
+    await _origAccept.apply(this, arguments);
+    try {
+      state.householdOwnerUid = fromUid;
+      state.householdId = 'hh_' + fromUid;
+      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid), { uid: currentUser.uid, name: currentUser.name || _meName(), joinedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
+      window._ftHhInit = false; window._ftHhSawSelf = false;
+      window.ftHhEnsure();
+      try { saveData(); } catch(e){}
+    } catch(e){ console.error(e); }
+  };
+
+  var _origInvite = window.sendHouseholdInvite;
+  window.sendHouseholdInvite = function(e){
+    var r = _origInvite.apply(this, arguments);
+    try {
+      state.householdOwnerUid = currentUser.uid;
+      state.householdId = 'hh_' + currentUser.uid;
+      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid), { uid: currentUser.uid, name: currentUser.name || _meName(), isOwner: true, joinedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
+      window._ftHhInit = false;
+      window.ftHhEnsure();
+    } catch(err){ console.error(err); }
+    return r;
+  };
+
+  var _origOpenExp = window.openHouseholdExpenseModal;
+  window.openHouseholdExpenseModal = function(){ _origOpenExp.apply(this, arguments); var t = document.getElementById('hhExpModalTitle'); if (t) t.innerText = 'Add Household Expense'; };
 })();
 </script>
 </body>
