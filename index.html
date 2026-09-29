@@ -442,7 +442,7 @@ function set(r, v) { return r.set(v); }
 function get(r) { return r.get(); }
 function update(r, v) { return r.update(v); }
 function remove(r) { return r.remove(); }
-function onValue(r, cb) { r.on('value', cb); return () => r.off('value', cb); }
+function onValue(r, cb, onError) { r.on('value', cb, onError); return () => r.off('value', cb); }
 function getStorage(app) { return firebase.storage(app); }
 function storageRef(storage, path) { return path !== undefined ? storage.ref(path) : storage.ref(); }
 function uploadBytes(r, data) { return r.put(data); }
@@ -677,6 +677,7 @@ window.handleLogout = async function() {
   if (sharedUnsubSplits) { sharedUnsubSplits(); sharedUnsubSplits = null; }
   if (sharedUnsubSettle) { sharedUnsubSettle(); sharedUnsubSettle = null; }
   if (connectionUnsub) { connectionUnsub(); connectionUnsub = null; } if (window._ftNotifUnsub) { window._ftNotifUnsub(); window._ftNotifUnsub = null; }
+  if(window._ftHhUnsub){window._ftHhUnsub();window._ftHhUnsub=null;}window._ftHhInit=false;window._ftHhSubscriptionKey='';window._ftHhReadyKey='';window._ftHhReady=null;window._ftHhSnapshot=null;window._ftHhSawSelf=false;window._ftBankSaveState=null;window._ftUserSavePromise=null;window._ftIncomingHHPending=[];
   try { await signOut(auth); } catch(e) {}
   currentUser = null; window.currentUser = null; dataLoaded = false; pendingLegacyUser = null; window.pendingLegacyUser = null; homeCaptionDisplayed = false; window._logoSubscribed = false; window.activeLogoUrl = ''; window._ftIncomingPending = []; window._ftConnections = []; window._lastConnRefresh = 0;
   state.rates = { ...DEFAULT_RATES }; state.displayCurrency = 'INR'; state.banks = []; state.debts = []; state.gold = []; state.sips = []; state.expenses = {}; state.settlements = {}; state.transfers = []; state.friends = []; state.friendSplits = {}; state.friendLedger = []; state.sharedSplits = []; state.sharedSettlements = []; state.settings = { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' };
@@ -779,7 +780,7 @@ function subscribeSharedData(uid) {
   });
 }
 window.subscribeSharedData = subscribeSharedData;
-window.subscribeConnectionData = function(uid){ if(connectionUnsub){ connectionUnsub(); connectionUnsub = null; } if(!uid) return; connectionUnsub = onValue(ref(db, 'publicProfiles'), function(snap){ const profiles = snap.val() || {}; const myUid = uid; const me = profiles[myUid] || {}; const incoming = []; const hhIncoming = []; const connMap = {}; if(me.connections){ Object.keys(me.connections).forEach(function(u){ const c = me.connections[u] || {}; connMap[u] = { uid: u, name: c.name || (profiles[u] && profiles[u].name) || 'Friend' }; }); } Object.keys(profiles).forEach(function(u){ if(u === myUid) return; const p = profiles[u] || {}; if(p.sentRequests && p.sentRequests[myUid] && p.sentRequests[myUid].status==='pending'){ const alreadyConn = me.connections && me.connections[u]; const declined = me.declinedRequests && me.declinedRequests[u]; if(!alreadyConn && !declined){ incoming.push({ fromUid: u, fromName: (p.sentRequests[myUid].fromName) || p.name || 'A user' }); } } if(p.connections && p.connections[myUid] && !connMap[u]){ connMap[u] = { uid: u, name: (profiles[u] && profiles[u].name) || 'Friend' }; } }); const conns = Object.keys(connMap).map(function(k){ return connMap[k]; }).sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }); window._ftIncomingPending = incoming; window._ftConnections = conns; window.state.connectedFriends = conns; if(typeof window.loadProfileNotifications==='function') window.loadProfileNotifications(); if(typeof window.loadProfileConnections==='function') window.loadProfileConnections(); if(typeof window.ftUpdateNotifBadge==='function') window.ftUpdateNotifBadge(); if(typeof renderFriendsSplit==='function') renderFriendsSplit(); }, function(err){ console.error('Connection listener error:', err); }); };
+window.subscribeConnectionData = function(uid){ if(connectionUnsub){ connectionUnsub(); connectionUnsub = null; } if(!uid) return; connectionUnsub = onValue(ref(db, 'publicProfiles'), function(snap){ const profiles = snap.val() || {}; const myUid = uid; const me = profiles[myUid] || {}; const incoming = []; const hhIncoming = []; const connMap = {}; if(me.connections){ Object.keys(me.connections).forEach(function(u){ const c = me.connections[u] || {}; connMap[u] = { uid: u, name: c.name || (profiles[u] && profiles[u].name) || 'Friend' }; }); } Object.keys(profiles).forEach(function(u){ if(u === myUid) return; const p = profiles[u] || {}; if(p.sentRequests && p.sentRequests[myUid] && p.sentRequests[myUid].status==='pending'){ const alreadyConn = me.connections && me.connections[u]; const declined = me.declinedRequests && me.declinedRequests[u]; if(!alreadyConn && !declined){ incoming.push({ fromUid: u, fromName: (p.sentRequests[myUid].fromName) || p.name || 'A user' }); } } if(p.sentHouseholdRequests&&p.sentHouseholdRequests[myUid]&&p.sentHouseholdRequests[myUid].status==='pending'&&!(me.declinedHouseholdRequests&&me.declinedHouseholdRequests[u]))hhIncoming.push({fromUid:u,fromName:p.sentHouseholdRequests[myUid].fromName||p.name||'A user',householdId:p.sentHouseholdRequests[myUid].householdId}); if(p.connections && p.connections[myUid] && !connMap[u]){ connMap[u] = { uid: u, name: (profiles[u] && profiles[u].name) || 'Friend' }; } }); const conns = Object.keys(connMap).map(function(k){ return connMap[k]; }).sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }); window._ftIncomingPending = incoming; window._ftIncomingHHPending=hhIncoming; window._ftConnections = conns; window.state.connectedFriends = conns; if(typeof window.loadProfileNotifications==='function') window.loadProfileNotifications(); if(typeof window.loadProfileConnections==='function') window.loadProfileConnections(); if(typeof window.ftUpdateNotifBadge==='function') window.ftUpdateNotifBadge(); if(typeof renderFriendsSplit==='function') renderFriendsSplit(); }, function(err){ console.error('Connection listener error:', err); }); };
 window.openSharedSplitModal = function() {
   if (!currentUser || !currentUser.uid) { alert('Please log in with an Email-based account to use shared splits.'); return; }
   document.getElementById('sharedSplitForm').reset();
@@ -893,7 +894,7 @@ onAuthStateChanged(auth, async (fbUser) => {
   }
 });
 
-async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { dataLoaded = true; const val = snapshot.val(); if (val) {
+async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { if(!currentUser||currentUser.loginId!==loginId)return; const wasFirstLoad=isFirstLoad; dataLoaded = true; const val = snapshot.val(); if (val) {
     normalizeState(val);
     if (!state.householdOwnerUid && currentUser && currentUser.uid) {
       try {
@@ -906,10 +907,10 @@ async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); d
         if (hhOwners.length === 1) {state.householdOwnerUid=hhOwners[0];state.householdId='hh_'+hhOwners[0];}
       } catch(err){console.warn('Could not restore previous household membership:',err);}
     }
-  } else { if (loginId === 'US' && isFirstLoad) { await migrateExistingData(loginId); } else { Object.assign(state, { rates: { ...DEFAULT_RATES }, displayCurrency: 'INR', banks: [], debts: [], gold: [], sips: [], expenses: {}, settlements: {}, transfers: [], friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }); } } isFirstLoad = false; if (currentUser && currentUser.name) { const _dn = currentUser.name.trim().split(/\s+/).slice(0,2).join(' '); if (_dn && (!state.settings.people || state.settings.people.length === 0)) { if(!state.settings.people) state.settings.people = []; state.settings.people.push(_dn); saveData(); } } /* PATCH: permanently include logged-in user as a household member */ if (currentUser && getPeople()[0]) { const _hhMe = getPeople()[0]; if (!Array.isArray(state.householdMembers)) state.householdMembers = []; const _hhHasMe = state.householdMembers.some(function(m){ return m.name === _hhMe; }); if (!_hhHasMe) { state.householdMembers.unshift({ id: 'hh_self_' + (currentUser.uid || 'me'), name: _hhMe, isSelf: true }); window._ftNeedHhSave = true; } else { const _sm = state.householdMembers.find(function(m){ return m.name === _hhMe; }); if (_sm && !_sm.isSelf) { _sm.isSelf = true; window._ftNeedHhSave = true; } } } if (currentUser && !state.settings.firstTimeSetupDone && (state.banks||[]).length === 0 && Object.keys(state.expenses||{}).length === 0) { if (typeof window.showFirstTimeGuidance === 'function') window.showFirstTimeGuidance(); } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const _rc = (window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'); liveRateInput.value = (state.rates[_rc] || DEFAULT_RATES[_rc] || 1).toFixed(2); } const displaySelect = document.getElementById('displayCurrencySelect'); if (displaySelect) displaySelect.value = state.displayCurrency || 'INR'; if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect(); if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput(); if (typeof window.setCommonGoldPurity === 'function') window.setCommonGoldPurity(activeCommonPurity); const cm = currentMonthStr(); ['expenseMonthSelect','friendSplitMonthSelect','settlementMonthSelect','transferMonthSelect','bankMonthSelect','bankMonthSelect2','cashMonthSelect','creditCardMonthSelect','cashbookMonthSelect','cashbookPdfMonthSelect','householdMonthSelect'].forEach(id => { const el = document.getElementById(id); if (el) el.value = cm; }); updateAllMonthNavLabels(); applyVisibilitySettings(); if (typeof window.renderAll === 'function') window.renderAll(); renderCreditCardReminders(); setTimeout(function(){ if (window._ftNeedHhSave) { window._ftNeedHhSave = false; saveData(); } if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar(); if (typeof window.ftApplyDescriptionVisibility === 'function') window.ftApplyDescriptionVisibility(); if (typeof window.ftSubscribePremiumSettings === 'function') window.ftSubscribePremiumSettings(); if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); applyAdminBranding(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true); if (typeof window.fetchLiveRates === 'function') { try { window.fetchLiveRates(true); } catch(_fe){} } }, 50); }, (error) => { console.error('Data load error:', error); alert('Could not load your saved data from the server (' + (error && error.message ? error.message : 'permission denied') + '). Your data has NOT been changed.'); }); }
+  } else { if (loginId === 'US' && isFirstLoad) { await migrateExistingData(loginId); } else { Object.assign(state, { rates: { ...DEFAULT_RATES }, displayCurrency: 'INR', banks: [], debts: [], gold: [], sips: [], expenses: {}, settlements: {}, transfers: [], friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }); } } isFirstLoad = false; if (currentUser && currentUser.name) { const _dn = currentUser.name.trim().split(/\s+/).slice(0,2).join(' '); if (_dn && (!state.settings.people || state.settings.people.length === 0)) { if(!state.settings.people) state.settings.people = []; state.settings.people.push(_dn); saveData(); } } /* PATCH: permanently include logged-in user as a household member */ if (currentUser && getPeople()[0]) { const _hhMe = getPeople()[0]; if (!Array.isArray(state.householdMembers)) state.householdMembers = []; const _hhHasMe = state.householdMembers.some(function(m){ return m.name === _hhMe; }); if (!_hhHasMe) { state.householdMembers.unshift({ id: 'hh_self_' + (currentUser.uid || 'me'), name: _hhMe, isSelf: true }); window._ftNeedHhSave = true; } else { const _sm = state.householdMembers.find(function(m){ return m.name === _hhMe; }); if (_sm && !_sm.isSelf) { _sm.isSelf = true; window._ftNeedHhSave = true; } } } if (currentUser && !state.settings.firstTimeSetupDone && (state.banks||[]).length === 0 && Object.keys(state.expenses||{}).length === 0) { if (typeof window.showFirstTimeGuidance === 'function') window.showFirstTimeGuidance(); } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const _rc = (window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'); liveRateInput.value = (state.rates[_rc] || DEFAULT_RATES[_rc] || 1).toFixed(2); } const displaySelect = document.getElementById('displayCurrencySelect'); if (displaySelect) displaySelect.value = state.displayCurrency || 'INR'; if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect(); if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput(); if (typeof window.setCommonGoldPurity === 'function') window.setCommonGoldPurity(activeCommonPurity); const cm = currentMonthStr(); ['expenseMonthSelect','friendSplitMonthSelect','settlementMonthSelect','transferMonthSelect','bankMonthSelect','bankMonthSelect2','cashMonthSelect','creditCardMonthSelect','cashbookMonthSelect','cashbookPdfMonthSelect','householdMonthSelect'].forEach(id => { const el = document.getElementById(id); if(el&&(wasFirstLoad||!el.value))el.value=cm; }); updateAllMonthNavLabels(); applyVisibilitySettings(); if (typeof window.renderAll === 'function') window.renderAll(); renderCreditCardReminders(); setTimeout(function(){ if (window._ftNeedHhSave) { window._ftNeedHhSave = false; saveData(); } if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar(); if (typeof window.ftApplyDescriptionVisibility === 'function') window.ftApplyDescriptionVisibility(); if (typeof window.ftSubscribePremiumSettings === 'function') window.ftSubscribePremiumSettings(); if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); applyAdminBranding(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true); if (typeof window.fetchLiveRates === 'function') { try { window.fetchLiveRates(true); } catch(_fe){} } }, 50); }, (error) => { console.error('Data load error:', error); alert('Could not load your saved data from the server (' + (error && error.message ? error.message : 'permission denied') + '). Your data has NOT been changed.'); }); }
 async function migrateExistingData(loginId) { try { const snapshot = await get(ref(db, 'fintrack_data')); const oldData = snapshot.val(); if (oldData) { const migratedState = { rates: { ...DEFAULT_RATES, ...(oldData.liveRate ? { SAR: oldData.liveRate } : {}), ...(oldData.rates || {}) }, displayCurrency: 'INR', banks: Array.isArray(oldData.banks) ? oldData.banks : (oldData.banks ? Object.values(oldData.banks) : []), debts: Array.isArray(oldData.debts) ? oldData.debts : (oldData.debts ? Object.values(oldData.debts) : []), gold: Array.isArray(oldData.gold) ? oldData.gold : (oldData.gold ? Object.values(oldData.gold) : []), sips: Array.isArray(oldData.sips) ? oldData.sips : (oldData.sips ? Object.values(oldData.sips) : []), expenses: oldData.expenses || {}, settlements: oldData.settlements || {}, transfers: Array.isArray(oldData.transfers) ? oldData.transfers : (oldData.transfers ? Object.values(oldData.transfers) : []), friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }; migratedState.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.date) b.date = ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; }); migratedState.gold.forEach(g => { if (g.date) g.date = convertGoldDate(g.date); }); migratedState.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); }); await set(ref(db, `userData/${loginId}`), migratedState); const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } console.log("Migration complete: existing data moved to user-specific path."); } else { const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } } } catch(err) { console.error("Migration error:", err); } }
-function normalizeState(val) { if (!val) return; state.rates = val.rates || { ...DEFAULT_RATES }; state.displayCurrency = val.displayCurrency || 'INR'; state.banks = Array.isArray(val.banks) ? val.banks : (val.banks ? Object.values(val.banks) : []); state.debts = Array.isArray(val.debts) ? val.debts : (val.debts ? Object.values(val.debts) : []); state.gold = Array.isArray(val.gold) ? val.gold : (val.gold ? Object.values(val.gold) : []); state.sips = Array.isArray(val.sips) ? val.sips : (val.sips ? Object.values(val.sips) : []); state.transfers = Array.isArray(val.transfers) ? val.transfers : (val.transfers ? Object.values(val.transfers) : []); state.expenses = val.expenses || {}; state.settlements = val.settlements || {}; state.friends = Array.isArray(val.friends) ? val.friends : (val.friends ? Object.values(val.friends) : []); state.friendSplits = val.friendSplits || {}; state.friendLedger = Array.isArray(val.friendLedger) ? val.friendLedger : []; state.householdMembers = Array.isArray(val.householdMembers) ? val.householdMembers : (val.householdMembers ? Object.values(val.householdMembers) : []); state.householdExpenses = Array.isArray(val.householdExpenses) ? val.householdExpenses : (val.householdExpenses ? Object.values(val.householdExpenses) : []); state.householdSettlements = Array.isArray(val.householdSettlements) ? val.householdSettlements : (val.householdSettlements ? Object.values(val.householdSettlements) : []); state.householdOwnerUid = val.householdOwnerUid || ""; state.householdId = val.householdId || ""; state.settings = val.settings || { people: [] }; if (!state.settings.people) state.settings.people = []; if (!state.settings.bankType1) state.settings.bankType1 = DEFAULT_BANK_TYPE1; if (!state.settings.bankType2) state.settings.bankType2 = DEFAULT_BANK_TYPE2; if (state.settings.showSecondaryAccount === undefined) state.settings.showSecondaryAccount = true; if (state.settings.showLiabilities === undefined) state.settings.showLiabilities = false; if (state.settings.showGoldSip === undefined) state.settings.showGoldSip = true; if (state.settings.showTransfers === undefined) state.settings.showTransfers = false; if (state.settings.showCreditCard === undefined) state.settings.showCreditCard = true; if (state.settings.showPendingPayments === undefined) state.settings.showPendingPayments = true; if (state.settings.showIndividualSummary === undefined) state.settings.showIndividualSummary = true; if (!state.settings.allowedCurrencies) state.settings.allowedCurrencies = []; if (state.settings.adminLogo === undefined) state.settings.adminLogo = ''; if (state.settings.adminTagline === undefined) state.settings.adminTagline = 'Financial Planning & Portfolio'; if (state.settings.showTotalLiabilities === undefined) state.settings.showTotalLiabilities = false; if (state.settings.showTotalSavingsGold === undefined) state.settings.showTotalSavingsGold = false; if (state.settings.showMonthlyCashbook === undefined) state.settings.showMonthlyCashbook = true; state.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.owner) b.owner = getPeople()[0] || ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; if (!b.date) b.date = ''; }); state.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); if (!d.currency) d.currency = 'INR'; }); state.gold.forEach(g => { if (!g.currency) g.currency = 'SAR'; }); state.sips.forEach(s => { if (!s.currency) s.currency = 'INR'; }); if (state.settings.people.length === 0 && state.banks.length > 0) { const owners = []; state.banks.forEach(b => { if (b.owner && !owners.includes(b.owner)) owners.push(b.owner); }); if (owners.length > 0) { state.settings.people = owners; saveData(); } } if (typeof val.liveRate === 'number' && !state.rates.SAR) state.rates.SAR = val.liveRate; }
-window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, householdExpenses: state.householdExpenses, householdSettlements: state.householdSettlements, householdOwnerUid: state.householdOwnerUid, householdId: state.householdId, settings: state.settings })); set(ref(db, `userData/${currentUser.loginId}`), _save).catch(err => console.error("Firebase sync error:", err)); } catch(e) { console.error("saveData serialize error:", e); } } };
+function normalizeState(val) { if (!val) return; state.rates = val.rates || { ...DEFAULT_RATES }; state.displayCurrency = val.displayCurrency || 'INR'; state.banks = window.ftNormalizeBanks ? window.ftNormalizeBanks(val.banks) : (Array.isArray(val.banks) ? val.banks : (val.banks ? Object.values(val.banks) : [])); state.debts = Array.isArray(val.debts) ? val.debts : (val.debts ? Object.values(val.debts) : []); state.gold = Array.isArray(val.gold) ? val.gold : (val.gold ? Object.values(val.gold) : []); state.sips = Array.isArray(val.sips) ? val.sips : (val.sips ? Object.values(val.sips) : []); state.transfers = Array.isArray(val.transfers) ? val.transfers : (val.transfers ? Object.values(val.transfers) : []); state.expenses = val.expenses || {}; state.settlements = val.settlements || {}; state.friends = Array.isArray(val.friends) ? val.friends : (val.friends ? Object.values(val.friends) : []); state.friendSplits = val.friendSplits || {}; state.friendLedger = Array.isArray(val.friendLedger) ? val.friendLedger : []; state.householdMembers = Array.isArray(val.householdMembers) ? val.householdMembers : (val.householdMembers ? Object.values(val.householdMembers) : []); state.householdExpenses = Array.isArray(val.householdExpenses) ? val.householdExpenses : (val.householdExpenses ? Object.values(val.householdExpenses) : []); state.householdSettlements = Array.isArray(val.householdSettlements) ? val.householdSettlements : (val.householdSettlements ? Object.values(val.householdSettlements) : []); state.householdOwnerUid = val.householdOwnerUid || ""; state.householdId = val.householdId || ""; state.householdMigrationComplete = !!val.householdMigrationComplete; state.settings = val.settings || { people: [] }; if (!state.settings.people) state.settings.people = []; if (!state.settings.bankType1) state.settings.bankType1 = DEFAULT_BANK_TYPE1; if (!state.settings.bankType2) state.settings.bankType2 = DEFAULT_BANK_TYPE2; if (state.settings.showSecondaryAccount === undefined) state.settings.showSecondaryAccount = true; if (state.settings.showLiabilities === undefined) state.settings.showLiabilities = false; if (state.settings.showGoldSip === undefined) state.settings.showGoldSip = true; if (state.settings.showTransfers === undefined) state.settings.showTransfers = false; if (state.settings.showCreditCard === undefined) state.settings.showCreditCard = true; if (state.settings.showPendingPayments === undefined) state.settings.showPendingPayments = true; if (state.settings.showIndividualSummary === undefined) state.settings.showIndividualSummary = true; if (!state.settings.allowedCurrencies) state.settings.allowedCurrencies = []; if (state.settings.adminLogo === undefined) state.settings.adminLogo = ''; if (state.settings.adminTagline === undefined) state.settings.adminTagline = 'Financial Planning & Portfolio'; if (state.settings.showTotalLiabilities === undefined) state.settings.showTotalLiabilities = false; if (state.settings.showTotalSavingsGold === undefined) state.settings.showTotalSavingsGold = false; if (state.settings.showMonthlyCashbook === undefined) state.settings.showMonthlyCashbook = true; state.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.owner) b.owner = getPeople()[0] || ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; if (!b.date) b.date = ''; }); state.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); if (!d.currency) d.currency = 'INR'; }); state.gold.forEach(g => { if (!g.currency) g.currency = 'SAR'; }); state.sips.forEach(s => { if (!s.currency) s.currency = 'INR'; }); if (state.settings.people.length === 0 && state.banks.length > 0) { const owners = []; state.banks.forEach(b => { if (b.owner && !owners.includes(b.owner)) owners.push(b.owner); }); if (owners.length > 0) { state.settings.people = owners; saveData(); } } if (typeof val.liveRate === 'number' && !state.rates.SAR) state.rates.SAR = val.liveRate; if(window.ftHhApplySharedState)window.ftHhApplySharedState(); }
+window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, householdExpenses: state.householdExpenses, householdSettlements: state.householdSettlements, householdOwnerUid: state.householdOwnerUid, householdId: state.householdId, householdMigrationComplete: !!state.householdMigrationComplete, settings: state.settings })); const _banks=_save.banks;delete _save.banks;const _bankSave=window.ftSaveBankChanges(_banks);window._ftUserSavePromise=Promise.all([update(ref(db,'userData/'+currentUser.loginId),_save),_bankSave]).then(function(){return true;}).catch(function(err){console.error('Firebase sync error:',err);alert('Could not save changes to Firebase: '+err.message);return false;});return window._ftUserSavePromise; } catch(e) { console.error("saveData serialize error:", e); } } };
 window.updateExchangeRate = function(val) { const c = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; state.rates[c] = parseFloat(val) || DEFAULT_RATES[c] || 1; saveData(); };
 window.changeDisplayCurrency = function(curr) { state.displayCurrency = curr; saveData(); };
 window.fetchLiveRates = async function(silent) { try { const res = await fetch('https://api.exchangerate-api.com/v4/latest/INR'); const data = await res.json(); if (data && data.rates) { for (const curr of Object.keys(CURRENCIES)) { if (curr === 'INR') { state.rates.INR = 1; continue; } if (data.rates[curr]) state.rates[curr] = 1 / data.rates[curr]; } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const sc = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; liveRateInput.value = (state.rates[sc] || DEFAULT_RATES[sc] || 1).toFixed(2); } saveData(); if (!silent) alert("Live rates fetched successfully!"); if (typeof window.renderAll === 'function') window.renderAll(); } } catch(e) { console.warn("Live rate API error, retaining current rates.", e); if (!silent) alert("Unable to fetch live rates. You can enter rates manually in Settings."); } };
@@ -1084,8 +1085,8 @@ window.saveFriendSplit = async function(e) {
   if (oldMonth) splits[oldMonth] = (splits[oldMonth]||[]).filter(x => String(x.id) !== String(id));
   splits[month] = (splits[month]||[]).filter(x => String(x.id) !== String(id)); splits[month].push(split);
   try {
-    await update(ref(db, 'userData/' + currentUser.loginId), { banks, expenses, friendSplits:splits });
-    state.banks=banks; state.expenses=expenses; state.friendSplits=splits;
+    await Promise.all([window.ftSaveBankChanges(banks),update(ref(db,'userData/'+currentUser.loginId),{expenses,friendSplits:splits})]);
+    state.expenses=expenses;state.friendSplits=splits;
     closeModal('modalFriendSplit'); renderAll(); ftToast('Friend Split added');
     try {
     const conn=state.connectedFriends||[], targets=new Map();
@@ -1111,8 +1112,8 @@ window.deleteFriendSplit = async function(month,id) {
   if (old.expenseId) Object.keys(expenses).forEach(m=>expenses[m]=(expenses[m]||[]).filter(x=>String(x.id)!==String(old.expenseId)));
   splits[month]=splits[month].filter(x=>String(x.id)!==String(id));
   try {
-    await update(ref(db,'userData/'+currentUser.loginId),{banks,expenses,friendSplits:splits});
-    state.banks=banks;state.expenses=expenses;state.friendSplits=splits;
+    await Promise.all([window.ftSaveBankChanges(banks),update(ref(db,'userData/'+currentUser.loginId),{expenses,friendSplits:splits})]);
+    state.expenses=expenses;state.friendSplits=splits;
     const changes={}, conn=state.connectedFriends||[];
     (old.participants||[]).forEach(p=>{const c=conn.find(x=>x.name===p);if(!c||c.uid===currentUser.uid)return;const key='fs_'+currentUser.uid+'_'+id+'_'+c.uid;changes['sharedSplits/'+key]=null;changes['users/'+c.uid+'/notifications/'+key+'_deleted']={id:key+'_deleted',type:'split',sourceSplitId:id,fromUid:currentUser.uid,fromName:currentUser.name||'',toUid:c.uid,message:'Friends Split deleted: '+old.description,createdAt:new Date().toISOString(),read:false};});
     if(Object.keys(changes).length)await update(ref(db),changes);
@@ -1153,17 +1154,7 @@ window.renderFriendLedger = renderFriendLedger;
 function householdBalanceByCurrency(memberName) {
   const bal = {}, members = state.householdMembers || [];
   const me = currentUser && currentUser.uid, myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  const names = new Map(), uids = new Map();
-  members.forEach(function(m) { names.set(m.name, m.name); });
-  (state.friends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); });
-  (state.connectedFriends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); if (f && f.uid) uids.set(String(f.uid), f.name); });
-  if (me) uids.set(String(me), names.get(myName) || names.get(currentUser.name) || '@self');
-  names.set(myName, names.get(myName) || '@self');
-  if (currentUser && currentUser.name) names.set(currentUser.name, names.get(myName));
-  function who(person) {
-    if (person && typeof person === 'object') return (person.uid && uids.get(String(person.uid))) || names.get(person.name) || null;
-    return names.get(person) || (person != null && uids.get(String(person))) || null;
-  }
+  function who(person){return window.ftFinancialIdentity(person);}
   const target = who(memberName);
   function obligation(payer, debtor, amount, currency) {
     const p = who(payer), d = who(debtor), value = Number(amount) || 0;
@@ -1173,9 +1164,9 @@ function householdBalanceByCurrency(memberName) {
     if (d === target) bal[c] = (bal[c] || 0) - value;
   }
   (state.householdExpenses || []).forEach(function(exp) {
-    const parts = Array.from(new Set(exp.splitAmong && exp.splitAmong.length ? exp.splitAmong : window.ftHhUniqueMembers().map(function(m){ return m.name; })));
+    const parts=window.ftHhExpensePeople(exp);
     if (!parts.length) return;
-    parts.forEach(function(p) { obligation(exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
+    parts.forEach(function(p) { obligation(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
   });
   (state.householdSettlements || []).forEach(function(s) { obligation(s.fromMember, s.toMember, s.amount, s.currency); });
   Object.keys(state.friendSplits || {}).forEach(function(month) {
@@ -1206,9 +1197,9 @@ function householdBalanceByCurrency(memberName) {
   });
   (state.friendLedger || []).forEach(function(t) {
     const friend = (state.friends || []).find(function(f) { return String(f.id) === String(t.friendId); });
-    if (!friend) return;
+    if(!friend&&!t.friendName&&!t.friendUid)return;
     const signed = (t.type === 'they_owe' || t.type === 'i_paid') ? Number(t.amount || 0) : -Number(t.amount || 0);
-    obligation(myName, friend.name, signed, t.currency);
+    obligation(myName,t.friendUid?{uid:t.friendUid,name:t.friendName}:friend?friend.name:t.friendName,signed,t.currency);
   });
   (state.sharedSettlements || []).forEach(function(s) {
     const parts = s.participants || [], owner = parts.find(function(p) { return String(p.uid) === String(s.ownerUid); });
@@ -1221,17 +1212,7 @@ window.householdBalanceByCurrency = householdBalanceByCurrency;
 window.ftHouseholdBilateralByCurrency = function(otherName) {
   const bal = {}, members = state.householdMembers || [];
   const me = currentUser && currentUser.uid, myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  const names = new Map(), uids = new Map();
-  members.forEach(function(m) { names.set(m.name, m.name); });
-  (state.friends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); });
-  (state.connectedFriends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); if (f && f.uid) uids.set(String(f.uid), f.name); });
-  if (me) uids.set(String(me), names.get(myName) || names.get(currentUser.name) || '@self');
-  names.set(myName, names.get(myName) || '@self');
-  if (currentUser && currentUser.name) names.set(currentUser.name, names.get(myName));
-  function who(person) {
-    if (person && typeof person === 'object') return (person.uid && uids.get(String(person.uid))) || names.get(person.name) || null;
-    return names.get(person) || (person != null && uids.get(String(person))) || null;
-  }
+  function who(person){return window.ftFinancialIdentity(person);}
   const meKey = who(myName) || '@self';
   const otherKey = who(otherName);
   if (!otherKey || otherKey === meKey) return bal;
@@ -1245,18 +1226,16 @@ window.ftHouseholdBilateralByCurrency = function(otherName) {
     if (d === meKey) bal[c] = (bal[c] || 0) - value;
   }
   (state.householdExpenses || []).forEach(function(exp) {
-    const parts = Array.from(new Set(exp.splitAmong && exp.splitAmong.length ? exp.splitAmong : window.ftHhUniqueMembers().map(function(m){ return m.name; })));
+    const parts=window.ftHhExpensePeople(exp);
     if (!parts.length) return;
-    if (!parts.some(function(x){return who(x)===meKey;}) || !parts.some(function(x){return who(x)===otherKey;})) return;
-    parts.forEach(function(p) { bil(exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
+    parts.forEach(function(p) { bil(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
   });
   (state.householdSettlements || []).forEach(function(s) { bil(s.fromMember, s.toMember, s.amount, s.currency); });
   Object.keys(state.friendSplits || {}).forEach(function(month) {
     (state.friendSplits[month] || []).forEach(function(fs) {
       const parts = fs.participants || [];
       if (!parts.length) return;
-      if (!parts.some(function(x){return who(x)===meKey;}) || !parts.some(function(x){return who(x)===otherKey;})) return;
-      parts.forEach(function(p) { bil(fs.paidBy, p, fs.shares && fs.shares[p] != null ? fs.shares[p] : Number(fs.amount || 0) / parts.length, fs.currency); });
+        parts.forEach(function(p) { bil(fs.paidBy, p, fs.shares && fs.shares[p] != null ? fs.shares[p] : Number(fs.amount || 0) / parts.length, fs.currency); });
     });
   });
   (state.sharedSplits || []).forEach(function(s) {
@@ -1275,15 +1254,14 @@ window.ftHouseholdBilateralByCurrency = function(otherName) {
     const parts = trip.members || [];
     if (!parts.length) return;
     Object.values(trip.splits || {}).forEach(function(s) {
-      if (!parts.some(function(x){return who(x)===meKey;}) || !parts.some(function(x){return who(x)===otherKey;})) return;
-      parts.forEach(function(p) { bil(s.paidByUid || s.paidByName, p, Number(s.amount || 0) / parts.length, s.currency); });
+        parts.forEach(function(p) { bil(s.paidByUid || s.paidByName, p, Number(s.amount || 0) / parts.length, s.currency); });
     });
   });
   (state.friendLedger || []).forEach(function(t) {
     const friend = (state.friends || []).find(function(f) { return String(f.id) === String(t.friendId); });
-    if (!friend) return;
+    if(!friend&&!t.friendName&&!t.friendUid)return;
     const signed = (t.type === 'they_owe' || t.type === 'i_paid') ? Number(t.amount || 0) : -Number(t.amount || 0);
-    bil(myName, friend.name, signed, t.currency);
+    bil(myName,t.friendUid?{uid:t.friendUid,name:t.friendName}:friend?friend.name:t.friendName,signed,t.currency);
   });
   (state.sharedSettlements || []).forEach(function(s) {
     const parts = s.participants || [], owner = parts.find(function(p) { return String(p.uid) === String(s.ownerUid); });
@@ -1296,17 +1274,7 @@ window.ftHouseholdBilateralByCurrency = function(otherName) {
 function householdObligationByCurrency(memberName) {
   const bal = {}, members = state.householdMembers || [];
   const myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  const names = new Map(), uids = new Map();
-  members.forEach(function(m) { names.set(m.name, m.name); });
-  (state.friends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); });
-  (state.connectedFriends || []).forEach(function(f) { if (f && f.name && !names.has(f.name)) names.set(f.name, f.name); if (f && f.uid) uids.set(String(f.uid), f.name); });
-  if (currentUser && currentUser.uid) uids.set(String(currentUser.uid), names.get(myName) || '@self');
-  names.set(myName, names.get(myName) || '@self');
-  if (currentUser && currentUser.name) names.set(currentUser.name, names.get(myName));
-  function who(person) {
-    if (person && typeof person === 'object') return (person.uid && uids.get(String(person.uid))) || names.get(person.name) || null;
-    return names.get(person) || (person != null && uids.get(String(person))) || null;
-  }
+  function who(person){return window.ftFinancialIdentity(person);}
   const target = who(memberName);
   if (!target) return bal;
   function obligation(payer, debtor, amount, currency) {
@@ -1317,9 +1285,9 @@ function householdObligationByCurrency(memberName) {
     if (d === target) bal[c] = (bal[c] || 0) - value;
   }
   (state.householdExpenses || []).forEach(function(exp) {
-    const parts = Array.from(new Set(exp.splitAmong && exp.splitAmong.length ? exp.splitAmong : window.ftHhUniqueMembers().map(function(m){ return m.name; })));
+    const parts=window.ftHhExpensePeople(exp);
     if (!parts.length) return;
-    parts.forEach(function(p) { obligation(exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
+    parts.forEach(function(p) { obligation(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
   });
   (state.householdSettlements || []).forEach(function(s) { obligation(s.fromMember, s.toMember, s.amount, s.currency); });
   return bal;
@@ -1446,53 +1414,22 @@ function renderHouseholdSettlement() {
 }
 window.renderHouseholdSettlement = renderHouseholdSettlement;
 window.openHouseholdMemberModal = async function() { if (typeof window.ftRefreshConnectionData === 'function') await window.ftRefreshConnectionData(true); document.getElementById('householdMemberForm').reset(); document.getElementById('hhMemberId').value = ''; const sel = document.getElementById('hhMemberName'); sel.innerHTML = '<option value="">-- Select a friend --</option>'; const connected = state.connectedFriends || []; const existing = new Set((state.householdMembers || []).map(function(m){ return m.name; })); let count = 0; connected.forEach(function(f) { if (!f.name || !f.uid || existing.has(f.name)) return; const opt = new Option(f.name, f.name); opt.dataset.uid = f.uid; sel.add(opt); count++; }); if (count === 0) { alert('No available connected friends to invite. Please connect with friends first in the Friends section.'); return; } document.getElementById('modalHouseholdMember').classList.remove('hidden'); };
-window.sendHouseholdInvite = function(e) {
-  e.preventDefault();
-  const sel = document.getElementById('hhMemberName');
-  const name = sel.value;
-  if (!name) { alert('Please select a friend.'); return; }
-  const opt = sel.selectedOptions[0];
-  const toUid = opt ? opt.dataset.uid : '';
-  if (!toUid) { alert('Only connected friends can be invited to your household. Please connect with this friend first.'); return; }
-  if (!currentUser || !currentUser.uid) { alert('Please log in again to send invitations.'); return; }
-  const myUid = currentUser.uid;
-  if ((state.householdMembers || []).some(function(m){ return m.name === name || m.uid === toUid; })) { alert('This friend is already a household member.'); return; }
-  const notifId = 'household_' + myUid;
-  set(ref(db, 'users/' + toUid + '/notifications/' + notifId), { id: notifId, type: 'household_invite', fromUid: myUid, fromName: currentUser.name, toUid: toUid, message: currentUser.name + ' invited you to join their household.', createdAt: new Date().toISOString(), read: false }).catch(function(e){ console.error(e); });
-  update(ref(db, 'publicProfiles/' + myUid + '/sentHouseholdRequests/' + toUid), { status: 'pending', fromName: currentUser.name, fromUid: myUid, toUid: toUid, toName: name, createdAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
-  ftToast('Household invitation sent to ' + name);
-  closeModal('modalHouseholdMember');
+window.sendHouseholdInvite=async function(e){
+  e.preventDefault();if(window._ftHhInviteBusy)return;window._ftHhInviteBusy=true;var button=e.submitter||document.querySelector('#householdMemberForm button[type="submit"]');if(button)button.disabled=true;
+  try{var sel=document.getElementById('hhMemberName'),opt=sel.selectedOptions[0],name=sel.value,toUid=opt&&opt.dataset.uid;if(!name||!toUid)throw new Error('Select a connected friend.');if(!currentUser||!currentUser.uid)throw new Error('Please sign in again.');if(!(await window.ftHhEnsure()))throw new Error('Your household could not connect to Firebase.');var uid=currentUser.uid,hid=state.householdId,data=(await get(ref(db,'households/'+hid))).val()||{};if(data.members&&data.members[toUid])throw new Error('This friend has already accepted and is a household member.');var now=new Date().toISOString(),owner=data.ownerUid||state.householdOwnerUid||uid,notifId='household_'+uid,changes={};changes['users/'+toUid+'/notifications/'+notifId]={id:notifId,type:'household_invite',fromUid:uid,fromName:currentUser.name,toUid:toUid,householdId:hid,ownerUid:owner,message:currentUser.name+' invited you to join their household.',createdAt:now,read:false};changes['publicProfiles/'+uid+'/sentHouseholdRequests/'+toUid]={status:'pending',fromName:currentUser.name,fromUid:uid,toUid:toUid,toName:name,householdId:hid,ownerUid:owner,createdAt:now};changes['publicProfiles/'+toUid+'/declinedHouseholdRequests/'+uid]=null;await update(ref(db),changes);ftToast('Household invitation sent to '+name);closeModal('modalHouseholdMember');}catch(err){console.error(err);alert('Could not send household invitation: '+err.message);}finally{window._ftHhInviteBusy=false;if(button)button.disabled=false;}
 };
 window.deleteHouseholdMember = function(id) { if (!window.__ftok) { ftConfirm('Delete this household member? Their expense/share data remains but will need manual cleanup.', function() { window.__ftok = 1; deleteHouseholdMember(id); }); return; } window.__ftok = 0; var _hhM = (state.householdMembers||[]).find(function(x){return String(x.id)===String(id);}); if (_hhM && _hhM.isSelf) { alert('You cannot remove yourself from the household. You are a permanent member.'); return; } if (!Array.isArray(state.householdMembers)) state.householdMembers = []; state.householdMembers = state.householdMembers.filter(function(m){return String(m.id) !== String(id);}); saveData(); };
-window.acceptHouseholdInvite = async function(fromUid, fromName) {
-  if (!currentUser || !currentUser.uid) return;
-  try {
-    const myUid = currentUser.uid;
-    const now = new Date().toISOString();
-    await update(ref(db, 'publicProfiles/' + myUid), { ['householdConnections/' + fromUid]: { uid: fromUid, name: fromName, connectedAt: now } });
-    try { await update(ref(db, 'publicProfiles/' + fromUid), { ['householdConnections/' + myUid]: { uid: myUid, name: currentUser.name, connectedAt: now }, ['sentHouseholdRequests/' + myUid]: null }); } catch(e2) { console.warn('Could not update other user profile:', e2); }
-    if (!Array.isArray(state.householdMembers)) state.householdMembers = [];
-    if (!state.householdMembers.some(function(m){ return m.name === fromName || m.uid === fromUid; })) { state.householdMembers.push({ id: 'hh_' + fromUid, name: fromName, uid: fromUid }); saveData(); }
-    remove(ref(db, 'users/' + myUid + '/notifications/household_' + fromUid)).catch(function(){});
-    if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true);
-    if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement();
-    ftToast('You are now household members with ' + fromName + '.');
-  } catch(e) { console.error(e); alert('Could not accept household invitation.'); }
+window.acceptHouseholdInvite=async function(fromUid,fromName){
+  if(!currentUser||!currentUser.uid||window._ftHhAcceptBusy)return;window._ftHhAcceptBusy=true;var uid=currentUser.uid,inserted=false,hid='',prior=state.householdId;
+  try{if(window._ftUserSavePromise&&(await window._ftUserSavePromise)===false)throw new Error('Your existing changes must finish saving first.');var request=(await get(ref(db,'publicProfiles/'+fromUid+'/sentHouseholdRequests/'+uid))).val(),notification=(await get(ref(db,'users/'+uid+'/notifications/household_'+fromUid))).val();if(!request&&(!notification||notification.type!=='household_invite'))throw new Error('This invitation is no longer pending.');var invite=request||notification;hid=invite.householdId||'hh_'+fromUid;fromName=invite.fromName||fromName;var now=new Date().toISOString(),membership={uid:uid,name:currentUser.name||getPeople()[0],joinedAt:now};await update(ref(db,'households/'+hid+'/members/'+uid),membership);inserted=prior!==hid;var household=(await get(ref(db,'households/'+hid))).val()||{};if(!household.members||!household.members[fromUid])throw new Error('The inviter is no longer in this household.');var owner=household.ownerUid||invite.ownerUid||hid.slice(3),changes={};changes['publicProfiles/'+uid+'/householdConnections/'+fromUid]={uid:fromUid,name:fromName,householdId:hid,ownerUid:owner,connectedAt:now};changes['publicProfiles/'+fromUid+'/householdConnections/'+uid]={uid:uid,name:currentUser.name,householdId:hid,ownerUid:owner,connectedAt:now};changes['publicProfiles/'+fromUid+'/sentHouseholdRequests/'+uid]=null;changes['publicProfiles/'+uid+'/declinedHouseholdRequests/'+fromUid]=null;changes['users/'+uid+'/notifications/household_'+fromUid]=null;changes['userData/'+currentUser.loginId+'/householdId']=hid;changes['userData/'+currentUser.loginId+'/householdOwnerUid']=owner;changes['userData/'+currentUser.loginId+'/householdMigrationComplete']=true;await update(ref(db),changes);inserted=false;if(prior!==hid){state.householdExpenses=[];state.householdSettlements=[];state.householdMembers=[];}state.householdId=hid;state.householdOwnerUid=owner;state.householdMigrationComplete=true;window._ftHhInit=false;window._ftHhSawSelf=false;window._ftHhReadyKey='';window._ftHhReady=null;window._ftHhSnapshot={uid:uid,hid:hid,data:household};window.ftHhApplySharedState();if(!(await window.ftHhEnsure()))throw new Error('Membership was accepted, but synchronization needs to reconnect.');await window.ftRefreshConnectionData(true);renderAll();ftToast('You joined '+fromName+'’s household.');}catch(err){if(inserted&&hid)await remove(ref(db,'households/'+hid+'/members/'+uid)).catch(console.error);console.error(err);alert('Could not accept household invitation: '+err.message);}finally{window._ftHhAcceptBusy=false;}
 };
-window.declineHouseholdInvite = async function(fromUid) {
-  if (!currentUser || !currentUser.uid) return;
-  try {
-    const myUid = currentUser.uid;
-    await update(ref(db, 'publicProfiles/' + myUid), { ['declinedHouseholdRequests/' + fromUid]: true });
-    remove(ref(db, 'users/' + myUid + '/notifications/household_' + fromUid)).catch(function(){});
-    if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true);
-    ftToast('Household invitation declined.');
-  } catch(e) { console.error(e); }
-};
+window.declineHouseholdInvite=async function(fromUid){if(!currentUser||!currentUser.uid)return;try{var uid=currentUser.uid,changes={};changes['publicProfiles/'+uid+'/declinedHouseholdRequests/'+fromUid]=true;changes['publicProfiles/'+fromUid+'/sentHouseholdRequests/'+uid]=null;changes['users/'+uid+'/notifications/household_'+fromUid]=null;await update(ref(db),changes);await window.ftRefreshConnectionData(true);ftToast('Household invitation declined.');}catch(err){console.error(err);alert('Could not decline invitation: '+err.message);}};
 window.openHouseholdExpenseModal = function() {
+  if(window._ftHhSaveBusy)return;
   const members = window.ftHhUniqueMembers();
   if (members.length === 0) { alert('Please add household members first.'); return; }
   document.getElementById('householdExpenseForm').reset();
+  document.getElementById('householdExpenseForm').dataset.ftSaved='0';delete document.getElementById('householdExpenseForm').dataset.ftPaymentKey;
   document.getElementById('hhExpId').value = '';
   document.getElementById('hhExpPaymentMethod').value = '';
   document.getElementById('hhExpPmError').classList.add('hidden');
@@ -1618,7 +1555,7 @@ window.ftUpdateHhExpAccountOptions = function() {
     hint.innerText = '';
     return window.ftHhPayerAccounts(paidBy).then(function(info){
       if (document.getElementById('hhExpPaidBy').value !== paidBy || document.getElementById('hhExpCurrency').value !== currency || document.getElementById('hhExpPaymentMethod').value !== pm) return;
-      var accounts = info.banks.filter(function(b){ return b.currency === currency && (pm === 'cash' ? b.name === 'Cash in Hand' : pm === 'credit' ? b.bankType === 3 : b.bankType !== 3 && b.name !== 'Cash in Hand'); });
+      var accounts = info.banks.filter(function(b){ return b.currency === currency && (pm === 'cash' ? b.name === 'Cash in Hand' : pm === 'credit' ? Number(b.bankType) === 3 : Number(b.bankType) !== 3 && b.name !== 'Cash in Hand'); });
       sel.innerHTML = '';
       sel.add(new Option(accounts.length ? '-- Select Account --' : 'No accounts of this type', ''));
       accounts.forEach(function(b){ sel.add(new Option(b.name + ' (' + b.currency + ')', String(b.id))); });
@@ -1666,12 +1603,7 @@ window.ftUpdateHhSetAccountOptions = function() {
     toHint.innerText = 'Recorded as ' + toMember + ' receiving method. No balance addition (member own account).';
   }
 };
-window.ftFriendNetBalanceByCurrency = function(name) {
-  const bal = householdBalanceByCurrency(name);
-  const result = {};
-  Object.keys(bal).forEach(function(c){ result[c] = -bal[c]; });
-  return result;
-};
+window.ftFriendNetBalanceByCurrency=function(name){return window.ftHouseholdBilateralByCurrency(name);};
 window.downloadHouseholdPDF = function() {
   const monthSel = document.getElementById('householdMonthSelect');
   const month = (monthSel && monthSel.value) ? monthSel.value : currentMonthStr();
@@ -1917,13 +1849,13 @@ window.saveTripSplit = async function(e) {
     if (oldAccount) accountAdd(oldAccount, Number(old.amount) || 0);
     if (account) accountDeduct(account, amount);
     if (oldAccount || account) {
-      try { await update(ref(db, 'userData/' + currentUser.loginId), { banks: state.banks }); }
+      try { await window.ftSaveBankChanges(state.banks); }
       catch (err) { if (account) accountAdd(account, amount); if (oldAccount) accountDeduct(oldAccount, Number(old.amount) || 0); throw err; }
     }
     try { await set(ref(db, 'sharedSplits/' + tripId + '/splits/' + sid), split); }
     catch (err) {
       if (account) accountAdd(account, amount); if (oldAccount) accountDeduct(oldAccount, Number(old.amount) || 0);
-      if (oldAccount || account) await update(ref(db, 'userData/' + currentUser.loginId), { banks: state.banks });
+      if (oldAccount || account) await window.ftSaveBankChanges(state.banks);
       throw err;
     }
     document.getElementById('modalTripSplit').classList.add('hidden'); ftToast('Trip Split added');
@@ -1937,9 +1869,9 @@ window.ftDeleteTripSplit = async function(tripId, splitId) {
   if (!confirm('Delete this trip split?')) return;
   const account = old.accountId ? (state.banks || []).find(b => String(b.id) === String(old.accountId)) : null;
   try {
-    if (account) { accountAdd(account, Number(old.amount) || 0); await update(ref(db, 'userData/' + currentUser.loginId), { banks: state.banks }); }
+    if (account) { accountAdd(account, Number(old.amount) || 0); await window.ftSaveBankChanges(state.banks); }
     try { await remove(ref(db, 'sharedSplits/' + tripId + '/splits/' + splitId)); }
-    catch (err) { if (account) { accountDeduct(account, Number(old.amount) || 0); await update(ref(db, 'userData/' + currentUser.loginId), { banks: state.banks }); } throw err; }
+    catch (err) { if (account) { accountDeduct(account, Number(old.amount) || 0); await window.ftSaveBankChanges(state.banks); } throw err; }
     await window.ftNotifyTripMembers(trip.members, currentUser.uid, 'Trip Split "' + (trip.name || '') + '" was deleted.', tripId + '_' + splitId + '_delete');
   } catch(err) { alert('Could not delete the split: ' + (err.message || err)); }
 };
@@ -2083,11 +2015,8 @@ function renderOverview() {
   const _flowMonth = (document.getElementById('expenseMonthSelect') && document.getElementById('expenseMonthSelect').value) ? document.getElementById('expenseMonthSelect').value : currentMonthStr();
   let _flowCollectionInr = 0;
   (window.state.transfers || []).forEach(function(t){ if (dateMonth(t.date) !== _flowMonth) return; if (t.fromName === 'External Deposit') { const _b = t.toId ? (window.state.banks||[]).find(function(b){return String(b.id)===String(t.toId);}) : null; _flowCollectionInr += window.convertToINR(t.amount, _b ? _b.currency : 'INR'); } });
-  let _flowExpensesInr = 0;
-  (window.state.expenses[_flowMonth] || []).forEach(function(exp){ if (!isCurrencyAllowed(exp.currency) || exp.isSplitShare) return; _flowExpensesInr += window.convertToINR(exp.amount, exp.currency); });
-  (function(){ var _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : ''; if(_un){ (window.state.friendSplits[_flowMonth] || []).forEach(function(fs){ if(!isCurrencyAllowed(fs.currency)) return; var _parts = fs.participants || []; if(_parts.includes(_un)){ _flowExpensesInr += window.convertToINR(fs.shares && fs.shares[_un] != null ? Number(fs.shares[_un]) : fs.amount / _parts.length, fs.currency); } }); } })();
-  (function(){ if (window.ftTripMyShareForMonth) { var _tb = ftTripMyShareForMonth(_flowMonth); Object.keys(_tb).forEach(function(c){ _flowExpensesInr += window.convertToINR(_tb[c], c); }); } })();
-  (window.state.householdExpenses || []).forEach(function(exp){ if(dateMonth(exp.date) !== _flowMonth || !isCurrencyAllowed(exp.currency)) return; _flowExpensesInr += window.convertToINR(window.ftHhMyShare(exp), exp.currency); });
+  const _flowTotals=window.ftMonthlyExpenseTotals(_flowMonth);
+  const _flowExpensesInr=Object.keys(_flowTotals).reduce(function(total,c){return total+window.convertToINR(_flowTotals[c],c);},0);
   const _ccEl = document.getElementById('sumCashCollection'); if (_ccEl) _ccEl.innerText = window.formatInDisplayCurrency(_flowCollectionInr);
   const _cmEl = document.getElementById('cashCollectionMonth'); if (_cmEl) _cmEl.innerText = 'Income received in ' + _flowMonth;
   const _meEl = document.getElementById('sumMonthExpenses'); if (_meEl) _meEl.innerText = window.formatInDisplayCurrency(_flowExpensesInr);
@@ -2130,39 +2059,7 @@ function renderAccountSpendSummary() {
   // Totals are computed identically to the main Expenses Summary (direct expenses + friend
   // splits + trip splits + household shares + shared splits — the user's share), so the
   // breakdown boxes exactly match the corresponding per-currency figures in the main summary.
-  const totalByCurrency = {};
-  const _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : '';
-  const _myUid = currentUser && currentUser.uid;
-  (window.state.expenses[month] || []).forEach(function(exp){
-    if (!isCurrencyAllowed(exp.currency) || exp.isSplitShare) return;
-    totalByCurrency[exp.currency] = (totalByCurrency[exp.currency] || 0) + (exp.amount || 0);
-  });
-  if (_un) {
-    (window.state.friendSplits[month] || []).forEach(function(fs){
-      if (!isCurrencyAllowed(fs.currency)) return;
-      const _parts = fs.participants || [];
-      if (_parts.includes(_un)) {
-        totalByCurrency[fs.currency] = (totalByCurrency[fs.currency] || 0) + (fs.shares && fs.shares[_un] != null ? Number(fs.shares[_un]) : fs.amount / _parts.length);
-      }
-    });
-  }
-  if (window.ftTripMyShareForMonth) {
-    const _tb = ftTripMyShareForMonth(month);
-    Object.keys(_tb).forEach(function(c){ totalByCurrency[c] = (totalByCurrency[c] || 0) + _tb[c]; });
-  }
-  if (_un) {
-    (window.state.householdExpenses || []).forEach(function(exp){
-      if (dateMonth(exp.date) !== month) return;
-      if (!isCurrencyAllowed(exp.currency)) return;
-      const share = window.ftHhMyShare(exp);
-       if (!share) return;
-       totalByCurrency[exp.currency] = (totalByCurrency[exp.currency] || 0) + share;
-    });
-  }
-  (window.state.sharedSplits || []).filter(function(fs){ return fs.sourceSplitId && dateMonth(fs.date) === month && (fs.participants || []).some(function(p){return p.uid === _myUid;}) && !(window.state.friendSplits[month]||[]).some(function(local){return String(local.id) === String(fs.sourceSplitId);}) && isCurrencyAllowed(fs.currency); }).forEach(function(fs){
-    const share = fs.shares && fs.shares[_myUid] != null ? Number(fs.shares[_myUid]) : fs.amount / (fs.participantCount || 2);
-    totalByCurrency[fs.currency] = (totalByCurrency[fs.currency] || 0) + share;
-  });
+  const totalByCurrency=window.ftMonthlyExpenseTotals(month);
   const primaryCurrency = window.getFirstCurrency();
   const secondaryCurrency = window.getSecondCurrency();
   const primarySpend = totalByCurrency[primaryCurrency] || 0;
@@ -2224,7 +2121,7 @@ window.renderExpenses = function() {
   const allExpenses = sortByDateDesc(window.state.expenses[month]).filter(item => isCurrencyAllowed(item.currency) && !item.isSplitShare);
   var _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : '';
   var _myUid = currentUser && currentUser.uid;
-  var _hasFs = (window.state.sharedSplits||[]).some(fs => fs.sourceSplitId && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid)) || _un && (window.state.friendSplits[month] || []).some(function(fs){ var _p = fs.participants || []; return isCurrencyAllowed(fs.currency) && _p.includes(_un); });
+  var _hasFs = (window.state.sharedSplits||[]).some(fs => fs.ftype!=='trip' && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid)) || _un && (window.state.friendSplits[month] || []).some(function(fs){ var _p = fs.participants || []; return isCurrencyAllowed(fs.currency) && _p.includes(_un); });
   var _hasTs = _myUid && (state.trips || []).some(function(trip){ var _m = trip.members || []; return _m.some(function(m){ return m.uid === _myUid; }) && Object.values(trip.splits||{}).some(function(s){ return dateMonth(s.date) === month && isCurrencyAllowed(s.currency); }); });
     var _hasHh = (window.state.householdExpenses || []).some(exp => dateMonth(exp.date)===month && isCurrencyAllowed(exp.currency) && window.ftHhMyShare(exp)>0);
   if (allExpenses.length === 0 && !_hasFs && !_hasTs && !_hasHh) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No expenses logged for this month yet.</td></tr>`; }
@@ -2235,10 +2132,10 @@ window.renderExpenses = function() {
       paidByPersonCurrency[item.paidBy][item.currency] = (paidByPersonCurrency[item.paidBy][item.currency] || 0) + item.amount;
       totalByCurrency[item.currency] = (totalByCurrency[item.currency] || 0) + item.amount;
     });
-    (function(){ var _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : ''; if(_un){ (window.state.friendSplits[month] || []).forEach(function(fs){ if(!isCurrencyAllowed(fs.currency)) return; var _parts = fs.participants || []; if(_parts.includes(_un)){ totalByCurrency[fs.currency] = (totalByCurrency[fs.currency] || 0) + (fs.shares && fs.shares[_un] != null ? Number(fs.shares[_un]) : fs.amount / _parts.length); } }); } })();
+    (function(){ var _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : ''; if(_un){ (window.state.friendSplits[month] || []).forEach(function(fs){ if(!isCurrencyAllowed(fs.currency)) return; var _parts = fs.participants || []; if(_parts.some(function(p){return window.ftFinancialIdentity(p)===window.ftFinancialIdentity({uid:_myUid});})){ totalByCurrency[fs.currency] = (totalByCurrency[fs.currency] || 0) + (window.ftOwnSplitShare(fs,_parts)); } }); } })();
     (function(){ if (window.ftTripMyShareForMonth) { var _tb = ftTripMyShareForMonth(month); Object.keys(_tb).forEach(function(c){ totalByCurrency[c] = (totalByCurrency[c] || 0) + _tb[c]; }); } })();
     (window.state.householdExpenses || []).forEach(function(exp){ if(dateMonth(exp.date)!==month || !isCurrencyAllowed(exp.currency)) return; var share=window.ftHhMyShare(exp); if(share) totalByCurrency[exp.currency]=(totalByCurrency[exp.currency]||0)+share; });
-    (state.sharedSplits||[]).filter(fs => fs.sourceSplitId && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid) && !(state.friendSplits[month]||[]).some(local=>String(local.id)===String(fs.sourceSplitId)) && isCurrencyAllowed(fs.currency)).forEach(fs => { const share=fs.shares && fs.shares[_myUid]!=null ? Number(fs.shares[_myUid]) : fs.amount/(fs.participantCount||2); totalByCurrency[fs.currency]=(totalByCurrency[fs.currency]||0)+share; });
+    (state.sharedSplits||[]).filter(fs => fs.ftype!=='trip' && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid) && (!fs.sourceSplitId || !(state.friendSplits[month]||[]).some(local=>String(local.id)===String(fs.sourceSplitId))) && isCurrencyAllowed(fs.currency)).forEach(fs => { const share=fs.shares && fs.shares[_myUid]!=null ? Number(fs.shares[_myUid]) : fs.amount/(fs.participantCount||2); totalByCurrency[fs.currency]=(totalByCurrency[fs.currency]||0)+share; });
     const limitedExpenses = allExpenses.slice(0, getDisplayLimit('expenses'));
     limitedExpenses.forEach(item => {
       const personIdx = people.indexOf(item.paidBy);
@@ -2246,13 +2143,14 @@ window.renderExpenses = function() {
       const acct = item.deductBankId ? window.state.banks.find(b => String(b.id) === String(item.deductBankId)) : null; const bankName = acct ? (acct.name || '-') : '-'; const acctColor = acct ? (acct.bankType === 3 ? 'rose' : (acct.bankType === 2 ? 'amber' : 'indigo')) : 'slate';
       tbody.innerHTML += `<tr class="border-l-4 border-${acctColor}-400"><td class="p-3">${item.date}</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider bg-${color}-100 text-${color}-700">${item.paidBy}</span></td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">${item.category || 'Other'}</span></td><td class="p-3 font-semibold">${item.desc}</td><td class="p-3 text-center text-[11px] text-slate-500">${bankName}</td><td class="p-3 text-right font-bold money-expense">-${formatCurrency(item.amount, item.currency)}</td><td class="p-3 text-center text-slate-400"><button onclick="editExpense('${month}', ${item.id})" class="hover:text-indigo-600 mx-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteExpense('${month}', ${item.id})" class="hover:text-red-600 mx-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
     });
-    (function(){ if(_un){ (window.state.friendSplits[month] || []).forEach(function(fs){ if(!isCurrencyAllowed(fs.currency)) return; var _parts = fs.participants || []; if(_parts.includes(_un)){ var _myShare = fs.shares && fs.shares[_un] != null ? Number(fs.shares[_un]) : fs.amount / _parts.length; tbody.innerHTML += '<tr class="border-l-4 border-violet-400 bg-violet-50/30"><td class="p-3">'+(fs.date||month)+'</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider bg-violet-100 text-violet-700">Friends Split</span></td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">'+(fs.category||'Friends Split')+'</span></td><td class="p-3 font-semibold">'+(fs.description||'Friends Split')+'</td><td class="p-3 text-right font-bold text-violet-700">'+window.formatCurrency(_myShare, fs.currency)+'</td><td class="p-3 text-center text-slate-400"><i class="fa-solid fa-users text-violet-400"></i></td></tr>'; } }); } })();
-    (state.sharedSplits||[]).filter(fs => fs.sourceSplitId && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid) && !(state.friendSplits[month]||[]).some(local=>String(local.id)===String(fs.sourceSplitId)) && isCurrencyAllowed(fs.currency)).forEach(fs => { const share=fs.shares && fs.shares[_myUid]!=null ? Number(fs.shares[_myUid]) : fs.amount/(fs.participantCount||2); tbody.innerHTML += '<tr class="border-l-4 border-violet-400"><td class="p-3">'+fs.date+'</td><td class="p-3 text-center">Friends Split</td><td class="p-3 text-center">'+(fs.category||'Other')+'</td><td class="p-3">'+(fs.description||'')+'</td><td class="p-3 text-center">—</td><td class="p-3 text-right font-bold money-expense">-'+formatCurrency(share,fs.currency)+'</td><td class="p-3"></td></tr>'; });
+    (function(){ if(_un){ (window.state.friendSplits[month] || []).forEach(function(fs){ if(!isCurrencyAllowed(fs.currency)) return; var _parts = fs.participants || []; if(_parts.some(function(p){return window.ftFinancialIdentity(p)===window.ftFinancialIdentity({uid:_myUid});})){ var _myShare = window.ftOwnSplitShare(fs,_parts); tbody.innerHTML += '<tr class="border-l-4 border-violet-400 bg-violet-50/30"><td class="p-3">'+(fs.date||month)+'</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider bg-violet-100 text-violet-700">Friends Split</span></td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">'+(fs.category||'Friends Split')+'</span></td><td class="p-3 font-semibold">'+(fs.description||'Friends Split')+'</td><td class="p-3 text-right font-bold text-violet-700">'+window.formatCurrency(_myShare, fs.currency)+'</td><td class="p-3 text-center text-slate-400"><i class="fa-solid fa-users text-violet-400"></i></td></tr>'; } }); } })();
+    (state.sharedSplits||[]).filter(fs => fs.ftype!=='trip' && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid) && (!fs.sourceSplitId || !(state.friendSplits[month]||[]).some(local=>String(local.id)===String(fs.sourceSplitId))) && isCurrencyAllowed(fs.currency)).forEach(fs => { const share=fs.shares && fs.shares[_myUid]!=null ? Number(fs.shares[_myUid]) : fs.amount/(fs.participantCount||2); tbody.innerHTML += '<tr class="border-l-4 border-violet-400"><td class="p-3">'+fs.date+'</td><td class="p-3 text-center">Friends Split</td><td class="p-3 text-center">'+(fs.category||'Other')+'</td><td class="p-3">'+(fs.description||'')+'</td><td class="p-3 text-center">—</td><td class="p-3 text-right font-bold money-expense">-'+formatCurrency(share,fs.currency)+'</td><td class="p-3"></td></tr>'; });
     (function(){ if(_myUid){ (state.trips || []).forEach(function(trip){ var _members = trip.members || []; if(!_members.some(function(m){ return m.uid === _myUid; })) return; var _cnt = _members.length || 1; Object.values(trip.splits || {}).forEach(function(s){ if(dateMonth(s.date) !== month) return; if(!isCurrencyAllowed(s.currency)) return; var _myShare = (s.amount || 0) / _cnt; tbody.innerHTML += '<tr class="border-l-4 border-cyan-400 bg-cyan-50/30"><td class="p-3">'+(s.date||month)+'</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider bg-cyan-100 text-cyan-700">Trip Split</span></td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">'+(s.category||'Trip Split')+'</span></td><td class="p-3 font-semibold">'+(trip.name||'Trip')+': '+(s.description||'Split')+'</td><td class="p-3 text-right font-bold text-cyan-700">'+window.formatCurrency(_myShare, s.currency)+'</td><td class="p-3 text-center text-slate-400"><i class="fa-solid fa-plane text-cyan-400"></i></td></tr>'; }); }); } })();
     (function(){ var _un = (currentUser && currentUser.name) ? currentUser.name.trim().split(/\s+/).slice(0,2).join(' ') : ''; if(_un){ (window.state.householdExpenses || []).forEach(function(exp){ if(dateMonth(exp.date) !== month) return; if(!isCurrencyAllowed(exp.currency)) return; var _myShare=window.ftHhMyShare(exp); if(!_myShare) return; tbody.innerHTML += '<tr class="border-l-4 border-teal-400 bg-teal-50/30"><td class="p-3">'+(exp.date||month)+'</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider bg-teal-100 text-teal-700">Household</span></td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">'+(exp.category||'Household')+'</span></td><td class="p-3 font-semibold">Household: '+(exp.description||'Expense')+'</td><td class="p-3 text-right font-bold text-teal-700">'+window.formatCurrency(_myShare, exp.currency)+'</td><td class="p-3 text-center text-slate-400"><i class="fa-solid fa-house-chimney-window text-teal-400"></i></td></tr>'; }); } })();
     const viewMoreContainer = document.getElementById('expensesViewMoreContainer');
     if (viewMoreContainer) viewMoreContainer.classList.toggle('hidden', !shouldShowViewMore('expenses', allExpenses.length));
   }
+  totalByCurrency=window.ftMonthlyExpenseTotals(month);
   const summaryContainer = document.getElementById('expenseSummaryContainer'); summaryContainer.innerHTML = ''; const _ftCfgCur = (typeof getSetting === 'function' ? (getSetting('allowedCurrencies', []) || []) : []).filter(isCurrencyAllowed); const currenciesUsed = Object.keys(totalByCurrency).filter(isCurrencyAllowed); _ftCfgCur.forEach(function(c){ if (currenciesUsed.indexOf(c) === -1) currenciesUsed.push(c); }); if (currenciesUsed.length === 0) currenciesUsed = Object.keys(CURRENCIES).slice(0, 2); const _ftPalette = ['indigo', 'amber', 'purple']; let _ftLines = ''; currenciesUsed.forEach(function(curr, _ftIdx) { const total = totalByCurrency[curr] || 0; const colorClass = _ftPalette[_ftIdx % _ftPalette.length]; _ftLines += `<div class="${_ftIdx < currenciesUsed.length - 1 ? 'border-b border-slate-100 pb-3 mb-3' : ''}"><div class="flex justify-between items-center border-b border-${colorClass}-100 pb-2"><span class="text-xs font-black text-${colorClass}-800">${curr} Expenses Logged</span><span class="text-sm font-black money-expense">${formatCurrency(total, curr)}</span></div></div>`; });summaryContainer.innerHTML = `<div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm"><div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3"><h3 class="text-xs font-bold text-slate-500 uppercase"><i class="fa-solid fa-calendar-days mr-1"></i>Expenses Summary</h3><button onclick="ftOpenCashbookPdfModal()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded shadow"><i class="fa-solid fa-file-pdf mr-1"></i>Monthly Cashbook PDF</button></div>${_ftLines}</div>`; const sBody = document.getElementById('settlementsTable'); sBody.innerHTML = '';
   if (window.state.settlements[month].length === 0) { sBody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-slate-400 italic">No settlements logged yet.</td></tr>`; }
   else { sortByDateDesc(window.state.settlements[month]).forEach(s => { sBody.innerHTML += `<tr><td class="p-2">${s.date}</td><td class="p-2 font-bold">${s.payer} &rarr; ${s.payee}</td><td class="p-2 text-right font-bold money-income">${formatCurrency(s.amount, s.currency)}</td><td class="p-2 text-center text-slate-400"><button onclick="deleteSettlement('${month}', ${s.id})" class="hover:text-red-600"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); }
@@ -2508,14 +2406,14 @@ window.loadProfileNotifications = function(){
   const pending = window._ftIncomingPending || [];
   const notifs = window._ftNotifData || [];
   if (list) list.innerHTML = '';
-  if (wrap) wrap.style.display = pending.length ? '' : 'none';
+  if(wrap)wrap.style.display=pending.length+(window.ftPendingHouseholdInvites?window.ftPendingHouseholdInvites().length:0)?'':'none';
   if (!list) return;
   let html = '';
   pending.forEach(function(r){
     const safeName = (r.fromName||'A user').replace(/'/g,'');
     html += '<div class="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center justify-between gap-2"><div><p class="font-bold text-amber-800"><i class="fa-solid fa-user-plus mr-1"></i>'+(r.fromName||'A user')+'</p><p class="text-[11px] text-slate-600">Sent you a friend request.</p></div><div class="flex gap-1"><button onclick="acceptConnectionRequest(\''+r.fromUid+'\', \''+safeName+'\')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold">Accept</button><button onclick="declineConnectionRequest(\''+r.fromUid+'\', \''+safeName+'\')" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] font-bold">Decline</button></div></div>';
   });
-  (window._ftIncomingHHPending || []).forEach(function(r){ const safeNameHH = (r.fromName||'A user').replace(/'/g,''); html += '<div class="bg-teal-50 border border-teal-200 rounded-lg p-3 flex items-center justify-between gap-2"><div><p class="font-bold text-teal-800"><i class="fa-solid fa-house-user mr-1"></i>'+(r.fromName||'A user')+'</p><p class="text-[11px] text-slate-600">Invited you to join their household.</p></div><div class="flex gap-1"><button onclick="acceptHouseholdInvite(\''+r.fromUid+'\', \''+safeNameHH+'\')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold">Accept</button><button onclick="declineHouseholdInvite(\''+r.fromUid+'\')" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] font-bold">Decline</button></div></div>'; }); notifs.forEach(function(n, idx){ if (n.type === 'household_invite') return;
+  (window.ftPendingHouseholdInvites?window.ftPendingHouseholdInvites():(window._ftIncomingHHPending||[])).forEach(function(r){ const safeNameHH = (r.fromName||'A user').replace(/'/g,''); html += '<div class="bg-teal-50 border border-teal-200 rounded-lg p-3 flex items-center justify-between gap-2"><div><p class="font-bold text-teal-800"><i class="fa-solid fa-house-user mr-1"></i>'+(r.fromName||'A user')+'</p><p class="text-[11px] text-slate-600">Invited you to join their household.</p></div><div class="flex gap-1"><button onclick="acceptHouseholdInvite(\''+r.fromUid+'\', \''+safeNameHH+'\')" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-bold">Accept</button><button onclick="declineHouseholdInvite(\''+r.fromUid+'\')" class="px-2 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] font-bold">Decline</button></div></div>'; }); notifs.forEach(function(n, idx){ if (n.type === 'household_invite') return;
     const icon = n.type === 'reminder' ? 'fa-bell' : (n.type === 'split' ? 'fa-scissors' : (n.type === 'admin' ? 'fa-bullhorn' : (n.type === 'settlement' ? 'fa-handshake' : (n.type === 'trip' ? 'fa-plane' : 'fa-bell'))));
     const label = n.type === 'reminder' ? 'Payment Reminder' : (n.type === 'split' ? 'New Split' : (n.type === 'admin' ? 'Admin Message' : (n.type === 'settlement' ? 'Settlement' : (n.type === 'trip' ? 'Trip Split' : 'Notification'))));
     const dateStr = n.createdAt ? new Date(n.createdAt).toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'}) : '';
@@ -2585,7 +2483,7 @@ window.renderOverviewTrend = function(){
   const curr = (sel && sel.value) || window._ftTrendCur || 'INR';
   const months=[]; const now=new Date();
   for(let i=5;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); months.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')); }
-  const data=months.map(function(m){ const arr=(state.expenses&&state.expenses[m])||[]; const inrTotal = arr.reduce(function(s,e){ return s + convertToINR(e.amount||0, e.currency||'INR'); },0); return convertFromINR(inrTotal, curr); });
+  const data=months.map(function(m){const totals=window.ftMonthlyExpenseTotals(m);const inrTotal=Object.keys(totals).reduce(function(sum,c){return sum+convertToINR(totals[c],c);},0);return convertFromINR(inrTotal,curr);});
   if(window._ftTrendChart) window._ftTrendChart.destroy();
   window._ftTrendChart=new Chart(canvas,{ type:'line', data:{ labels:months, datasets:[{ label:'Monthly Expenses ('+curr+')', data:data, borderColor:'#6366F1', backgroundColor:'rgba(99,102,241,0.12)', fill:true, tension:0.35, pointRadius:3, pointBackgroundColor:'#4F46E5' }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function(ctx){ return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString(undefined,{maximumFractionDigits:2}) + ' ' + curr; } } } }, scales:{ y:{beginAtZero:true, ticks:{ callback:function(v){ return v.toLocaleString(undefined,{maximumFractionDigits:2}) + ' ' + curr; } } } } } });
 };
@@ -2600,9 +2498,9 @@ window.ftRenderRatingOptions = function(){ var c=document.getElementById('ftRati
 window.ftSetRating = function(v){ window.ftRating=v; window.ftRenderRatingOptions(); };
 window.ftLoadPublicFeedback = async function(){ var list=document.getElementById('ftPublicFeedbackList'); if(!list) return; list.innerHTML='<p class="text-xs text-slate-400 italic">Loading feedback...</p>'; try{ var snap=await get(ref(db, 'publicProfiles')); var all=snap.val()||{}; var isAdmin = currentUser && (currentUser.loginId === 'US' || currentUser.role === 'admin'); var entries=Object.keys(all).map(function(uid){ var r=(all[uid]&&all[uid].rating)||{}; return { uid:uid, value:r.value, comment:r.comment||'', userName:r.userName||'', userEmail:r.userEmail||'', createdAt:r.createdAt||'' }; }).filter(function(r){ return r.value; }); entries.sort(function(a,b){ return String(b.createdAt||'').localeCompare(String(a.createdAt||'')); }); if(entries.length===0){ list.innerHTML='<p class="text-xs text-slate-400 italic">No feedback submitted yet.</p>'; return; } list.innerHTML=entries.map(function(r){ var dateStr=r.createdAt||''; try{ if(r.createdAt){ var d=new Date(r.createdAt); dateStr=d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); } }catch(e){} var stars='\u2605'.repeat(r.value)+'\u2606'.repeat(5-r.value); var safeComment=(r.comment||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); var safeName=(r.userName||'-').replace(/</g,'&lt;'); var safeUid=(r.userEmail||r.uid||'').replace(/</g,'&lt;'); var header='<span class="font-bold text-sm text-slate-800">'+safeName+'</span>'; var starsHtml='<span class="text-amber-500 text-sm tracking-wide">'+stars+'</span>'; var deleteBtn=isAdmin?'<button onclick="deleteAdminFeedback(\''+r.uid+'\')" title="Delete feedback" class="text-slate-400 hover:text-red-600 text-xs"><i class="fa-solid fa-trash"></i></button>':''; var uidLine=isAdmin?'<p class="text-[11px] text-slate-500">User ID: '+safeUid+'</p>':''; return '<div class="bg-white/70 p-3 rounded-xl border border-amber-200 space-y-1"><div class="flex items-center justify-between">'+header+'<div class="flex items-center gap-2">'+starsHtml+deleteBtn+'</div></div>'+uidLine+(safeComment?'<p class="text-xs text-slate-700">'+safeComment+'</p>':'')+'<p class="text-[10px] text-slate-400">'+dateStr+'</p></div>'; }).join(''); }catch(e){ console.error(e); list.innerHTML='<p class="text-xs text-red-500">Could not load feedback.</p>'; } };
 window.ftSubmitRating = async function(){ if(!window.ftRating){ alert('Please select a rating.'); return; } var comment=(document.getElementById('ftRatingComment')||{}).value||''; try{ if(currentUser && currentUser.uid){ var entry={ value: window.ftRating, comment: comment, userName: currentUser.name||'', userEmail: currentUser.email||currentUser.loginId||'', uid: currentUser.uid, createdAt: new Date().toISOString() }; await set(ref(db, 'publicProfiles/'+currentUser.uid+'/rating'), entry); } alert('Rating registered successfully.'); window.ftRating=0; window.ftRenderRatingOptions(); var ta=document.getElementById('ftRatingComment'); if(ta) ta.value=''; if(typeof window.ftLoadPublicFeedback==='function') window.ftLoadPublicFeedback(); }catch(e){ console.error(e); alert('Could not save rating.'); } };
-window.ftUpdateNotifBadge = function(){ const unread = (window._ftNotifData || []).filter(function(n){ return !n.read; }).length; const pending = (window._ftIncomingPending || []).length; const total = unread + pending; const badge = document.getElementById('profileNotifBadge'); if(badge){ badge.classList.toggle('hidden', total === 0); badge.innerText = total > 9 ? '9+' : String(total); } const ppBadge = document.getElementById('ppNotifBadge'); if(ppBadge){ ppBadge.classList.toggle('hidden', total === 0); ppBadge.innerText = total > 9 ? '9+' : String(total); } };
+window.ftUpdateNotifBadge = function(){ const unread = (window._ftNotifData || []).filter(function(n){ return !n.read; }).length; const pending = (window._ftIncomingPending || []).length; const hhPending=window.ftPendingHouseholdInvites?window.ftPendingHouseholdInvites().length:(window._ftIncomingHHPending||[]).length;const inviteUnread=(window._ftNotifData||[]).filter(function(n){return !n.read&&n.type==='household_invite';}).length;const total=unread-inviteUnread+pending+hhPending; const badge = document.getElementById('profileNotifBadge'); if(badge){ badge.classList.toggle('hidden', total === 0); badge.innerText = total > 9 ? '9+' : String(total); } const ppBadge = document.getElementById('ppNotifBadge'); if(ppBadge){ ppBadge.classList.toggle('hidden', total === 0); ppBadge.innerText = total > 9 ? '9+' : String(total); } };
 let _lastConnRefresh = 0; window._ftIncomingPending = []; window._ftConnections = [];
-window.ftRefreshConnectionData = async function(force){ if(!currentUser || !currentUser.uid) return; const now=Date.now(); if(!force && now - _lastConnRefresh < 12000) return; _lastConnRefresh = now; try { const snap = await get(ref(db, 'publicProfiles')); const profiles = (snap && snap.val()) || {}; const myUid = currentUser.uid; const me = profiles[myUid] || {}; const incoming = []; const hhIncoming = []; const connMap = {}; if(me.connections){ Object.keys(me.connections).forEach(function(uid){ const c = me.connections[uid] || {}; connMap[uid] = { uid: uid, name: c.name || (profiles[uid] && profiles[uid].name) || 'Friend' }; }); } Object.keys(profiles).forEach(function(uid){ if(uid === myUid) return; const p = profiles[uid] || {}; if(p.sentRequests && p.sentRequests[myUid] && p.sentRequests[myUid].status==='pending'){ const alreadyConn = me.connections && me.connections[uid]; const declined = me.declinedRequests && me.declinedRequests[uid]; if(!alreadyConn && !declined){ incoming.push({ fromUid: uid, fromName: (p.sentRequests[myUid].fromName) || p.name || 'A user' }); } } if(p.connections && p.connections[myUid] && !connMap[uid]){ connMap[uid] = { uid: uid, name: (profiles[uid] && profiles[uid].name) || 'Friend' }; } if(p.sentHouseholdRequests && p.sentHouseholdRequests[myUid] && p.sentHouseholdRequests[myUid].status==='pending'){ const alreadyHH = me.householdConnections && me.householdConnections[uid]; const declinedHH = me.declinedHouseholdRequests && me.declinedHouseholdRequests[uid]; if(!alreadyHH && !declinedHH){ hhIncoming.push({ fromUid: uid, fromName: (p.sentHouseholdRequests[myUid].fromName) || p.name || 'A user' }); } } }); const conns = Object.keys(connMap).map(function(k){ return connMap[k]; }).sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }); window._ftIncomingPending = incoming; window._ftIncomingHHPending = hhIncoming; window._ftConnections = conns; window.state.connectedFriends = conns; if (me.householdConnections) { let _hhChanged = false; Object.keys(me.householdConnections).forEach(function(uid) { const hc = me.householdConnections[uid]; if (hc && hc.name && !(state.householdMembers || []).some(function(m){ return m.uid === uid || m.id === 'hh_' + uid; })) { if (!Array.isArray(state.householdMembers)) state.householdMembers = []; state.householdMembers.push({ id: 'hh_' + uid, name: hc.name, uid: uid }); _hhChanged = true; } }); if (_hhChanged && typeof saveData === 'function') saveData(); } } catch(e){ console.error('ftRefreshConnectionData', e); } if(typeof window.loadProfileNotifications==='function') window.loadProfileNotifications(); if(typeof window.loadProfileConnections==='function') window.loadProfileConnections(); if(typeof window.ftUpdateNotifBadge==='function') window.ftUpdateNotifBadge(); if(typeof renderFriendsSplit==='function') renderFriendsSplit(); };
+window.ftRefreshConnectionData = async function(force){ if(!currentUser || !currentUser.uid) return; const now=Date.now(); if(!force && now - _lastConnRefresh < 12000) return; _lastConnRefresh = now; try { const snap = await get(ref(db, 'publicProfiles')); const profiles = (snap && snap.val()) || {}; const myUid = currentUser.uid; const me = profiles[myUid] || {}; const incoming = []; const hhIncoming = []; const connMap = {}; if(me.connections){ Object.keys(me.connections).forEach(function(uid){ const c = me.connections[uid] || {}; connMap[uid] = { uid: uid, name: c.name || (profiles[uid] && profiles[uid].name) || 'Friend' }; }); } Object.keys(profiles).forEach(function(uid){ if(uid === myUid) return; const p = profiles[uid] || {}; if(p.sentRequests && p.sentRequests[myUid] && p.sentRequests[myUid].status==='pending'){ const alreadyConn = me.connections && me.connections[uid]; const declined = me.declinedRequests && me.declinedRequests[uid]; if(!alreadyConn && !declined){ incoming.push({ fromUid: uid, fromName: (p.sentRequests[myUid].fromName) || p.name || 'A user' }); } } if(p.connections && p.connections[myUid] && !connMap[uid]){ connMap[uid] = { uid: uid, name: (profiles[uid] && profiles[uid].name) || 'Friend' }; } if(p.sentHouseholdRequests && p.sentHouseholdRequests[myUid] && p.sentHouseholdRequests[myUid].status==='pending'){ const alreadyHH = me.householdConnections && me.householdConnections[uid]; const declinedHH = me.declinedHouseholdRequests && me.declinedHouseholdRequests[uid]; if(!declinedHH){ hhIncoming.push({ fromUid: uid, fromName: (p.sentHouseholdRequests[myUid].fromName) || p.name || 'A user' }); } } }); const conns = Object.keys(connMap).map(function(k){ return connMap[k]; }).sort(function(a,b){ return (a.name||'').localeCompare(b.name||''); }); window._ftIncomingPending = incoming; window._ftIncomingHHPending = hhIncoming; window._ftConnections = conns; window.state.connectedFriends = conns;  } catch(e){ console.error('ftRefreshConnectionData', e); } if(typeof window.loadProfileNotifications==='function') window.loadProfileNotifications(); if(typeof window.loadProfileConnections==='function') window.loadProfileConnections(); if(typeof window.ftUpdateNotifBadge==='function') window.ftUpdateNotifBadge(); if(typeof renderFriendsSplit==='function') renderFriendsSplit(); };
 window.applyActiveLogo = function(){
   let url = (window.activeLogoUrl || (state.settings && state.settings.adminLogo) || ''); try { if(!url){ const cached = localStorage.getItem('ft_active_logo'); if(cached) url = cached; } } catch(le) {}
   const headerBox = document.getElementById('headerLogoBox');
@@ -2965,11 +2863,11 @@ window.ftSendReminder = async function(friendUid, friendName) {
   try {
   const conn = (window._ftConnections || []).find(function(c){ return c.uid === friendUid; });
   if (!conn) { alert('Friend not found.'); return; }
-  const manualFriend = (state.friends || []).find(function(f){ return f.name === friendName; });
-  const outstandingByCurr = window.ftFriendNetBalanceByCurrency(friendName);
+  await window.ftRefreshFinancialBalances();
+  const outstandingByCurr=window.ftFriendNetBalanceByCurrency({uid:friendUid,name:friendName});
   const owedCurrencies = Object.keys(outstandingByCurr).filter(function(c){ return outstandingByCurr[c] > 0.01; });
   if (owedCurrencies.length === 0) {
-    alert('There is no outstanding balance with ' + friendName + '. No reminder needed.');
+    const payable=Object.keys(outstandingByCurr).filter(function(c){return outstandingByCurr[c]<-0.01;});alert(payable.length?'You owe '+friendName+' '+payable.map(function(c){return formatCurrency(-outstandingByCurr[c],c);}).join(' / ')+'. A reminder asking them to pay you is not applicable.':'There is no outstanding balance with '+friendName+'. No reminder needed.');
     return;
   }
   const reminderAmounts = owedCurrencies.map(function(c){ return formatCurrency(outstandingByCurr[c], c); }).join(' / ');
@@ -3391,41 +3289,76 @@ window.ftUpdateFooterStatus = function() {
 (function(){
   function _uid(){ return (currentUser && currentUser.uid) || ''; }
   function _meName(){ return getPeople()[0] || (currentUser && currentUser.name) || 'Me'; }
+
+  window.ftFinancialIdentity=function(person){
+    if(person&&typeof person==='object'&&person.uid)return 'uid:'+String(person.uid);
+    var value=String(person&&typeof person==='object'?person.name||'':person||'').trim().toLowerCase();if(!value)return '';var aliases=new Map();
+    function add(p){if(!p||!p.name)return;var key=p.uid?'uid:'+String(p.uid):'name:'+String(p.name).trim().toLowerCase(),full=String(p.name).trim().toLowerCase();[full,full.split(/\s+/).slice(0,2).join(' ')].forEach(function(n){if(!aliases.has(n)||p.uid)aliases.set(n,key);});if(p.uid)aliases.set(String(p.uid).toLowerCase(),key);}
+    (state.connectedFriends||[]).forEach(add);(state.householdMembers||[]).forEach(add);(state.friends||[]).forEach(function(p){if(p&&!aliases.has(String(p.name||'').trim().toLowerCase()))add(p);});(state.sharedSplits||[]).forEach(function(p){(p.participants||[]).forEach(add);});(state.trips||[]).forEach(function(p){(p.members||[]).forEach(add);});
+    if(currentUser&&currentUser.uid){var mine='uid:'+currentUser.uid;[currentUser.uid,currentUser.name,_meName()].filter(Boolean).forEach(function(n){var full=String(n).trim().toLowerCase();aliases.set(full,mine);aliases.set(full.split(/\s+/).slice(0,2).join(' '),mine);});}return aliases.get(value)||'name:'+value;
+  };
+  window.ftHhExpensePeople=function(exp){var names=exp.splitAmong&&exp.splitAmong.length?exp.splitAmong:window.ftHhUniqueMembers().map(function(m){return m.name;}),seen=new Set();return names.map(function(name,i){return exp.splitAmongUids&&exp.splitAmongUids[i]?{uid:exp.splitAmongUids[i],name:name}:name;}).filter(function(p){var key=window.ftFinancialIdentity(p);if(!key||seen.has(key))return false;seen.add(key);return true;});};
+  window.ftOwnSplitShare=function(split,people){if(!currentUser||!currentUser.uid)return 0;people=people||split.participants||[];var me=window.ftFinancialIdentity({uid:currentUser.uid}),mine=people.find(function(p){return window.ftFinancialIdentity(p)===me;});if(mine==null)return 0;var keys=[currentUser.uid,typeof mine==='object'?mine.name:mine,currentUser.name,_meName()];for(var i=0;i<keys.length;i++)if(split.shares&&split.shares[keys[i]]!=null)return Number(split.shares[keys[i]])||0;var count=Number(split.participantCount)||new Set(people.map(window.ftFinancialIdentity)).size;return count?Number(split.amount||0)/count:0;};
+  window.ftMonthlyExpenseTotals=function(month){var totals={},seen=new Set(),uid=currentUser&&currentUser.uid;function add(amount,currency){amount=Number(amount);currency=currency||'INR';if(Number.isFinite(amount)&&isCurrencyAllowed(currency))totals[currency]=(totals[currency]||0)+amount;}(state.expenses[month]||[]).forEach(function(e){if(!e.isSplitShare)add(e.amount,e.currency);});(state.friendSplits[month]||[]).forEach(function(e){if(e.id!=null)seen.add(String(e.ownerUid||uid)+'|'+e.id);add(window.ftOwnSplitShare(e),e.currency);});(state.sharedSplits||[]).forEach(function(e){if(e.ftype==='trip'||dateMonth(e.date)!==month)return;var key=e.sourceSplitId!=null?String(e.ownerUid)+'|'+e.sourceSplitId:'shared|'+e.id;if(seen.has(key))return;seen.add(key);add(window.ftOwnSplitShare(e),e.currency);});(state.trips||[]).forEach(function(trip){Object.values(trip.splits||{}).forEach(function(e){if(dateMonth(e.date)===month)add(window.ftOwnSplitShare(e,trip.members||[]),e.currency);});});(state.householdExpenses||[]).forEach(function(e){if(dateMonth(e.date)===month)add(window.ftHhMyShare(e),e.currency);});return totals;};
+  window.ftHhApplySharedState=function(){var cached=window._ftHhSnapshot;if(!cached||!currentUser||cached.uid!==currentUser.uid||cached.hid!==state.householdId)return false;var data=cached.data||{},members=data.members||{},uid=currentUser.uid;state.householdExpenses=Object.values(data.expenses||{}).filter(Boolean);state.householdSettlements=Object.values(data.settlements||{}).filter(Boolean);if(data.ownerUid)state.householdOwnerUid=data.ownerUid;var locals=(state.householdMembers||[]).filter(function(m){return m&&!m.uid&&!m.isSelf&&String(m.id||'').indexOf('hh_')!==0;});state.householdMembers=Object.keys(members).map(function(id){return {id:id===uid?'hh_self_'+uid:'hh_'+id,uid:id,name:id===uid?_meName():members[id].name||'Member',isSelf:id===uid};}).concat(locals);window._ftHhExitReqs=data.exitRequests||{};return true;};
+  window.ftNormalizeBanks=function(raw){
+    var rows=Array.isArray(raw)?raw:(raw?Object.values(raw):[]),key=currentUser&&currentUser.uid+'|'+currentUser.loginId,q=window._ftBankSaveState;
+    if(q&&q.key===key&&q.pending)rows=JSON.parse(JSON.stringify(q.desired));else{if(!q||q.key!==key)q=window._ftBankSaveState={key:key,pending:0,queue:Promise.resolve(),baseline:[]};q.baseline=JSON.parse(JSON.stringify(rows));q.desired=JSON.parse(JSON.stringify(rows));}
+    return rows.filter(Boolean).map(function(incoming){var existing=(state.banks||[]).find(function(bank){return String(bank.id)===String(incoming.id);});if(!existing)return incoming;Object.keys(existing).forEach(function(field){if(!Object.prototype.hasOwnProperty.call(incoming,field))delete existing[field];});Object.assign(existing,incoming);return existing;});
+  };
+  window.ftSaveBankChanges=function(requested){
+    var uid=currentUser.uid,login=currentUser.loginId,key=uid+'|'+login,q=window._ftBankSaveState;if(!q||q.key!==key)q=window._ftBankSaveState={key:key,pending:0,queue:Promise.resolve(),baseline:[],desired:[]};requested=JSON.parse(JSON.stringify(requested||[]));var before=JSON.parse(JSON.stringify(q.baseline||[]));if(JSON.stringify(before)===JSON.stringify(requested))return Promise.resolve(true);
+    var previous=new Map(before.filter(Boolean).map(function(b){return [String(b.id),b];})),wanted=new Map(requested.filter(Boolean).map(function(b){return [String(b.id),b];}));q.baseline=requested;q.desired=requested;q.pending++;
+    var work=q.queue.catch(function(){}).then(async function(){if(!currentUser||currentUser.uid!==uid||currentUser.loginId!==login||!auth.currentUser||auth.currentUser.uid!==uid)throw new Error('The account session changed before saving.');var result=await ref(db,'userData/'+login+'/banks').transaction(function(raw){var rows=JSON.parse(JSON.stringify(raw?Object.values(raw):[])).filter(Boolean);rows=rows.filter(function(b){return !previous.has(String(b.id))||wanted.has(String(b.id));});wanted.forEach(function(next,id){var old=previous.get(id),index=rows.findIndex(function(b){return String(b.id)===id;});if(!old){if(index<0)rows.push(next);return;}if(index<0)return;var bank=rows[index];new Set(Object.keys(old).concat(Object.keys(next))).forEach(function(field){if(['balance','cardOutstanding','ftHouseholdPayments'].indexOf(field)>=0)return;if(JSON.stringify(old[field])!==JSON.stringify(next[field])){if(next[field]===undefined)delete bank[field];else bank[field]=next[field];}});var delta=Number(next.balance||0)-Number(old.balance||0),cardDelta=Number(next.cardOutstanding||0)-Number(old.cardOutstanding||0);if(Number(bank.bankType)===3){if(cardDelta)bank.cardOutstanding=Math.max(0,Number(bank.cardOutstanding||0)+cardDelta);if(cardDelta||delta)bank.balance=-Number(bank.cardOutstanding||0);}else if(delta){var balance=Number(bank.balance||0)+delta;if(!Number.isFinite(balance)||balance<-0.000001)throw new Error('The account balance changed. Review its latest balance before saving.');bank.balance=Math.round(balance*1e8)/1e8;}rows[index]=bank;});return rows;},undefined,false);if(!result.committed)throw new Error('Account changes could not be saved.');return true;});q.queue=work;
+    return work.finally(async function(){q.pending--;if(!q.pending&&window._ftBankSaveState===q&&currentUser&&currentUser.uid===uid){var snapshot=await get(ref(db,'userData/'+login+'/banks'));if(!q.pending&&window._ftBankSaveState===q&&currentUser&&currentUser.uid===uid){state.banks=window.ftNormalizeBanks(snapshot.val());if(typeof renderAll==='function')renderAll();}}});
+  };
+  window.ftPendingHouseholdInvites=function(){var byUid=new Map();(window._ftIncomingHHPending||[]).forEach(function(r){if(r&&r.fromUid)byUid.set(r.fromUid,r);});(window._ftNotifData||[]).forEach(function(n){if(n&&n.type==='household_invite'&&n.fromUid&&!byUid.has(n.fromUid))byUid.set(n.fromUid,{fromUid:n.fromUid,fromName:n.fromName,householdId:n.householdId});});return Array.from(byUid.values());};
+  window.ftRefreshFinancialBalances=async function(){if(window._ftUserSavePromise&&(await window._ftUserSavePromise)===false)throw new Error('Your latest changes have not been saved yet.');var uid=_uid(),login=currentUser.loginId,snaps=await Promise.all([get(ref(db,'userData/'+login)),get(ref(db,'sharedSplits')),get(ref(db,'sharedSettlements'))]);if(_uid()!==uid)throw new Error('Please sign in again.');var own=snaps[0].val()||{};state.friendSplits=own.friendSplits||{};state.friendLedger=Object.values(own.friendLedger||{});state.friends=Object.values(own.friends||{});var splits=Object.values(snaps[1].val()||{});state.sharedSplits=splits.filter(function(x){return (x.participants||[]).some(function(p){return p.uid===uid;});});state.trips=splits.filter(function(x){return x.ftype==='trip'&&(x.members||[]).some(function(p){return p.uid===uid;});});state.sharedSettlements=Object.values(snaps[2].val()||{}).filter(function(x){return (x.participants||[]).some(function(p){return p.uid===uid;});});if(state.householdId){if(!(await window.ftHhEnsure()))throw new Error('Household balances could not be refreshed.');var hid=state.householdId,hh=await get(ref(db,'households/'+hid));window._ftHhSnapshot={uid:uid,hid:hid,data:hh.val()||{}};window.ftHhApplySharedState();}};
+
   window.ftHhUniqueMembers = function(){ var seen = new Set(); return (state.householdMembers||[]).filter(function(m){ if(!m || !m.name) return false; var name = String(m.name).trim().toLowerCase(), uid = m.uid && String(m.uid); if(seen.has('n'+name) || (uid && seen.has('u'+uid))) return false; seen.add('n'+name); if(uid) seen.add('u'+uid); return true; }); };
-  window.ftHhMyShare = function(exp){ var parts = Array.from(new Set((exp.splitAmong && exp.splitAmong.length ? exp.splitAmong : window.ftHhUniqueMembers().map(m=>m.name)).map(p=>String(p).trim().toLowerCase()))); if(!parts.length || !currentUser) return 0; var me=window.ftHhUniqueMembers().find(m=>m.uid===currentUser.uid), names=[currentUser.name,getPeople()[0],me&&me.name].filter(Boolean).map(n=>String(n).trim().toLowerCase()); return parts.some(p=>names.includes(p)) ? Number(exp.amount||0)/parts.length : 0; };
+  window.ftHhMyShare=function(exp){var parts=window.ftHhExpensePeople(exp),me=window.ftFinancialIdentity({uid:_uid()});return parts.length&&parts.some(function(p){return window.ftFinancialIdentity(p)===me;})?Number(exp.amount||0)/parts.length:0;};
 
   window.ftHhEnsure = function(){
-    if (!currentUser || !currentUser.uid) return;
+    if (!currentUser || !currentUser.uid || !auth.currentUser || auth.currentUser.uid !== currentUser.uid) return Promise.resolve(false);
     if (!state.householdOwnerUid) {
       state.householdOwnerUid = currentUser.uid;
       state.householdId = 'hh_' + currentUser.uid;
     } else {
       state.householdId = state.householdId || 'hh_' + state.householdOwnerUid;
     }
-    if (state.householdOwnerUid === currentUser.uid) {
-      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid),
-        { uid: currentUser.uid, name: currentUser.name || _meName(), isOwner: true, joinedAt: new Date().toISOString() })
-        .catch(function(e){ console.error(e); });
+    var uid=currentUser.uid, hid=state.householdId, key=uid+'|'+hid;
+    function startSubscription(){
+      if(!auth.currentUser || auth.currentUser.uid!==uid || !currentUser || currentUser.uid!==uid || state.householdId!==hid) return false;
+      if(!window._ftHhInit||window._ftHhSubscriptionKey!==key){window._ftHhInit=true;window.ftHhSubscribe();}
+      return true;
     }
-    if (!window._ftHhInit) {
-      window._ftHhInit = true;
-      window.ftHhSubscribe();
-    }
+    if(window._ftHhReadyKey===key && window._ftHhReady) return window._ftHhReady.then(function(ready){return ready && startSubscription();});
+    var membership={uid:uid,name:currentUser.name||_meName(),joinedAt:new Date().toISOString()};
+    if(state.householdOwnerUid===uid) membership.isOwner=true;
+    window._ftHhReadyKey=key;
+    // These rules allow writing our own membership before reading the household.
+    window._ftHhReady=update(ref(db,'households/'+hid+'/members/'+uid),membership).then(startSubscription).catch(function(err){
+      if(window._ftHhReadyKey===key){window._ftHhReadyKey='';window._ftHhReady=null;window._ftHhInit=false;}
+      console.error('Household membership registration failed:',err);
+      return false;
+    });
+    return window._ftHhReady;
   };
 
   window.ftHhSubscribe = function(){
-    var hid = state.householdId;
-    if (!hid) return;
+    var hid=state.householdId,subscribingUid=_uid();
+    if(!hid)return;window._ftHhSubscriptionKey=subscribingUid+'|'+hid;
     if (window._ftHhUnsub) { try { window._ftHhUnsub(); } catch(e){} window._ftHhUnsub = null; }
     var migrated = false;
     window._ftHhUnsub = onValue(ref(db, 'households/' + hid), function(snap){
-      var data = snap.val() || {};
+      if(_uid()!==subscribingUid||state.householdId!==hid)return;
+      var data=snap.val()||{};window._ftHhSnapshot={uid:subscribingUid,hid:hid,data:data};
       var exps = data.expenses ? Object.values(data.expenses) : [];
       var sets = data.settlements ? Object.values(data.settlements) : [];
       var members = data.members || {};
       var exits = data.exitRequests || {};
       if (data.ownerUid && data.ownerUid !== state.householdOwnerUid) { state.householdOwnerUid = data.ownerUid; saveData(); }
-      if (!migrated && exps.length === 0 && sets.length === 0) {
+      if(!migrated&&!state.householdMigrationComplete&&state.householdOwnerUid===subscribingUid&&exps.length===0&&sets.length===0){
         var lExps = state.householdExpenses || [];
         var lSets = state.householdSettlements || [];
         if (lExps.length || lSets.length) {
@@ -3433,11 +3366,12 @@ window.ftUpdateFooterStatus = function() {
           var upd = {};
           lExps.forEach(function(e){ if (e && e.id) upd['households/' + hid + '/expenses/' + e.id] = e; });
           lSets.forEach(function(s){ if (s && s.id) upd['households/' + hid + '/settlements/' + s.id] = s; });
+          state.householdMigrationComplete=true;upd['userData/'+currentUser.loginId+'/householdMigrationComplete']=true;
           update(ref(db), upd).catch(function(e){ console.error(e); });
           return;
         }
       }
-      migrated = true;
+      migrated=true;if(!state.householdMigrationComplete){state.householdMigrationComplete=true;set(ref(db,'userData/'+currentUser.loginId+'/householdMigrationComplete'),true).catch(console.error);}
       var myUid = _uid();
       if (state.householdOwnerUid && state.householdOwnerUid !== myUid && members && Object.keys(members).length > 0 && !members[myUid]) {
         if (window._ftHhSawSelf) {
@@ -3467,14 +3401,14 @@ window.ftUpdateFooterStatus = function() {
         state.householdMembers = window.ftHhUniqueMembers();
       }
       state.householdExpenses = exps;
-      state.householdSettlements = sets;
-      window._ftHhExitReqs = exits;
+      state.householdSettlements=sets;window.ftHhApplySharedState();
+      window._ftHhExitReqs=exits;if(typeof window.renderExpenses==='function')window.renderExpenses();if(typeof window.renderMonthlyCashbook==='function')window.renderMonthlyCashbook();
       try { if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement(); } catch(e){}
       try { if (typeof renderFriendsSplit === 'function') renderFriendsSplit(); } catch(e){}
       try { if (typeof window.renderOverview === 'function') window.renderOverview(); } catch(e){}
       try { if (typeof window.loadProfileNotifications === 'function') window.loadProfileNotifications(); } catch(e){}
       try { if (typeof window.ftUpdateNotifBadge === 'function') window.ftUpdateNotifBadge(); } catch(e){}
-    }, function(err){ console.error('Household sync error:', err); });
+    },function(err){window._ftHhInit=false;window._ftHhSubscriptionKey='';console.error('Household sync error:',err);alert('Household data could not sync with Firebase: '+err.message);});
   };
 
   window.ftHhNotifyOthers = function(message, type){
@@ -3495,77 +3429,20 @@ window.ftUpdateFooterStatus = function() {
     } catch(e){ console.error(e); }
   };
 
-  window.ftHhPayerAccounts = async function(name){
-    var member = window.ftHhUniqueMembers().find(function(m){return m.name === name;});
-    if(!member || !member.uid) throw new Error('This member has no linked account.');
-    var profile = (await get(ref(db, 'users/' + member.uid))).val() || {};
-    var key = profile.legacyLoginId || member.uid;
-    var banks = (await get(ref(db, 'userData/' + key + '/banks'))).val() || [];
-    return {key:key, banks:Array.isArray(banks) ? banks : Object.values(banks), raw:banks};
-  };
-  window.ftHhAdjustPayerAccount = async function(name, accountId, delta, currency, pm){
-    if(!accountId || !delta) return;
-    var me = _meName();
-    if(name === me){
-      var own = (state.banks||[]).find(function(b){return String(b.id)===String(accountId);});
-      if(!own || own.currency !== currency) throw new Error('Your selected account is unavailable.');
-      if(delta < 0 && own.bankType !== 3 && Number(own.balance||0) < -delta) throw new Error('Insufficient account balance.');
-      if(delta < 0) accountDeduct(own,-delta); else accountAdd(own,delta);
-      return;
-    }
-    var info = await window.ftHhPayerAccounts(name);
-    var keys = Object.keys(info.raw);
-    var index = keys.find(function(k){return info.raw[k] && String(info.raw[k].id)===String(accountId);});
-    if(index === undefined) throw new Error('Payer account is unavailable.');
-    var kind = pm || (info.raw[index].bankType===3 ? 'credit' : info.raw[index].name==='Cash in Hand' ? 'cash' : 'bank');
-    var matches = function(bank){ return bank && String(bank.id)===String(accountId) && bank.currency===currency && (kind==='cash' ? bank.name==='Cash in Hand' : kind==='credit' ? bank.bankType===3 : bank.bankType!==3 && bank.name!=='Cash in Hand'); };
-    var result = await ref(db,'userData/'+info.key+'/banks/'+index).transaction(function(bank){
-      if(!matches(bank) || (delta<0 && bank.bankType!==3 && Number(bank.balance||0)<-delta)) return;
-      if(delta<0) accountDeduct(bank,-delta); else accountAdd(bank,delta);
-      return bank;
-    });
-    if(!result.committed) throw new Error('Payer account is unavailable or has insufficient balance.');
+  window.ftHhPayerAccounts=async function(name){if(!currentUser||!auth.currentUser||auth.currentUser.uid!==currentUser.uid)throw new Error('Please sign in before choosing a payment source.');var identity=window.ftFinancialIdentity(name),uid=identity.indexOf('uid:')===0?identity.slice(4):'';if(!uid)throw new Error('The selected payer needs one linked Firebase user.');if(!(await window.ftHhEnsure()))throw new Error('Your household membership could not sync.');var hid=state.householdId,members=(await get(ref(db,'households/'+hid+'/members'))).val()||{};if(!members[currentUser.uid]||!members[uid])throw new Error('The payer must accept the invitation before a household payment is recorded.');if(uid===currentUser.uid&&window._ftBankSaveState&&window._ftBankSaveState.pending)await window._ftBankSaveState.queue;var legacy=(await get(ref(db,'users/'+uid+'/legacyLoginId'))).val(),key=uid===currentUser.uid?currentUser.loginId:legacy||uid,raw=(await get(ref(db,'userData/'+key+'/banks'))).val()||[];return {uid:uid,key:key,hid:hid,banks:Object.values(raw).filter(Boolean),raw:raw};};
+  window.ftHhAdjustPayerAccount=async function(name,accountId,delta,currency,pm,operationKey,reverse){
+    delta=Number(delta);if(!accountId||!delta)return;if(!Number.isFinite(delta))throw new Error('Invalid payment amount.');var info=await window.ftHhPayerAccounts(name),index=Object.keys(info.raw).find(function(k){return info.raw[k]&&String(info.raw[k].id)===String(accountId);});if(index===undefined)throw new Error('The selected payer account no longer exists.');var kind=pm||(Number(info.raw[index].bankType)===3?'credit':info.raw[index].name==='Cash in Hand'?'cash':'bank');function matches(bank){return bank&&String(bank.id)===String(accountId)&&bank.currency===currency&&(kind==='cash'?bank.name==='Cash in Hand':kind==='credit'?Number(bank.bankType)===3:Number(bank.bankType)!==3&&bank.name!=='Cash in Hand');}var reason='',accountRef=ref(db,'userData/'+info.key+'/banks/'+index);await get(accountRef);
+    var result=await accountRef.transaction(function(raw){if(raw===null)return null;var bank=JSON.parse(JSON.stringify(raw));if(!matches(bank)){reason='The selected account or payment type changed. Select it again.';return;}var receipts=bank.ftHouseholdPayments||{},receipt=operationKey&&receipts[operationKey];if(reverse){if(!receipt||!receipt.active)return bank;delta=-Number(receipt.delta);}else if(receipt&&receipt.active){if(Number(receipt.delta)!==delta||receipt.currency!==currency){reason='Resolve the previous payment before changing this request.';return;}return bank;}var credit=Number(bank.bankType)===3,balance=Number(bank.balance||0),outstanding=Number(bank.cardOutstanding||0);if(!Number.isFinite(balance)||!Number.isFinite(outstanding)){reason='This account has an invalid Firebase amount.';return;}if(delta<0&&!credit&&balance < -delta-0.000001){reason='Insufficient account balance.';return;}if(credit){bank.cardOutstanding=Math.max(0,Math.round((outstanding-delta)*1e8)/1e8);bank.balance=-bank.cardOutstanding;}else bank.balance=Math.round((balance+delta)*1e8)/1e8;if(operationKey){receipts[operationKey]={delta:reverse?Number(receipt.delta):delta,currency:currency,accountId:String(accountId),active:!reverse};bank.ftHouseholdPayments=receipts;}return bank;},undefined,false);if(!result.committed||!matches(result.snapshot.val()))throw new Error(reason||'The payer account changed before payment. Select it again.');return info.uid;
   };
 
-  window.saveHouseholdExpense = async function(e){
-    e.preventDefault();
-    var button=e.submitter;
-    if(button) button.disabled=true;
-    try {
-      var amount=parseFloat(document.getElementById('hhExpAmount').value)||0;
-      var paidBy=document.getElementById('hhExpPaidBy').value;
-      var splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(cb=>cb.value)));
-      var pm=document.getElementById('hhExpPaymentMethod').value;
-      var currency=document.getElementById('hhExpCurrency').value;
-      if(amount<=0 || !paidBy || !splitAmong.length || !pm) throw new Error('Enter an amount, payer, participants and payment method.');
-      var accountId=document.getElementById('hhExpAccount').value;
-      if(!accountId) throw new Error('Select the payer’s account.');
-      var idVal=document.getElementById('hhExpId').value, id=idVal||String(Date.now());
-      var old=idVal && (state.householdExpenses||[]).find(x=>String(x.id)===String(id));
-      var entry={id:id,date:document.getElementById('hhExpDate').value,description:document.getElementById('hhExpDesc').value,category:document.getElementById('hhExpCategory').value,amount:amount,currency:currency,paidBy:paidBy,splitAmong:splitAmong,paymentMethod:pm,accountId:accountId,deductAmount:amount,paidByUid:(window.ftHhUniqueMembers().find(m=>m.name===paidBy)||{}).uid||_uid()};
-      var oldAdjusted=false, newAdjusted=false;
-      try {
-        if(old && old.accountId && old.deductAmount){ await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod); oldAdjusted=true; }
-        await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm); newAdjusted=true;
-        if(state.householdId) await set(ref(db,'households/'+state.householdId+'/expenses/'+id),entry);
-        else if(paidBy!==_meName()) throw new Error('Create or join a household before recording another payer.');
-      } catch(err) {
-        if(newAdjusted) await window.ftHhAdjustPayerAccount(paidBy,accountId,amount,currency,pm).catch(console.error);
-        if(oldAdjusted) await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,-Number(old.deductAmount),old.currency,old.paymentMethod).catch(console.error);
-        throw err;
-      }
-      if(!Array.isArray(state.householdExpenses)) state.householdExpenses=[];
-      var i=state.householdExpenses.findIndex(x=>String(x.id)===String(id));
-      if(i>=0) state.householdExpenses[i]=entry; else state.householdExpenses.push(entry);
-      saveData();
-      window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(entry.description||'')+' — '+formatCurrency(amount,currency),'household');
-      renderHouseholdSettlement(); window.renderOverview();
-      ftToast('Household Split '+(old?'updated':'added')); closeModal('modalHouseholdExpense');
-    } catch(err){console.error(err);alert('Could not save household expense: '+err.message);}
-    finally{if(button) button.disabled=false;}
+  window.saveHouseholdExpense=async function(e){
+    e.preventDefault();var form=document.getElementById('householdExpenseForm');if(window._ftHhSaveBusy||form.dataset.ftSaved==='1')return;window._ftHhSaveBusy=true;var buttons=Array.from(form.querySelectorAll('button[type="submit"]'));if(e.submitter&&buttons.indexOf(e.submitter)<0)buttons.push(e.submitter);buttons.forEach(function(b){b.disabled=true;});var oldAdjusted=false,newAdjusted=false,old=null,entry=null,operation='';
+    try{var amount=Number(document.getElementById('hhExpAmount').value),paidBy=document.getElementById('hhExpPaidBy').value,pm=document.getElementById('hhExpPaymentMethod').value,currency=document.getElementById('hhExpCurrency').value,accountId=document.getElementById('hhExpAccount').value,splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){return cb.value;})));if(!Number.isFinite(amount)||amount<=0||!paidBy||!splitAmong.length||!pm||!accountId)throw new Error('Enter an amount, payer, participants, payment method and account.');var date=document.getElementById('hhExpDate').value,description=document.getElementById('hhExpDesc').value,category=document.getElementById('hhExpCategory').value,splitAmongUids=splitAmong.map(function(name){var identity=window.ftFinancialIdentity(name);return identity.indexOf('uid:')===0?identity.slice(4):'';});var id=document.getElementById('hhExpId').value||ref(db,'households').push().key;document.getElementById('hhExpId').value=id;operation=form.dataset.ftPaymentKey||ref(db,'households').push().key;form.dataset.ftPaymentKey=operation;var payer=await window.ftHhPayerAccounts(paidBy),hid=payer.hid,expenseRef=ref(db,'households/'+hid+'/expenses/'+id);old=(await get(expenseRef)).val();if(old&&old.paymentOperation===operation){form.dataset.ftSaved='1';closeModal('modalHouseholdExpense');return;}entry={id:id,date:date,description:description,category:category,amount:amount,currency:currency,paidBy:paidBy,paidByUid:payer.uid,splitAmong:splitAmong,splitAmongUids:splitAmongUids,paymentMethod:pm,accountId:accountId,deductAmount:amount,paymentOperation:operation,createdByUid:_uid(),updatedAt:new Date().toISOString()};if(old&&old.accountId&&old.deductAmount){await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old');oldAdjusted=true;}await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm,operation+'_new');newAdjusted=true;if(state.householdId!==hid)throw new Error('The household changed before saving.');await set(expenseRef,entry);form.dataset.ftSaved='1';newAdjusted=false;oldAdjusted=false;var fresh=await get(ref(db,'households/'+hid));window._ftHhSnapshot={uid:_uid(),hid:hid,data:fresh.val()||{}};window.ftHhApplySharedState();saveData();window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(description||'')+' — '+formatCurrency(amount,currency),'household');renderHouseholdSettlement();renderExpenses();window.renderOverview();ftToast('Household expense '+(old?'updated':'added'));closeModal('modalHouseholdExpense');}
+    catch(err){var reversalError=null;if(newAdjusted&&entry)try{await window.ftHhAdjustPayerAccount(entry.paidBy,entry.accountId,entry.amount,entry.currency,entry.paymentMethod,operation+'_new',true);}catch(undo){reversalError=undo;}if(oldAdjusted&&old)try{await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,-Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old',true);}catch(undo){reversalError=undo;}console.error(err);alert('Could not complete household expense: '+err.message+(reversalError?' The account reversal also needs attention: '+reversalError.message+' Do not submit a new payment.':''));}finally{window._ftHhSaveBusy=false;buttons.forEach(function(b){b.disabled=false;});}
   };
 
   window.editHouseholdExpense = function(id){
+    if(window._ftHhSaveBusy)return;
     var exp = (state.householdExpenses || []).find(function(x){ return String(x.id) === String(id); });
     if (!exp) return;
     openHouseholdExpenseModal();
@@ -3585,21 +3462,21 @@ window.ftUpdateFooterStatus = function() {
 
   window.deleteHouseholdExpense = async function(id){
     var exp=(state.householdExpenses||[]).find(x=>String(x.id)===String(id));
-    if(!exp) return;
-    if(exp.paidBy!==_meName()) {alert('Only the person who paid can delete this household expense.');return;}
+    if(!exp)return;window._ftHhDeleteBusy=window._ftHhDeleteBusy||{};if(window._ftHhDeleteBusy[id])return;
+    if(exp.paidByUid?exp.paidByUid!==_uid():window.ftFinancialIdentity(exp.paidBy)!==window.ftFinancialIdentity({uid:_uid()})){alert('Only the person who paid can delete this household expense.');return;}
     if(!window.__ftok){ftConfirm('Delete this household expense? The account deduction will be reversed.',function(){window.__ftok=1;deleteHouseholdExpense(id);});return;}
-    window.__ftok=0;
+    window.__ftok=0;window._ftHhDeleteBusy[id]=true;
     var refunded=false;
     try {
-      if(exp.accountId && exp.deductAmount){await window.ftHhAdjustPayerAccount(exp.paidBy,exp.accountId,Number(exp.deductAmount),exp.currency,exp.paymentMethod);refunded=true;}
+      if(exp.accountId && exp.deductAmount){await window.ftHhAdjustPayerAccount(exp.paidBy,exp.accountId,Number(exp.deductAmount),exp.currency,exp.paymentMethod,'delete_'+id);refunded=true;}
       if(state.householdId) await remove(ref(db,'households/'+state.householdId+'/expenses/'+id));
       state.householdExpenses=state.householdExpenses.filter(x=>String(x.id)!==String(id));
       saveData(); window.ftHhNotifyOthers('Household expense deleted: '+(exp.description||'')+' — '+formatCurrency(exp.amount,exp.currency),'household');
       renderHouseholdSettlement();window.renderOverview();ftToast('Household expense deleted');
     } catch(err){
-      if(refunded) await window.ftHhAdjustPayerAccount(exp.paidBy,exp.accountId,-Number(exp.deductAmount),exp.currency,exp.paymentMethod).catch(console.error);
+      if(refunded) await window.ftHhAdjustPayerAccount(exp.paidBy,exp.accountId,-Number(exp.deductAmount),exp.currency,exp.paymentMethod,'delete_'+id,true).catch(console.error);
       console.error(err);alert('Could not delete household expense: '+err.message);
-    }
+    }finally{delete window._ftHhDeleteBusy[id];}
   };
 
   window.saveHouseholdSettlement = function(e){
@@ -3813,31 +3690,7 @@ window.ftUpdateFooterStatus = function() {
   var _origBadge = window.ftUpdateNotifBadge;
   window.ftUpdateNotifBadge = function(){ _origBadge.apply(this, arguments); try { var ec = Object.keys(window._ftHhExitReqs || {}).filter(function(k){ return (window._ftHhExitReqs[k] || {}).status === 'pending'; }).length; if (ec > 0) { ['profileNotifBadge','ppNotifBadge'].forEach(function(id){ var b = document.getElementById(id); if (b) { b.classList.remove('hidden'); var cur = parseInt((b.innerText || '').replace(/[^0-9]/g, ''), 10) || 0; var tot = cur + ec; b.innerText = tot > 9 ? '9+' : String(tot); } }); } } catch(e){} };
 
-  var _origAccept = window.acceptHouseholdInvite;
-  window.acceptHouseholdInvite = async function(fromUid, fromName){
-    await _origAccept.apply(this, arguments);
-    try {
-      state.householdOwnerUid = fromUid;
-      state.householdId = 'hh_' + fromUid;
-      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid), { uid: currentUser.uid, name: currentUser.name || _meName(), joinedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
-      window._ftHhInit = false; window._ftHhSawSelf = false;
-      window.ftHhEnsure();
-      try { saveData(); } catch(e){}
-    } catch(e){ console.error(e); }
-  };
-
-  var _origInvite = window.sendHouseholdInvite;
-  window.sendHouseholdInvite = function(e){
-    var r = _origInvite.apply(this, arguments);
-    try {
-      state.householdOwnerUid = currentUser.uid;
-      state.householdId = 'hh_' + currentUser.uid;
-      set(ref(db, 'households/' + state.householdId + '/members/' + currentUser.uid), { uid: currentUser.uid, name: currentUser.name || _meName(), isOwner: true, joinedAt: new Date().toISOString() }).catch(function(e){ console.error(e); });
-      window._ftHhInit = false;
-      window.ftHhEnsure();
-    } catch(err){ console.error(err); }
-    return r;
-  };
+  /* Invitations retain the actual shared household identity. */
 
   var _origOpenExp = window.openHouseholdExpenseModal;
   window.openHouseholdExpenseModal = function(){ _origOpenExp.apply(this, arguments); var t = document.getElementById('hhExpModalTitle'); if (t) t.innerText = 'Add Household Expense'; };
