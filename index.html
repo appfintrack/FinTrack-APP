@@ -260,34 +260,30 @@ button:active, .ft-qa:active { transform:scale(.96); }
           <h1 class="text-2xl font-black tracking-wider uppercase">FinTrack</h1>
           <p class="text-xs text-[#EE5133] font-semibold tracking-widest mt-1 uppercase">Financial Planning & Portfolio</p>
         </div>
-      <div id="finpinLockScreen" class="auth-screen active p-6 space-y-4">
-        <div class="text-center space-y-2">
-          <div class="w-16 h-16 mx-auto bg-violet-100 rounded-full flex items-center justify-center"><i class="fa-solid fa-shield-halved text-3xl text-violet-600"></i></div>
-          <p class="text-xs font-bold text-violet-600 uppercase tracking-wide">Quick Login</p>
-          <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide">Unlock with FinPIN</h2>
-          <p class="text-xs text-slate-500">Enter your 4-digit FinPIN to unlock FinTrack</p>
-        </div>
-        <div class="flex justify-center space-x-3" id="finpinLockInputs">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="0">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="1">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="2">
-          <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="3">
-        </div>
-        <p id="finpinLockError" class="text-center text-xs text-red-500 font-semibold hidden"></p>
-        <button id="finpinUnlockButton" type="button" onclick="ftUnlockWithFinpin()" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md">Unlock FinTrack <i class="fa-solid fa-unlock ml-1"></i></button>
-        <button id="finpinPasswordToggle" type="button" onclick="ftTogglePasswordLogin()" aria-expanded="false" aria-controls="finpinPasswordFields" class="w-full py-2.5 border border-slate-200 rounded-lg text-indigo-600 font-semibold text-sm">Log in with Password <span aria-hidden="true">⌄</span></button>
-        <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
-          <div id="finpinPasswordFields" class="hidden space-y-4">
-            <div><label for="loginId" class="block text-xs font-bold text-slate-600 uppercase mb-1">Email or User ID</label><input type="text" id="loginId" required autocomplete="username" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 text-sm" placeholder="Enter your Email ID (or old User ID)"></div>
-            <div><label for="loginPass" class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label><div class="relative"><input type="password" id="loginPass" required autocomplete="current-password" class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 text-sm" placeholder="Enter your password"><button type="button" onclick="toggleLoginPass(this)" aria-label="Show or hide password" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400"><i class="fa-solid fa-eye"></i></button></div></div>
-            <button type="submit" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md">Access FinTrack <i class="fa-solid fa-arrow-right ml-1"></i></button>
+<div id="finpinLockScreen" class="auth-screen active p-6 space-y-4">
+        <div id="finpinQuickArea" class="space-y-4">
+          <h2 class="text-lg font-bold text-slate-800 text-center">Quick Unlock</h2>
+          <div class="flex justify-center gap-2 sm:gap-3" id="finpinLockInputs">
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="0">
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="1">
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="2">
+            <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="3">
           </div>
-          <div class="flex items-center justify-between text-xs"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="rememberMe" class="rounded text-indigo-600 w-4 h-4"><span class="text-slate-600 font-medium">Remember Me</span></label><button type="button" onclick="showAuthScreen('forgotScreen')" class="text-indigo-600 font-semibold">Forgot Password?</button></div>
-          <div class="text-center"><button type="button" onclick="ftFinpinForgot()" class="text-indigo-600 font-semibold text-xs">Forgot FinPIN?</button></div>
-          <div class="text-center pt-2 border-t border-slate-100"><p class="text-xs text-slate-500">Don't have an account? <button type="button" onclick="showAuthScreen('createScreen')" class="text-indigo-600 font-bold">Create Account</button></p></div>
+          <button id="finpinUnlockButton" type="button" onclick="ftUnlockWithFinpin()" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md transition-all">Unlock FinTrack <i class="fa-solid fa-unlock ml-1"></i></button>
+          <div class="text-center"><button type="button" onclick="ftFinpinForgot()" class="text-indigo-600 hover:text-indigo-700 font-semibold text-xs">Forgot FinPIN?</button></div>
+        </div>
+        <p id="finpinLockError" role="alert" class="text-center text-xs text-red-500 font-semibold hidden"></p>
+        <form id="loginForm" class="hidden" onsubmit="handleLogin(event)">
+          <div id="finpinPasswordFields" class="hidden space-y-4">
+            <div><label for="loginId" class="block text-xs font-bold text-slate-600 uppercase mb-1">Email ID / User ID</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-envelope"></i></span><input type="text" id="loginId" required autocomplete="username" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your Email ID (or old User ID)"></div></div>
+            <div><label for="loginPass" class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span><input type="password" id="loginPass" required autocomplete="current-password" class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your password"><button type="button" onclick="toggleLoginPass(this)" aria-label="Show or hide password" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-eye"></i></button></div></div>
+            <div class="flex items-center justify-between text-xs"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="rememberMe" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-slate-600 font-medium">Remember Me</span></label><button type="button" onclick="showAuthScreen('forgotScreen')" class="text-indigo-600 hover:text-indigo-700 font-semibold">Forgot Password?</button></div>
+            <button type="submit" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md transition-all">Access FinTrack <i class="fa-solid fa-arrow-right ml-1"></i></button>
+          </div>
         </form>
-      </div>
-      <div id="createScreen" class="auth-screen p-6 space-y-4">
+        <button id="finpinPasswordToggle" type="button" onclick="ftTogglePasswordLogin()" aria-expanded="false" aria-controls="finpinPasswordFields finpinQuickArea" class="w-full py-2.5 bg-violet-50 hover:bg-violet-100 text-violet-700 font-bold rounded-lg border border-violet-200 transition-all text-sm">Log in with Password</button>
+        <div class="text-center pt-2 border-t border-slate-100"><p class="text-xs text-slate-500">Don't have an account? <button type="button" onclick="showAuthScreen('createScreen')" class="text-indigo-600 hover:text-indigo-700 font-bold">Create Account</button></p></div>
+      </div>      <div id="createScreen" class="auth-screen p-6 space-y-4">
         <form id="createForm" class="space-y-4" onsubmit="handleCreateAccount(event)">
           <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Full Name</label><input type="text" id="createName" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your name"></div>
           <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email ID</label><input type="email" id="createEmail" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your email (this is your User ID)"></div><div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Mobile Number</label><div class="flex gap-2"><select id="createCountryCode" class="w-32 px-2 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 font-bold text-sm outline-none"><option value="+91">+91 (India)</option><option value="+966">+966 (KSA)</option><option value="+971">+971 (UAE)</option><option value="+973">+973 (Bahrain)</option><option value="+968">+968 (Oman)</option><option value="+974">+974 (Qatar)</option><option value="+965">+965 (Kuwait)</option><option value="+998">+998 (Uzbekistan)</option><option value="+1">+1 (USA)</option><option value="+44">+44 (UK)</option><option value="+1">+1 (Canada)</option><option value="+61">+61 (Australia)</option></select><input type="tel" id="createMobile" required class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Mobile number"></div></div>
@@ -646,8 +642,14 @@ window.ftTogglePasswordLogin = function(open) {
   var fields = document.getElementById('finpinPasswordFields');
   var expanded = typeof open === 'boolean' ? open : fields.classList.contains('hidden');
   fields.classList.toggle('hidden', !expanded);
-  document.getElementById('finpinPasswordToggle').setAttribute('aria-expanded', String(expanded));
-  if (expanded) document.getElementById('loginId').focus();
+  document.getElementById('loginForm').classList.toggle('hidden', !expanded);
+  document.getElementById('finpinQuickArea').classList.toggle('hidden', expanded);
+  var toggle = document.getElementById('finpinPasswordToggle');
+  toggle.setAttribute('aria-expanded', String(expanded));
+  toggle.textContent = expanded ? 'Quick Unlock with FinPIN' : 'Log in with Password';
+  if (typeof open !== 'boolean') document.getElementById('finpinLockError').classList.add('hidden');
+  var focusTarget = expanded ? document.getElementById('loginId') : document.querySelector('input[data-finpin-lock="0"]');
+  if (focusTarget && focusTarget.getClientRects().length) focusTarget.focus();
 };
 window.handleLogin = async function(e) {
   e.preventDefault();
