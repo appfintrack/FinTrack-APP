@@ -227,7 +227,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
 
   <!-- AUTH SCREENS -->
-  <div id="authContainer" class="hidden fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center z-50 p-4">
+  <div id="authContainer" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
       <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#182736] via-[#394758] to-[#182736] p-10 text-white flex-1">
         <div class="mb-6">
@@ -260,23 +260,12 @@ button:active, .ft-qa:active { transform:scale(.96); }
           <h1 class="text-2xl font-black tracking-wider uppercase">FinTrack</h1>
           <p class="text-xs text-[#EE5133] font-semibold tracking-widest mt-1 uppercase">Financial Planning & Portfolio</p>
         </div>
-      <div id="loginScreen" class="auth-screen active p-6 space-y-4">
-        <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
-          <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email ID</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-envelope"></i></span><input type="text" id="loginId" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your Email ID (or old User ID)"></div></div>
-          <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span><input type="password" id="loginPass" required class="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your password"><button type="button" onclick="toggleLoginPass(this)" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-eye"></i></button></div></div>
-          <div class="flex items-center justify-between text-xs"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="rememberMe" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-slate-600 font-medium">Remember Me</span></label><button type="button" onclick="showAuthScreen('forgotScreen')" class="text-indigo-600 hover:text-indigo-700 font-semibold">Forgot Password?</button></div>
-          <button type="button" onclick="ftFinpinQuickLogin()" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-shield-halved"></i> Quick Unlock with FinPIN</button>
-          <div class="flex items-center gap-2 text-[10px] text-slate-400 my-1"><span class="flex-1 h-px bg-slate-200"></span><span class="font-bold uppercase tracking-wider">or use password</span><span class="flex-1 h-px bg-slate-200"></span></div>
-          <button type="submit" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md transition-all">Access FinTrack <i class="fa-solid fa-arrow-right ml-1"></i></button>
-          <div class="text-center pt-2 border-t border-slate-100"><p class="text-xs text-slate-500">Don't have an account? <button type="button" onclick="showAuthScreen('createScreen')" class="text-indigo-600 hover:text-indigo-700 font-bold">Create Account</button></p></div>
-        </form>
-      </div>
-      <div id="finpinLockScreen" class="auth-screen p-6 space-y-4">
+      <div id="finpinLockScreen" class="auth-screen active p-6 space-y-4">
         <div class="text-center space-y-2">
           <div class="w-16 h-16 mx-auto bg-violet-100 rounded-full flex items-center justify-center"><i class="fa-solid fa-shield-halved text-3xl text-violet-600"></i></div>
-          <p class="text-[10px] font-black text-violet-600 uppercase tracking-[0.25em]">Quick Login</p>
-          <h2 class="text-2xl font-black text-slate-800">Unlock with PIN</h2>
-          <p class="text-xs text-slate-500">Enter your 4-digit FinPIN to continue</p>
+          <p class="text-xs font-bold text-violet-600 uppercase tracking-wide">Quick Login</p>
+          <h2 class="text-xl font-black text-slate-800 uppercase tracking-wide">Unlock with FinPIN</h2>
+          <p class="text-xs text-slate-500">Enter your 4-digit FinPIN to unlock FinTrack</p>
         </div>
         <div class="flex justify-center space-x-3" id="finpinLockInputs">
           <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="0">
@@ -285,27 +274,18 @@ button:active, .ft-qa:active { transform:scale(.96); }
           <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-14 h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="3">
         </div>
         <p id="finpinLockError" class="text-center text-xs text-red-500 font-semibold hidden"></p>
-        <div id="finpinLockDisabled" class="hidden text-center text-xs text-red-600 font-semibold bg-red-50 border border-red-200 rounded-xl p-3">Too many incorrect attempts. Please log in with your User ID and password.</div>
-        <button id="finpinUnlockBtn" type="button" onclick="ftUnlockWithFinpin()" class="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-lg shadow-md transition-all">Unlock <i class="fa-solid fa-unlock ml-1"></i></button>
-        <div class="text-center pt-3 border-t border-slate-100">
-          <button type="button" onclick="ftOpenLoginModal()" class="text-indigo-600 hover:text-indigo-700 font-semibold text-sm flex items-center justify-center gap-2 w-full"><i class="fa-solid fa-right-to-bracket text-xs"></i> Log in with User ID and Password</button>
-        </div>
-      </div>
-      <div id="finpinLoginModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="ftCloseLoginModal()"></div>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-base font-black text-slate-800">Log in with User ID and Password</h3>
-            <button type="button" onclick="ftCloseLoginModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark"></i></button>
+        <button id="finpinUnlockButton" type="button" onclick="ftUnlockWithFinpin()" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md">Unlock FinTrack <i class="fa-solid fa-unlock ml-1"></i></button>
+        <button id="finpinPasswordToggle" type="button" onclick="ftTogglePasswordLogin()" aria-expanded="false" aria-controls="finpinPasswordFields" class="w-full py-2.5 border border-slate-200 rounded-lg text-indigo-600 font-semibold text-sm">Log in with Password <span aria-hidden="true">⌄</span></button>
+        <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+          <div id="finpinPasswordFields" class="hidden space-y-4">
+            <div><label for="loginId" class="block text-xs font-bold text-slate-600 uppercase mb-1">Email or User ID</label><input type="text" id="loginId" required autocomplete="username" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 text-sm" placeholder="Enter your Email ID (or old User ID)"></div>
+            <div><label for="loginPass" class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label><div class="relative"><input type="password" id="loginPass" required autocomplete="current-password" class="w-full pl-4 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 text-sm" placeholder="Enter your password"><button type="button" onclick="toggleLoginPass(this)" aria-label="Show or hide password" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400"><i class="fa-solid fa-eye"></i></button></div></div>
+            <button type="submit" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md">Access FinTrack <i class="fa-solid fa-arrow-right ml-1"></i></button>
           </div>
-          <form id="modalLoginForm" class="space-y-3" onsubmit="ftModalLogin(event)">
-            <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Email ID</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-envelope"></i></span><input type="text" id="modalLoginId" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your Email ID (or old User ID)"></div></div>
-            <div><label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label><div class="relative"><span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400"><i class="fa-solid fa-lock"></i></span><input type="password" id="modalLoginPass" required class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-sm" placeholder="Enter your password"></div></div>
-            <div class="flex items-center text-xs"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="modalRememberMe" class="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"><span class="text-slate-600 font-medium">Remember Me</span></label></div>
-            <button type="submit" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md transition-all">Log In <i class="fa-solid fa-arrow-right ml-1"></i></button>
-          </form>
-          <div class="text-center pt-2 border-t border-slate-100"><button type="button" onclick="ftCloseLoginModal(); ftFinpinForgot()" class="text-xs text-slate-500 hover:text-slate-700 font-semibold">Forgot FinPIN?</button></div>
-        </div>
+          <div class="flex items-center justify-between text-xs"><label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="rememberMe" class="rounded text-indigo-600 w-4 h-4"><span class="text-slate-600 font-medium">Remember Me</span></label><button type="button" onclick="showAuthScreen('forgotScreen')" class="text-indigo-600 font-semibold">Forgot Password?</button></div>
+          <div class="text-center"><button type="button" onclick="ftFinpinForgot()" class="text-indigo-600 font-semibold text-xs">Forgot FinPIN?</button></div>
+          <div class="text-center pt-2 border-t border-slate-100"><p class="text-xs text-slate-500">Don't have an account? <button type="button" onclick="showAuthScreen('createScreen')" class="text-indigo-600 font-bold">Create Account</button></p></div>
+        </form>
       </div>
       <div id="createScreen" class="auth-screen p-6 space-y-4">
         <form id="createForm" class="space-y-4" onsubmit="handleCreateAccount(event)">
@@ -661,7 +641,14 @@ window.ftRenderAdminPanel = function(){ var p=document.getElementById('ftAdminPa
 window.reorderOverviewSections = function() { if (typeof window.ftApplyStructure === 'function') window.ftApplyStructure(); const overview = document.getElementById("sec-overview"); if (!overview) return; const greeting = document.getElementById("overviewGreeting"); const caption = document.getElementById("homeCaption"); const summaryGrid = document.getElementById("overviewSummaryGrid"); const individual = document.getElementById("individualSummarySection");  const trend = document.getElementById("overviewTrendWrap"); const flowSummary = document.getElementById("monthlyFlowSummary"); const ftQA = document.getElementById("ftQuickActions"); const ftRA = document.getElementById("ftRecentActivity"); const ftAdmin = document.getElementById("ftAdminPanel"); [greeting, caption, summaryGrid, flowSummary, ftQA, ftRA, individual, trend, ftAdmin].forEach(function(el){ if (el) overview.appendChild(el); }); if (typeof window.renderOverviewTrend === 'function') window.renderOverviewTrend(); };
 const FINTRACK_SVG_LOGO = `<svg width="40" height="40" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="ftGradDyn" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FCD34D"/><stop offset="100%" stop-color="#D97706"/></linearGradient></defs><path d="M36 4C20 4 8 14 8 28C8 44 20 56 36 64C52 56 64 44 64 28C64 14 52 4 36 4Z" fill="url(#ftGradDyn)" stroke="#B8860B" stroke-width="1.5"/><text x="36" y="34" text-anchor="middle" fill="#1E293B" font-size="22" font-weight="900" font-family="sans-serif">FT</text><polyline points="18,50 28,42 38,46 54,30" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><polygon points="54,30 50,28 52,34" fill="#1E293B"/></svg>`;
 window.FINTRACK_SVG_LOGO = FINTRACK_SVG_LOGO;
-window.showAuthScreen = function(screenId) { document.querySelectorAll('.auth-screen').forEach(el => el.classList.remove('active')); document.getElementById(screenId).classList.add('active'); };
+window.showAuthScreen = function(screenId) { if (screenId === 'loginScreen') { screenId = 'finpinLockScreen'; ftTogglePasswordLogin(false); ftClearFinpinInputs('data-finpin-lock'); } document.querySelectorAll('.auth-screen').forEach(el => el.classList.remove('active')); document.getElementById(screenId).classList.add('active'); };
+window.ftTogglePasswordLogin = function(open) {
+  var fields = document.getElementById('finpinPasswordFields');
+  var expanded = typeof open === 'boolean' ? open : fields.classList.contains('hidden');
+  fields.classList.toggle('hidden', !expanded);
+  document.getElementById('finpinPasswordToggle').setAttribute('aria-expanded', String(expanded));
+  if (expanded) document.getElementById('loginId').focus();
+};
 window.handleLogin = async function(e) {
   e.preventDefault();
   const loginId = document.getElementById('loginId').value.trim();
@@ -671,7 +658,7 @@ window.handleLogin = async function(e) {
     let fbUser = null;
     try {
       window._ftManualLogin = true;
-      await setPersistence(auth, browserSessionPersistence);
+      await setPersistence(auth, document.getElementById('rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
       const cred = await signInWithEmailAndPassword(auth, loginId.toLowerCase(), password); fbUser = cred.user;
     } catch(ferr) { /* maybe legacy */ }
     if (fbUser) {
@@ -686,7 +673,10 @@ window.handleLogin = async function(e) {
       var _ftIsDormant = false;
       if (prof.lastLogin) { var _ftDays = (Date.now() - new Date(prof.lastLogin).getTime()) / 86400000; if (_ftDays >= 7) _ftIsDormant = true; }
       await update(ref(db, 'users/' + fbUser.uid), { lastLogin: new Date().toISOString(), lastPlatform: (function(){ var ua = (navigator.userAgent || '').toLowerCase(); if (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('mobile') > -1) return 'mobile'; return 'web'; })() });
-      if (document.getElementById('rememberMe').checked) { localStorage.setItem('fintrack_remember_email', loginId); localStorage.setItem('fintrack_remember_pass', password); } else { localStorage.removeItem('fintrack_remember_email'); localStorage.removeItem('fintrack_remember_pass'); }
+      localStorage.removeItem('fintrack_remember_pass');
+      if (document.getElementById('rememberMe').checked) { localStorage.setItem('fintrack_remember_email', loginId); } else { localStorage.removeItem('fintrack_remember_email'); }
+      sessionStorage.removeItem('fintrack_pin_attempts_' + fbUser.uid);
+      window._ftFinpinPendingUser = null;
       if (prof.finpin && !window._ftFinpinForgotFlow && window._ftFinpinQuickLogin) {
         window._ftFinpinPendingUser = { uid: fbUser.uid, dataKey: dataKey, isDormant: _ftIsDormant };
         window._ftManualLogin = false;
@@ -694,7 +684,7 @@ window.handleLogin = async function(e) {
         return;
       }
       if (window._ftFinpinForgotFlow) {
-        try { await update(ref(db, 'users/' + fbUser.uid), { finpin: null }); localStorage.removeItem('fintrack_finpin_enabled'); } catch(e) {}
+        await update(ref(db, 'users/' + fbUser.uid), { finpin: null });
         window._ftFinpinForgotFlow = false;
       }
       if (window._ftFinpinQuickLogin && !prof.finpin) {
@@ -714,7 +704,7 @@ window.handleLogin = async function(e) {
       return;
     }
     const isEmail = loginId.includes('@');
-    if (isEmail) { if (!window._ftFinpinQuickLogin) { alert('Incorrect email or password. Please try again, or use Forgot Password.'); } else { window._ftFinpinQuickLogin = false; window._ftFinpinAutoQuick = false; } return; }
+    if (isEmail) { alert('Incorrect email or password. Please try again, or use Forgot Password.'); return; }
     const snapshot = await get(ref(db, 'users/' + loginId));
     const legacyUser = snapshot.val();
     if (!legacyUser) { alert('User not found. Please check your Email ID / User ID or create a new account.'); return; }
@@ -814,7 +804,9 @@ window.handleLogout = async function() {
   state.rates = { ...DEFAULT_RATES }; state.displayCurrency = 'INR'; state.banks = []; state.debts = []; state.gold = []; state.sips = []; state.expenses = {}; state.settlements = {}; state.transfers = []; state.friends = []; state.friendSplits = {}; state.friendLedger = []; state.sharedSplits = []; state.sharedSettlements = []; state.settings = { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio', theme: 'default' };
   document.getElementById('loginId').value = ''; document.getElementById('loginPass').value = '';
   const rem = localStorage.getItem('fintrack_remember_email'); if (rem) document.getElementById('loginId').value = rem;
-  const remPass = localStorage.getItem('fintrack_remember_pass'); if (remPass) { document.getElementById('loginPass').value = remPass; const cb = document.getElementById('rememberMe'); if (cb) cb.checked = true; }
+  localStorage.removeItem('fintrack_remember_pass');
+  window._ftFinpinForgotFlow = false;
+  window._ftFinpinPendingUser = null;
   document.getElementById('appContainer').classList.add('hidden');
   document.getElementById('authContainer').classList.remove('hidden');
   showAuthScreen('loginScreen');
@@ -832,85 +824,81 @@ function ftHashFinpin(pin) {
   return 'fp_' + (hash >>> 0).toString(36);
 }
 
+async function ftDeriveFinpin(pin, uid, salt) {
+  var key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveBits']);
+  var bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: new TextEncoder().encode(uid + ':' + salt), iterations: 120000 }, key, 256);
+  return Array.from(new Uint8Array(bits)).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+}
+async function ftCreateFinpinHash(pin, uid) {
+  var salt = Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+  return 'pbkdf2$' + salt + '$' + await ftDeriveFinpin(pin, uid, salt);
+}
 function ftReadFinpinInputs(attr) {
-  var inputs = document.querySelectorAll('input[' + attr + ']');
-  var pin = '';
-  inputs.forEach(function(i) { pin += i.value; });
-  return pin;
+  return Array.from(document.querySelectorAll('input[' + attr + ']')).map(function(i) { return i.dataset.finpinDigit || ''; }).join('');
 }
-
 function ftClearFinpinInputs(attr) {
-  document.querySelectorAll('input[' + attr + ']').forEach(function(i) { i.value = ''; });
+  document.querySelectorAll('input[' + attr + ']').forEach(function(i) { clearTimeout(i._finpinMaskTimer); i.dataset.finpinDigit = ''; i.value = ''; });
   var first = document.querySelector('input[' + attr + '="0"]');
-  if (first) first.focus();
+  if (first && first.getClientRects().length) first.focus();
 }
-
 function ftSetupFinpinInputs(attr, onComplete) {
-  var inputs = document.querySelectorAll('input[' + attr + ']');
+  var inputs = Array.from(document.querySelectorAll('input[' + attr + ']'));
   inputs.forEach(function(input, idx) {
+    input.setAttribute('aria-label', 'FinPIN digit ' + (idx + 1)); input.autocomplete = 'off'; input._finpinComplete = onComplete;
+    if (input._finpinBound) return; input._finpinBound = true;
     input.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-      if (this.value && idx < inputs.length - 1) {
-        inputs[idx + 1].focus();
-      }
-      if (onComplete && idx === inputs.length - 1 && Array.from(inputs).every(function(i) { return i.value; })) {
-        onComplete();
+      var digit = this.value.replace(/[^0-9]/g, '').slice(-1); this.dataset.finpinDigit = digit; this.value = digit; clearTimeout(this._finpinMaskTimer);
+      inputs.forEach(function(other) { if (other !== input && other.dataset.finpinDigit) other.value = '●'; });
+      if (digit) {
+        this._finpinMaskTimer = setTimeout(function() { if (input.dataset.finpinDigit) input.value = '●'; }, 700);
+        if (idx < inputs.length - 1) inputs[idx + 1].focus();
+        if (inputs.every(function(i) { return i.dataset.finpinDigit; }) && this._finpinComplete) this._finpinComplete();
       }
     });
+    input.addEventListener('focus', function() { this.select(); });
     input.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace' && !this.value && idx > 0) {
-        inputs[idx - 1].focus();
-      }
+      if (e.key === 'Backspace') { e.preventDefault(); var target = this.dataset.finpinDigit ? this : inputs[Math.max(0, idx - 1)]; clearTimeout(target._finpinMaskTimer); target.dataset.finpinDigit = ''; target.value = ''; target.focus(); }
+      else if (e.key === 'Enter') { e.preventDefault(); if (this._finpinComplete) this._finpinComplete(); }
     });
   });
 }
-
 window.ftShowFinpinLock = function() {
-  document.getElementById('authContainer').classList.remove('hidden');
-  if (typeof ftCloseLoginModal === 'function') ftCloseLoginModal();
-  showAuthScreen('finpinLockScreen');
-  ftClearFinpinInputs('data-finpin-lock');
-  var errEl = document.getElementById('finpinLockError');
-  if (errEl) errEl.classList.add('hidden');
-  setTimeout(function() { ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); }, 100);
+  document.getElementById('authContainer').classList.remove('hidden'); showAuthScreen('finpinLockScreen'); ftTogglePasswordLogin(false);
+  ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); ftClearFinpinInputs('data-finpin-lock'); document.getElementById('finpinLockError').classList.add('hidden');
 };
-
 window.ftUnlockWithFinpin = async function() {
-  var pin = ftReadFinpinInputs('data-finpin-lock');
-  var errEl = document.getElementById('finpinLockError');
-  if (pin.length !== 4) {
-    if (errEl) { errEl.textContent = 'Please enter all 4 digits'; errEl.classList.remove('hidden'); }
-    return;
+  if (window._ftFinpinUnlockBusy) return;
+  var pin = ftReadFinpinInputs('data-finpin-lock'); var errEl = document.getElementById('finpinLockError');
+  function message(text) { errEl.textContent = text; errEl.classList.remove('hidden'); }
+  if (!/^\d{4}$/.test(pin)) { message('Please enter all 4 digits.'); return; }
+  if (!currentUser || !auth.currentUser || auth.currentUser.uid !== currentUser.uid) {
+    message('Sign in with your password on this device first. Remember Me keeps your account session available for future PIN unlocks.');
+    ftClearFinpinInputs('data-finpin-lock'); ftTogglePasswordLogin(true); return;
   }
+  var uid = currentUser.uid; var attemptKey = 'fintrack_pin_attempts_' + uid; var attempts = Number(sessionStorage.getItem(attemptKey) || 0);
+  if (attempts >= 5) { message('Five incorrect attempts. Log in with your account password to continue.'); ftTogglePasswordLogin(true); return; }
+  window._ftFinpinUnlockBusy = true; var button = document.getElementById('finpinUnlockButton'); button.disabled = true; var label = button.innerHTML; button.textContent = 'Verifying…';
   try {
-    if (!currentUser || !currentUser.uid) {
-      if (errEl) { errEl.textContent = 'Please sign in with your password once to enable PIN unlock.'; errEl.classList.remove('hidden'); }
-      ftClearFinpinInputs('data-finpin-lock');
-      ftOpenLoginModal();
-      return;
-    }
-    var profSnap = await get(ref(db, 'users/' + currentUser.uid));
-    var prof = profSnap.val() || {};
-    if (prof.finpin === ftHashFinpin(pin)) {
-      if (errEl) errEl.classList.add('hidden');
-      ftFinpinUnlockSuccess();
+    var prof = (await get(ref(db, 'users/' + uid))).val() || {};
+    if (!prof.finpin) { message('No FinPIN is set. Log in with your password, then set FinPIN in Settings → Security.'); ftTogglePasswordLogin(true); return; }
+    var stored = String(prof.finpin); var parts = stored.split('$');
+    var valid = parts[0] === 'pbkdf2' && parts.length === 3 ? (await ftDeriveFinpin(pin, uid, parts[1])) === parts[2] : stored === ftHashFinpin(pin);
+    if (!auth.currentUser || auth.currentUser.uid !== uid || !currentUser || currentUser.uid !== uid) return;
+    if (valid) {
+      if (parts[0] !== 'pbkdf2') await update(ref(db, 'users/' + uid), { finpin: await ftCreateFinpinHash(pin, uid) });
+      sessionStorage.removeItem(attemptKey); window._ftFinpinForgotFlow = false; errEl.classList.add('hidden'); ftClearFinpinInputs('data-finpin-lock'); ftFinpinUnlockSuccess();
     } else {
-      window.ftFinpinAttempts = (window.ftFinpinAttempts || 0) + 1;
-      var left = 5 - window.ftFinpinAttempts;
-      if (left <= 0) { ftFinpinLockDisabled(); }
-      else if (errEl) { errEl.textContent = 'Incorrect FinPIN. ' + left + ' attempt' + (left === 1 ? '' : 's') + ' remaining.'; errEl.classList.remove('hidden'); }
-      ftClearFinpinInputs('data-finpin-lock');
+      attempts += 1; sessionStorage.setItem(attemptKey, String(attempts));
+      message(attempts >= 5 ? 'Five incorrect attempts. Log in with your account password to continue.' : 'Incorrect FinPIN. ' + (5 - attempts) + ' attempts remaining.');
+      ftClearFinpinInputs('data-finpin-lock'); if (attempts >= 5) ftTogglePasswordLogin(true);
     }
-  } catch(e) {
-    console.error('FinPIN unlock error:', e);
-    if (errEl) { errEl.textContent = 'Error verifying FinPIN. Please try again.'; errEl.classList.remove('hidden'); }
-  }
+  } catch(e) { message('Unable to verify FinPIN. Please try again.'); }
+  finally { window._ftFinpinUnlockBusy = false; button.disabled = false; button.innerHTML = label; }
 };
 
 window.ftFinpinUnlockSuccess = function() {
   var pending = window._ftFinpinPendingUser;
   if (!pending) return;
-  window.ftFinpinAttempts = 0;
   document.getElementById('authContainer').classList.add('hidden');
   document.getElementById('appContainer').classList.remove('hidden');
   if (currentUser && currentUser.name) {
@@ -927,61 +915,17 @@ window.ftFinpinUnlockSuccess = function() {
 
 window.ftFinpinForgot = function() {
   window._ftFinpinForgotFlow = true;
-  signOut(auth).catch(function(){});
-  currentUser = null;
-  window.currentUser = null;
-  window._ftFinpinPendingUser = null;
+  ftClearFinpinInputs('data-finpin-lock');
+  showAuthScreen('finpinLockScreen');
+  ftTogglePasswordLogin(true);
   var errEl = document.getElementById('finpinLockError');
-  if (errEl) errEl.classList.add('hidden');
-  showAuthScreen('loginScreen');
+  errEl.textContent = 'Log in with your full account password. Your FinPIN will be cleared only after successful login.';
+  errEl.classList.remove('hidden');
 };
-
-window.ftOpenLoginModal = function() {
-  var m = document.getElementById('finpinLoginModal');
-  if (m) { m.classList.remove('hidden'); var f = document.getElementById('modalLoginId'); if (f) setTimeout(function(){ f.focus(); }, 120); }
-};
-window.ftCloseLoginModal = function() {
-  var m = document.getElementById('finpinLoginModal');
-  if (m) m.classList.add('hidden');
-};
-window.ftModalLogin = function(e) {
-  e.preventDefault();
-  var idEl = document.getElementById('modalLoginId');
-  var passEl = document.getElementById('modalLoginPass');
-  var remEl = document.getElementById('modalRememberMe');
-  document.getElementById('loginId').value = idEl ? idEl.value : '';
-  document.getElementById('loginPass').value = passEl ? passEl.value : '';
-  var rem = document.getElementById('rememberMe');
-  if (rem && remEl) rem.checked = remEl.checked;
-  ftCloseLoginModal();
-  handleLogin(e);
-};
-window.ftFinpinLockDisabled = function() {
-  var errEl = document.getElementById('finpinLockError');
-  if (errEl) errEl.classList.add('hidden');
-  var inputs = document.getElementById('finpinLockInputs');
-  if (inputs) inputs.classList.add('hidden');
-  var btn = document.getElementById('finpinUnlockBtn');
-  if (btn) btn.classList.add('hidden');
-  var msg = document.getElementById('finpinLockDisabled');
-  if (msg) msg.classList.remove('hidden');
-  ftOpenLoginModal();
-};
-
-window.ftFinpinQuickLogin = async function() {
-  var savedEmail = localStorage.getItem('fintrack_remember_email');
-  var savedPass = localStorage.getItem('fintrack_remember_pass');
-  if (!savedEmail || !savedPass) {
-    alert('No saved credentials found. Please login with your Email ID and Password first, then set up FinPIN in Settings.');
-    return;
-  }
-  document.getElementById('loginId').value = savedEmail;
-  document.getElementById('loginPass').value = savedPass;
-  window._ftFinpinQuickLogin = true;
-  handleLogin({ preventDefault: function(){} });
-};
+window.ftFinpinQuickLogin = function() { ftShowFinpinLock(); };
 
 window.ftOpenFinpinSetup = function() {
+  window._ftFinpinVerifiedUid = null;
   document.getElementById('modalFinpinSetup').classList.remove('hidden');
   ftShowFinpinStep(1);
   document.getElementById('finpinVerifyPass').value = '';
@@ -994,6 +938,7 @@ window.ftCloseFinpinSetup = function() {
   ftClearFinpinInputs('data-finpin-setup');
   ftClearFinpinInputs('data-finpin-confirm');
   window._ftFinpinTempPin = null;
+  window._ftFinpinVerifiedUid = null;
 };
 
 function ftShowFinpinStep(step) {
@@ -1014,8 +959,12 @@ window.ftVerifyPasswordForFinpin = async function() {
     return;
   }
   try {
-    var cred = await signInWithEmailAndPassword(auth, currentUser.email.toLowerCase(), pass);
-    if (cred.user) {
+    var user = auth.currentUser;
+    if (!user || user.uid !== currentUser.uid) throw new Error('Session expired');
+    await user.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(user.email, pass));
+    window._ftFinpinVerifiedUid = user.uid;
+    document.getElementById('finpinVerifyPass').value = '';
+    if (user) {
       if (errEl) errEl.classList.add('hidden');
       ftShowFinpinStep(2);
       ftClearFinpinInputs('data-finpin-setup');
@@ -1047,8 +996,10 @@ window.ftSaveFinpin = async function() {
     return;
   }
   try {
-    await update(ref(db, 'users/' + currentUser.uid), { finpin: ftHashFinpin(pin) });
-    localStorage.setItem('fintrack_finpin_enabled', '1');
+    if (!auth.currentUser || auth.currentUser.uid !== currentUser.uid || window._ftFinpinVerifiedUid !== currentUser.uid) throw new Error('Please verify your password again');
+    var pinHash = await ftCreateFinpinHash(pin, currentUser.uid);
+    await update(ref(db, 'users/' + currentUser.uid), { finpin: pinHash });
+    sessionStorage.removeItem('fintrack_pin_attempts_' + currentUser.uid);
     ftCloseFinpinSetup();
     window._ftFinpinTempPin = null;
     ftUpdateFinpinStatus();
@@ -1299,13 +1250,12 @@ onAuthStateChanged(auth, async (fbUser) => {
       if (prof.lastLogin) { var _ftDays = (Date.now() - new Date(prof.lastLogin).getTime()) / 86400000; if (_ftDays >= 7) _ftIsDormant = true; }
       await set(ref(db, 'users/' + fbUser.uid + '/lastLogin'), new Date().toISOString());
       if (prof.finpin && !window._ftFinpinForgotFlow) {
-        localStorage.setItem('fintrack_finpin_enabled', '1');
         window._ftFinpinPendingUser = { uid: fbUser.uid, dataKey: dataKey, isDormant: _ftIsDormant };
         ftShowFinpinLock();
         return;
       }
       if (window._ftFinpinForgotFlow) {
-        try { await update(ref(db, 'users/' + fbUser.uid), { finpin: null }); localStorage.removeItem('fintrack_finpin_enabled'); } catch(e) {}
+        await update(ref(db, 'users/' + fbUser.uid), { finpin: null });
         window._ftFinpinForgotFlow = false;
       }
       document.getElementById('authContainer').classList.add('hidden');
@@ -2410,7 +2360,7 @@ window.showAllAdminFeedback = function(){ var list=document.getElementById('admi
 window.cleanupExpiredFeedback = async function(){ try{ var snap=await get(ref(db, 'publicProfiles')); var all=snap.val()||{}; var now=Date.now(); var sixMonthsMs=6*30*24*60*60*1000; Object.keys(all).forEach(function(uid){ var r=(all[uid]&&all[uid].rating)||null; if(r && r.createdAt){ var age=now-new Date(r.createdAt).getTime(); if(age>sixMonthsMs){ set(ref(db, 'publicProfiles/'+uid+'/rating'), null).catch(function(){}); } } }); }catch(e){ console.error('cleanupExpiredFeedback', e); } };
 window.toggleUserBlocked = async function(loginId, blocked) { try { const snap = await get(ref(db, `users/${loginId}`)); if (!snap.exists()) { alert("Account not found."); return; } const user = snap.val(); user.blocked = !blocked; await set(ref(db, `users/${loginId}`), user); loadAdminInfo(); } catch(err) { console.error(err); alert("Could not update this account. Please try again."); } };
 window.deleteUserAccount = async function(loginId) { try { const snap = await get(ref(db, `users/${loginId}`)); const u = snap.exists() ? snap.val() : {}; const _dispName = u.name || u.email || loginId; const _dispEmail = u.email || '(no email on file)'; if (!window.__ftok) { ftConfirm('Permanently delete account "' + _dispName + '" (' + _dispEmail + ') and ALL of its data? This cannot be undone.', function() { window.__ftok = 1; deleteUserAccount(loginId); }); return; } window.__ftok = 0; await remove(ref(db, `users/${loginId}`)); await remove(ref(db, `userData/${loginId}`)); await remove(ref(db, `publicProfiles/${loginId}`)); if (u.legacyLoginId && u.legacyLoginId !== loginId) { await remove(ref(db, `userData/${u.legacyLoginId}`)); await remove(ref(db, `users/${u.legacyLoginId}`)); } loadAdminInfo(); } catch(err) { console.error(err); alert("Could not delete this account. Please try again."); } };
-window.addEventListener('DOMContentLoaded', () => { const rem = localStorage.getItem('fintrack_remember_email'); if (rem) document.getElementById('loginId').value = rem; const remPass = localStorage.getItem('fintrack_remember_pass'); if (remPass) { document.getElementById('loginPass').value = remPass; const cb = document.getElementById('rememberMe'); if (cb) cb.checked = true; } document.getElementById('authContainer').classList.remove('hidden'); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (localStorage.getItem('fintrack_finpin_enabled') === '1' && typeof window.ftShowFinpinLock === 'function') { window.ftShowFinpinLock(); } if (rem && remPass) { setTimeout(function(){ if (!window.currentUser && typeof window.ftFinpinQuickLogin === 'function') { window._ftFinpinAutoQuick = true; window.ftFinpinQuickLogin(); } }, 500); } });
+window.addEventListener('DOMContentLoaded', () => { const rem = localStorage.getItem('fintrack_remember_email'); if (rem) { document.getElementById('loginId').value = rem; document.getElementById('rememberMe').checked = true; } localStorage.removeItem('fintrack_remember_pass'); ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); if (document.getElementById('appContainer').classList.contains('hidden')) ftShowFinpinLock(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); });
 window.renderProfile = function() { const container = document.getElementById('profileInfoContainer'); if (!container) return; if (!currentUser) { container.innerHTML = '<p class="text-slate-400 text-xs">Not logged in.</p>'; return; } const fullName = currentUser.name || '-'; const userId = currentUser.email || currentUser.loginId || '-'; const mobileStr = (currentUser.countryCode ? currentUser.countryCode + ' ' : '') + (currentUser.mobile || '-'); let joiningDate = currentUser.createdAt || '-'; if (joiningDate && joiningDate !== '-') { try { const d = new Date(joiningDate); joiningDate = d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch(e) {} } container.innerHTML = '<div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Name:</span><span class="font-bold text-slate-800">' + fullName + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">User ID (Email):</span><span class="font-bold text-slate-800">' + userId + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Mobile Number:</span><span class="font-bold text-slate-800">' + mobileStr + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Date of Joining:</span><span class="font-bold text-slate-800">' + joiningDate + '</span></div><div class="flex justify-between"><span class="text-slate-500 font-bold">Subscription Status:</span><span class="font-bold text-slate-800" id="subscriptionStatusValue">' + (typeof window.ftGetSubscriptionStatusLabel==='function' ? window.ftGetSubscriptionStatusLabel() : 'Free') + '</span></div>'; if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); };
   window.openEditMobileModal = function() { if (!currentUser || !currentUser.uid) { alert('Please log in to update your profile.'); return; } document.getElementById('editMobileForm').reset(); if (currentUser.name) document.getElementById('editProfileName').value = (currentUser.name||'').toUpperCase(); if (currentUser.countryCode) document.getElementById('editMobileCountryCode').value = currentUser.countryCode; if (currentUser.mobile) document.getElementById('editMobileNumber').value = currentUser.mobile; document.getElementById('modalEditMobile').classList.remove('hidden'); };
   window.handleSaveMobile = async function(e) { e.preventDefault(); var newName=(document.getElementById('editProfileName').value.trim()||'').toUpperCase(); var newCountryCode=document.getElementById('editMobileCountryCode').value; var newMobile=document.getElementById('editMobileNumber').value.trim(); var password=document.getElementById('editMobilePassword').value; if(!newName){alert('Please enter your name.');return;} if(!currentUser||!currentUser.email){alert('Session expired. Please log in again.');return;} var oldName=(currentUser.name||'').toUpperCase(); var oldCC=currentUser.countryCode||''; var oldMob=currentUser.mobile||''; var oldKey=oldCC+oldMob; var newKey=newCountryCode+newMobile; var nameChanged=newName!==oldName; var mobileChanged=!!newMobile&&(newMobile!==oldMob||newCountryCode!==oldCC); if(!nameChanged&&!mobileChanged){closeModal('modalEditMobile');return;} if(mobileChanged){ if(!password){alert('Please enter your password to change your mobile number.');return;} ftConfirm('WARNING: You are changing your mobile number from '+oldCC+' '+oldMob+' to '+newCountryCode+' '+newMobile+'. All your connections, friend splits, and linked data will be updated to the new mobile number. This action cannot be undone. Do you want to continue?',function(result){ if(!result)return; window._doProfileUpdate(nameChanged,mobileChanged,newName,newCountryCode,newMobile,password,oldKey,newKey); }); } else { window._doProfileUpdate(nameChanged,mobileChanged,newName,newCountryCode,newMobile,'',oldKey,newKey); } }; window._doProfileUpdate = async function(nameChanged,mobileChanged,newName,newCountryCode,newMobile,password,oldKey,newKey){ try{ if(mobileChanged){ var dupSnap=await get(ref(db,'mobileLookup/'+newKey)); if(dupSnap.exists()&&dupSnap.val()!==currentUser.uid){alert('This mobile number is already registered to another user. Please use a different mobile number.');return;} await signInWithEmailAndPassword(auth,currentUser.email,password); } if(nameChanged){ await set(ref(db,'publicProfiles/'+currentUser.uid+'/name'),newName); try{ var myConnSnap=await get(ref(db,'publicProfiles/'+currentUser.uid+'/connections')); var myConns=myConnSnap.val()||{}; var updates={}; for(var otherUid in myConns){updates['publicProfiles/'+otherUid+'/connections/'+currentUser.uid+'/name']=newName;} if(Object.keys(updates).length>0){await update(ref(db),updates);} }catch(e){console.error('Connection name update error:',e);} try{ var splits=(state.sharedSplits||[]); for(var i=0;i<splits.length;i++){ var sp=splits[i]; if(sp&&sp.participants&&Array.isArray(sp.participants)){ var hasMe=sp.participants.some(function(p){return p.uid===currentUser.uid;}); if(hasMe){ var uSp=JSON.parse(JSON.stringify(sp)); uSp.participants=uSp.participants.map(function(p){return p.uid===currentUser.uid?Object.assign({},p,{name:newName}):p;}); await set(ref(db,'sharedSplits/'+sp.id),uSp); sp.participants.forEach(function(p){if(p.uid===currentUser.uid)p.name=newName;}); } } } }catch(e){console.error('Split name update error:',e);} currentUser.name=newName; } if(mobileChanged){ await set(ref(db,'users/'+currentUser.uid+'/mobile'),newMobile); await set(ref(db,'users/'+currentUser.uid+'/countryCode'),newCountryCode); await set(ref(db,'publicProfiles/'+currentUser.uid+'/mobile'),newMobile); await set(ref(db,'publicProfiles/'+currentUser.uid+'/countryCode'),newCountryCode); if(oldKey&&oldKey!==newKey){await remove(ref(db,'mobileLookup/'+oldKey));} await set(ref(db,'mobileLookup/'+newKey),currentUser.uid); currentUser.mobile=newMobile; currentUser.countryCode=newCountryCode; } window.currentUser=currentUser; closeModal('modalEditMobile'); alert('Profile updated successfully!'); renderProfile(); if(typeof renderAll==='function')renderAll(); }catch(err){ console.error('Profile update error:',err); if(err.code==='auth/wrong-password'||err.code==='auth/invalid-credential'){alert('Password verification failed. Please enter your correct current password.');} else{alert('Could not update profile: '+(err.message||'please try again.'));} } };
