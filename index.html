@@ -801,6 +801,14 @@ window.handleLogout = async function() {
   if (sharedUnsubSettle) { sharedUnsubSettle(); sharedUnsubSettle = null; }
   if (connectionUnsub) { connectionUnsub(); connectionUnsub = null; } if (window._ftNotifUnsub) { window._ftNotifUnsub(); window._ftNotifUnsub = null; }
   if(window._ftHhUnsub){window._ftHhUnsub();window._ftHhUnsub=null;}window._ftHhInit=false;window._ftHhSubscriptionKey='';window._ftHhReadyKey='';window._ftHhReady=null;window._ftHhSnapshot=null;window._ftHhSawSelf=false;window._ftBankSaveState=null;window._ftUserSavePromise=null;window._ftIncomingHHPending=[];
+  var _ftHasPin = false;
+  try { if (currentUser && currentUser.uid) { var _ftProfSnap = await get(ref(db, 'users/' + currentUser.uid)); _ftHasPin = !!((_ftProfSnap.val() || {}).finpin); } } catch(e) {}
+  if (_ftHasPin && auth.currentUser) {
+    window._ftFinpinPendingUser = { uid: currentUser.uid, dataKey: currentUser.loginId, isDormant: false };
+    document.getElementById('appContainer').classList.add('hidden');
+    ftShowFinpinLock();
+    return;
+  }
   try { await signOut(auth); } catch(e) {}
   currentUser = null; window.currentUser = null; dataLoaded = false; pendingLegacyUser = null; window.pendingLegacyUser = null; homeCaptionDisplayed = false; window._logoSubscribed = false; window.activeLogoUrl = ''; window._ftIncomingPending = []; window._ftConnections = []; window._lastConnRefresh = 0;
   state.rates = { ...DEFAULT_RATES }; state.displayCurrency = 'INR'; state.banks = []; state.debts = []; state.gold = []; state.sips = []; state.expenses = {}; state.settlements = {}; state.transfers = []; state.friends = []; state.friendSplits = {}; state.friendLedger = []; state.sharedSplits = []; state.sharedSettlements = []; state.settings = { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio', theme: 'default' };
@@ -1001,6 +1009,7 @@ window.ftSaveFinpin = async function() {
     if (!auth.currentUser || auth.currentUser.uid !== currentUser.uid || window._ftFinpinVerifiedUid !== currentUser.uid) throw new Error('Please verify your password again');
     var pinHash = await ftCreateFinpinHash(pin, currentUser.uid);
     await update(ref(db, 'users/' + currentUser.uid), { finpin: pinHash });
+    try { await setPersistence(auth, browserLocalPersistence); } catch(e) {}
     sessionStorage.removeItem('fintrack_pin_attempts_' + currentUser.uid);
     ftCloseFinpinSetup();
     window._ftFinpinTempPin = null;
