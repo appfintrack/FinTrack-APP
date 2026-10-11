@@ -4680,15 +4680,15 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
 <script>
 // Classic script embedded after the standalone FinTrack host; internal Premium plans + Google Play billing hooks.
 // Product IDs below must match the in-app products created in Google Play Console.
-/* global ftToast, document, console, setTimeout, window */
+/* global ftToast, currentUser, db, ref, update, document, console, setTimeout, window */
 (function () {
   var PLANS = [
     { id: 'premium_1m', name: '1 Month Plan', price: '₹49', note: 'Billed monthly' },
-    { id: 'premium_3m', name: '3 Months Plan', price: '₹79', note: 'Save vs monthly' },
-    { id: 'premium_6m', name: '6 Months Plan', price: '₹139', note: 'Save vs monthly' },
+    { id: 'premium_3m', name: '3 Months Plan', price: '₹139', note: 'Save vs monthly' },
+    { id: 'premium_6m', name: '6 Months Plan', price: '₹279', note: 'Save vs monthly' },
     { id: 'premium_1y', name: '1 Year Plan', price: '₹499', note: 'Best value' }
   ];
-  var selected = null, busy = false;
+  var selected = null, busy = false, busyTimer = null;
   window.ftPremiumPlans = PLANS;
 
   function show(message) {
@@ -4734,8 +4734,21 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     if (!bridge) { show('Google Play billing is only available inside the Android app.'); return; }
     busy = true; show('');
     if (btn) { btn.disabled = true; btn.textContent = 'Opening Google Play…'; }
-    try { bridge.purchase(selected); }
-    catch (err) {
+    try {
+      bridge.purchase(selected);
+      // Safety: if the Android side never reports back (user backed out and the
+      // wrapper stays silent), release the UI — the plan is NOT activated.
+      if (busyTimer) clearTimeout(busyTimer);
+      busyTimer = setTimeout(function () {
+        busyTimer = null;
+        if (!busy) return;
+        busy = false;
+        var btn = document.getElementById('ftPremiumSubscribeBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
+        show('Purchase was not completed. You were not charged.');
+      }, 180000);
+      return; // stay busy until ftOnPremiumPurchaseResult fires
+    } catch (err) {
       console.error('Google Play billing failed', err);
       show('Could not start the purchase. Please try again.');
     }
@@ -4743,12 +4756,40 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
   };
 
+  // Plan durations in days, matched to the Google Play subscription period.
+  var PLAN_DAYS = { premium_1m: 30, premium_3m: 90, premium_6m: 180, premium_1y: 365 };
+
+  // Saves the confirmed purchase so the profile's live listener updates days left.
+  function saveSubscription(productId) {
+    var uid = currentUser && currentUser.uid;
+    if (!uid) return;
+    var days = PLAN_DAYS[productId || selected] || 30;
+    var base = Date.now(); // renewals extend from the current expiry, not today
+    var current = window._ftMySubscription;
+    if (current && current.endsAt) {
+      try { var endMs = new Date(current.endsAt).getTime(); if (endMs > base) base = endMs; } catch (e) {}
+    }
+    var subscription = {
+      status: 'active',
+      plan: productId || selected,
+      endsAt: new Date(base + days * 86400000).toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    window._ftMySubscription = subscription;
+    var labelEl = document.getElementById('subscriptionStatusValue');
+    if (labelEl && typeof window.ftGetSubscriptionStatusLabel === 'function') labelEl.innerText = window.ftGetSubscriptionStatusLabel();
+    try { update(ref(db, 'users/' + uid), { subscription: subscription }); }
+    catch (err) { console.error('Could not save subscription', err); }
+  }
+
   // Called by the Android wrapper when the purchase flow finishes.
   window.ftOnPremiumPurchaseResult = function (success, productId) {
+    if (busyTimer) { clearTimeout(busyTimer); busyTimer = null; }
     var btn = document.getElementById('ftPremiumSubscribeBtn');
     if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
     busy = false;
     if (success) {
+      saveSubscription(productId);
       show('Success! ' + (productId || selected) + ' is now active.');
       if (typeof ftToast === 'function') ftToast('FinTrack Premium activated.');
       setTimeout(function () { if (typeof window.ftClosePremiumModal === 'function') window.ftClosePremiumModal(); }, 1200);
