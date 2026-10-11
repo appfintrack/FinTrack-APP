@@ -250,7 +250,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
         </div>
 <div id="finpinLockScreen" class="auth-screen active p-6 space-y-4">
         <div id="finpinQuickArea" class="space-y-4">
-          <h2 class="text-lg font-bold text-slate-800 text-center">Enter Fin Code</h2>
+          <h2 class="text-lg font-bold text-slate-800 text-center">Enter FinPIN</h2>
           <div class="flex justify-center gap-2 sm:gap-3" id="finpinLockInputs">
             <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="0">
             <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="finpin-box w-12 h-14 sm:w-14 sm:h-16 text-center text-2xl font-black bg-slate-50 border-2 border-slate-300 rounded-xl focus:border-violet-500 focus:ring-2 focus:ring-violet-400 outline-none transition-all" data-finpin-lock="1">
@@ -446,7 +446,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
         <section id="sec-profile" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-circle text-indigo-600 mr-2"></i> Profile</h3><p class="text-xs text-slate-500 mt-1">Your account information and mobile number settings.</p></div><div id="profileInfoContainer" class="space-y-3 text-sm"></div><div class="pt-3 border-t border-slate-200"><button onclick="openEditMobileModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-pen mr-1"></i> Update Profile</button></div></div><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-bell text-amber-500 mr-2"></i> Notifications</h3><p class="text-xs text-slate-500 mt-1">Friend requests, new splits and payment reminders — in real time.</p></div><div id="profileNotificationsList" class="space-y-3"></div></div></section>
         <section id="sec-settings" class="tab-content hidden space-y-6">
           <div class="pastel-violet p-5 rounded-2xl border border-violet-200 shadow-sm space-y-4"><div class="border-b border-violet-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-eye text-violet-600 mr-2"></i> Visibility Settings</h3><p class="text-xs text-slate-500 mt-1">Control what is visible on your dashboard and navigation. Disabling a module hides it but does NOT delete its data.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[320px] overflow-y-auto pr-1"><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Liabilities in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Liabilities card. Liability data is preserved.</p></div><input type="checkbox" id="settingShowTotalLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Savings &amp; Gold in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Savings &amp; Gold card. Investment data is preserved.</p></div><input type="checkbox" id="settingShowTotalSavingsGold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Secondary Account on Dashboard</span><p class="text-[10px] text-slate-500 mt-1">When disabled, only Primary Account is shown. Secondary data is preserved.</p></div><input type="checkbox" id="settingShowSecondaryAccount" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Credit Card Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Credit Card section and Credit Card Spend card on the dashboard. Credit card data is preserved.</p></div><input type="checkbox" id="settingShowCreditCard" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Individual Bank & Cash Balance Summary</span><p class="text-[10px] text-slate-500 mt-1">Hides the Individual Balance Summary section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowIndividualSummary" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Monthly Cashbook</span><p class="text-[10px] text-slate-500 mt-1">Hides the Monthly Cashbook section on the dashboard. Cashbook data is preserved.</p></div><input type="checkbox" id="settingShowMonthlyCashbook" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Pending Payments</span><p class="text-[10px] text-slate-500 mt-1">Hides the Pending Payments section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowPendingPayments" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Liability & Debt Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Liability & Debt navigation and section.</p></div><input type="checkbox" id="settingShowLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Gold & SIP Investment Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Gold & SIP navigation and section.</p></div><input type="checkbox" id="settingShowGoldSip" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Bank & Cash Transfer Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Bank & Cash Transfer navigation and section.</p></div><input type="checkbox" id="settingShowTransfers" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Household Settlement Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Household Settlement navigation and section. Data is preserved.</p></div><input type="checkbox" id="settingShowHousehold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Optional Quick Links</span></div><input type="checkbox" id="settingShowOptionalQuickLinks" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label></div><div class="flex justify-end pt-2"><button onclick="saveVisibilitySettings()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">Save Visibility Settings</button></div></div><div class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4"><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-coins text-amber-600 mr-2"></i> Keep Selected Currency Only</h3><p class="text-xs text-slate-500 mt-1">Show only selected currencies in financial areas. Select up to 2 currencies (admin can select all). Leave empty to show all currencies. Currencies follow priority order: <b>INR</b> first, then Gulf (SAR, AED, OMR, QAR, BHD, KWD), then Global (USD, GBP, CAD, AUD, UZS).</p></div><div id="currencyRestrictionContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[180px] overflow-y-auto pr-1"></div><div class="flex justify-end"><button onclick="saveAllowedCurrencies()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Currency Selection</button></div></div>
-          <div id="adminBrandingCard" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4 hidden"><div class="bg-white/80 p-4 rounded-xl border border-amber-200"><h4 class="text-xs font-black text-amber-800 uppercase mb-2"><i class="fa-solid fa-chart-simple mr-1"></i>Registered Users (Live)</h4><div class="grid grid-cols-3 gap-2 text-center"><div><p id="ftAdminTotalUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Total</p></div><div><p id="ftAdminMobileUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Mobile</p></div><div><p id="ftAdminWebUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Web</p></div></div></div><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-palette text-amber-600 mr-2"></i> Admin Branding</h3><p class="text-xs text-slate-500 mt-1">Customize the application logo and tagline. Supports PNG, JPG, or SVG.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Custom Logo (PNG, JPG, or SVG)</label><input type="file" id="adminLogoFile" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)" class="w-full text-xs p-2 border border-amber-200 rounded-lg"><div id="adminLogoPreview" class="mt-2 flex items-center space-x-3"></div><button onclick="removeAdminLogo()" id="removeLogoBtn" class="hidden text-xs text-red-600 hover:text-red-700 font-bold mt-1">Remove Custom Logo</button></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Application Tagline</label><input type="text" id="adminTaglineInput" placeholder="e.g. Financial Planning & Portfolio" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><button onclick="saveAdminTagline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Tagline</button></div></div></div>
+          <div id="adminBrandingCard" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4 hidden"><div class="bg-white/80 p-4 rounded-xl border border-amber-200"><h4 class="text-xs font-black text-amber-800 uppercase mb-2"><i class="fa-solid fa-chart-simple mr-1"></i>Registered & Online Users</h4><div class="grid grid-cols-3 gap-2 text-center"><div><p id="ftAdminTotalUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Registered</p><p id="ftAdminOnlineUsers" class="text-lg font-black text-emerald-700">—</p><p class="text-[10px] font-bold text-slate-500 uppercase">Online now</p></div><div><p id="ftAdminMobileUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Mobile online</p></div><div><p id="ftAdminWebUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Web online</p></div></div><p id="ftLiveUsersStatus" role="status" class="text-xs text-slate-500 mt-2">Connecting to live user activity…</p></div><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-palette text-amber-600 mr-2"></i> Admin Branding</h3><p class="text-xs text-slate-500 mt-1">Customize the application logo and tagline. Supports PNG, JPG, or SVG.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Custom Logo (PNG, JPG, or SVG)</label><input type="file" id="adminLogoFile" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)" class="w-full text-xs p-2 border border-amber-200 rounded-lg"><div id="adminLogoPreview" class="mt-2 flex items-center space-x-3"></div><button onclick="removeAdminLogo()" id="removeLogoBtn" class="hidden text-xs text-red-600 hover:text-red-700 font-bold mt-1">Remove Custom Logo</button></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Application Tagline</label><input type="text" id="adminTaglineInput" placeholder="e.g. Financial Planning & Portfolio" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><button onclick="saveAdminTagline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Tagline</button></div></div></div>
           <div class="pastel-indigo p-5 rounded-2xl border border-indigo-200 shadow-sm space-y-4"><div class="flex items-center justify-between border-b border-indigo-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-building-columns text-indigo-600 mr-2"></i> Currency Account Groups</h3><p class="text-xs text-slate-500">Your accounts are organized by currency, not by country. The first group holds your first selected currency (normally INR). The second group holds your second selected currency. You can add multiple bank accounts under each currency.</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-indigo-200 space-y-2"><label class="block text-xs font-bold text-indigo-700 uppercase">Currency Account Group 1</label><input type="text" id="settingBankType1" placeholder="Account group name" class="w-full p-2 border border-indigo-200 rounded-lg font-bold text-sm"><p class="text-[10px] text-slate-500">The first account group, normally for your INR accounts. Add multiple banks under this currency.</p></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Currency Account Group 2</label><input type="text" id="settingBankType2" placeholder="Account group name" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><p class="text-[10px] text-slate-500">The second account group. If you select SAR it can hold Saudi bank accounts; if AED, UAE bank accounts; and so on.</p></div></div><div class="flex justify-end"><button onclick="saveBankTypes()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow">Save Account Groups</button></div></div>
           
           <div class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-globe text-emerald-600 mr-2"></i> Exchange Rate Management</h3><p class="text-xs text-slate-500">Manage conversion rates to INR. Edit manually or fetch live rates online.</p></div><button onclick="fetchLiveRates()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-rotate mr-1"></i> Fetch Live Rates</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-emerald-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Currency</th><th class="p-3">Country</th><th class="p-3 text-right">Rate to INR</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="ratesTable" class="divide-y divide-emerald-100 font-medium text-slate-700"></tbody></table></div></div>
@@ -635,7 +635,7 @@ window.ftTogglePasswordLogin = function(open) {
   document.getElementById('finpinQuickArea').classList.toggle('hidden', expanded);
   var toggle = document.getElementById('finpinPasswordToggle');
   toggle.setAttribute('aria-expanded', String(expanded));
-  toggle.textContent = expanded ? 'Enter Fin Code' : 'Log in with Password';
+  toggle.textContent = expanded ? 'Enter FinPIN' : 'Log in with Password';
   if (typeof open !== 'boolean') document.getElementById('finpinLockError').classList.add('hidden');
   var focusTarget = expanded ? document.getElementById('loginId') : document.querySelector('input[data-finpin-lock="0"]');
   if (focusTarget && focusTarget.getClientRects().length) focusTarget.focus();
@@ -1040,30 +1040,7 @@ window.ftUpdateFinpinStatus = async function() {
   } catch(e) { statusEl.textContent = 'FinPIN status unavailable.'; statusEl.className = 'text-xs text-slate-500 text-center'; }
 };
 
-// App resume lock — visibilitychange (locks only on real backgrounding; in-app overlays such as pickers, PDF viewers and share sheets must not lock)
-var _ftHiddenAt = 0;
-document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') {
-    _ftHiddenAt = Date.now();
-    window._ftHiddenModalOpen = !!(currentUser && document.querySelector('div[id^="modal"].fixed.inset-0:not(.hidden)'));
-  } else if (document.visibilityState === 'visible' && _ftHiddenAt && currentUser && !window._ftFinpinPendingUser) {
-    var _ftGoneMs = Date.now() - _ftHiddenAt; _ftHiddenAt = 0;
-    if (document.getElementById('appContainer').classList.contains('hidden')) return;
-    if (_ftGoneMs < 1500) return;
-    if (window._ftHiddenModalOpen) { window._ftHiddenModalOpen = false; return; }
-    window._ftHiddenModalOpen = false;
-    if (window._ftInAppHandoffAt && (Date.now() - window._ftInAppHandoffAt) < 1800000) { window._ftInAppHandoffAt = 0; return; }
-    window._ftInAppHandoffAt = 0;
-    get(ref(db, 'users/' + currentUser.uid)).then(function(snap) {
-      var prof = snap.val() || {};
-      if (prof.finpin) {
-        document.getElementById('appContainer').classList.add('hidden');
-        window._ftFinpinPendingUser = { uid: currentUser.uid, dataKey: currentUser.loginId, isDormant: false };
-        ftShowFinpinLock();
-      }
-    }).catch(function(){});
-  }
-});;
+// Resume protection is handled by session-security below, with one-use PDF share handoffs.
 
 document.addEventListener('click', function(e) {
   var t = e.target;
@@ -2082,7 +2059,7 @@ window.downloadHouseholdPDF = function() {
   const lastDay = new Date(y, m, 0).getDate();
   const mn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const periodStr = '1 ' + mn[m-1] + ' ' + y + ' to ' + lastDay + ' ' + mn[m-1] + ' ' + y;
-  const doc = new JsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+  const doc = ftPreparePdf(new JsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' }));
   try {
     if (typeof doc.autoTable !== 'function') { throw new Error('The PDF table plugin did not load. Please reload the page.'); }
     doc.setFontSize(20); doc.setTextColor(30,41,59); doc.text('FinTrack', 40, 44);
@@ -3160,7 +3137,7 @@ window.downloadCashbookPDF = function(mode) {
   const lastDay = new Date(y, m, 0).getDate();
   const mn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const periodStr = '1 ' + mn[m-1] + ' ' + y + ' to ' + lastDay + ' ' + mn[m-1] + ' ' + y;
-  const doc = new JsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const doc = ftPreparePdf(new JsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }));
   try {
   if (typeof doc.autoTable !== 'function') { throw new Error('The PDF table plugin did not load. Please reload the page and try again.'); }
   doc.setFontSize(20); doc.setTextColor(30,41,59); doc.text('FinTrack', 40, 44);
@@ -3183,8 +3160,7 @@ window.downloadCashbookPDF = function(mode) {
   var _pdfCurSel = document.getElementById('cashbookPdfCurrencySelect'); var _pdfCur = (_pdfCurSel && _pdfCurSel.value && currencies.indexOf(_pdfCurSel.value) !== -1) ? _pdfCurSel.value : (currencies[0] || 'INR'); { const entries = window._buildCashbookEntriesForCurrency(month, _pdfCur); addTable(_pdfCur === first ? 'Primary Currency Cashbook' : (_pdfCur === second ? 'Secondary Currency Cashbook' : _pdfCur + ' Cashbook'), entries, _pdfCur); }
   const cards = (state.banks||[]).filter(function(b){return b.bankType === 3 && (b.currency || 'INR') === _pdfCur;});
   cards.forEach(function(card){ const entries = window._buildCashbookEntriesForCard(month, card); addTable('Credit Card Cashbook - ' + card.name, entries, card.currency || 'INR'); });
-  if (mode === 'view') { if (/; wv\)/.test(navigator.userAgent)) { window.ftShareOrSavePdf(doc, 'FinTrack_Cashbook_' + month + '.pdf', 'Cashbook ' + month); return; } window._ftInAppHandoffAt = Date.now(); try { var _pdfUrl = doc.output('bloburl'); if (_pdfUrl) { var _ftWin = window.open(_pdfUrl, '_blank'); if (_ftWin) return; } } catch(e) {} }
-  window.ftShareOrSavePdf(doc, 'FinTrack_Cashbook_' + month + '.pdf');
+  window.ftShareOrSavePdf(doc, 'FinTrack_Cashbook_' + month + '.pdf', 'Cashbook ' + month, mode);
   } catch (err) { alert('Could not generate the cashbook PDF: ' + (err && err.message ? err.message : err)); }
 };
 window.downloadCashbookPDFByKey = function(key) {
@@ -3200,7 +3176,7 @@ window.downloadCashbookPDFByKey = function(key) {
   const lastDay = new Date(y, m, 0).getDate();
   const mn = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const periodStr = '1 ' + mn[m-1] + ' ' + y + ' to ' + lastDay + ' ' + mn[m-1] + ' ' + y;
-  const doc = new JsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const doc = ftPreparePdf(new JsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' }));
   doc.setFontSize(20); doc.setTextColor(30,41,59); doc.text('FinTrack', 40, 44);
   doc.setFontSize(13); doc.text(data.title + ' - ' + mn[m-1] + ' ' + y, 40, 64);
   doc.setFontSize(10); doc.setTextColor(80,80,80); doc.text('Period: ' + periodStr, 40, 80);
@@ -4207,7 +4183,205 @@ window.ftUpdateFooterStatus = function() {
 })();
 </script>
 <script>
-/* FinTrack companion patch (loaded via <script src> before </body>).
+/* FinTrack companion patch (loaded via <script src> before <script>
+// Classic script embedded after the standalone FinTrack host; report actions are window exports below.
+/* global ftCloseReport, ftSaveActiveReport, ftShowReport, currentUser */
+(function () {
+  var active = null;
+  window.ftPreparePdf = function (doc) {
+    var blocks = [], inTable = false, text = doc.text, table = doc.autoTable;
+    doc._ftReportBlocks = blocks;
+    doc.text = function (value) { if (!inTable) blocks.push({ text: Array.isArray(value) ? value.join(' ') : String(value) }); return text.apply(this, arguments); };
+    if (table) doc.autoTable = function (options) { blocks.push({ table: options }); inTable = true; try { return table.apply(this, arguments); } finally { inTable = false; } };
+    return doc;
+  };
+  function element(tag, content, className) { var el = document.createElement(tag); el.textContent = content || ''; if (className) el.className = className; return el; }
+  window.ftCloseReport = function () { var el = document.getElementById('ftReportViewer'); if (el) el.remove(); active = null; if (window.ftPdfHandoff) window.ftPdfHandoff = null; };
+  window.ftShowReport = function (doc, fileName, title) {
+    ftCloseReport(); active = { doc: doc, name: fileName, title: title || fileName };
+    var viewer = element('div', '', 'fixed inset-0 bg-slate-100 text-slate-800 flex flex-col'); viewer.id = 'ftReportViewer'; viewer.style.zIndex = '110';
+    viewer.setAttribute('role', 'dialog'); viewer.setAttribute('aria-modal', 'true'); viewer.setAttribute('aria-label', title || 'Report preview');
+    var toolbar = element('div', '', 'bg-white border-b border-slate-200 p-3 flex flex-wrap items-center gap-2 shrink-0');
+    toolbar.appendChild(element('h3', title || fileName, 'font-bold text-sm flex-1 min-w-0 break-words'));
+    [['Save / Share', function () { ftSaveActiveReport(); }], ['Close', ftCloseReport]].forEach(function (item) { var button = element('button', item[0], 'px-3 py-2 bg-indigo-600 text-white font-bold text-xs rounded-lg'); button.type = 'button'; button.onclick = item[1]; toolbar.appendChild(button); });
+    viewer.appendChild(toolbar); var status = element('p', 'Report preview — the exported PDF contains the same report.', 'text-xs text-slate-600 p-3'); status.id = 'ftReportStatus'; status.setAttribute('role', 'status'); viewer.appendChild(status);
+    var body = element('div', '', 'flex-1 min-h-0 overflow-auto p-3 sm:p-6'); var paper = element('div', '', 'bg-white rounded-xl p-4 space-y-3 max-w-5xl mx-auto');
+    (doc._ftReportBlocks || []).forEach(function (block) {
+      if (block.text) paper.appendChild(element('p', block.text, 'text-sm font-semibold break-words'));
+      if (block.table) { var wrap = element('div', '', 'overflow-x-auto border border-slate-200 rounded-lg'); var t = element('table', '', 'w-full text-xs text-left');
+        ['head', 'body', 'foot'].forEach(function (part) { var section = element(part === 'head' ? 'thead' : part === 'foot' ? 'tfoot' : 'tbody'); (block.table[part] || []).forEach(function (row) { var tr = element('tr', '', 'border-b border-slate-200'); row.forEach(function (cell) { tr.appendChild(element(part === 'head' ? 'th' : 'td', cell && typeof cell === 'object' ? cell.content : String(cell == null ? '' : cell), 'p-2 whitespace-pre-wrap')); }); section.appendChild(tr); }); t.appendChild(section); }); wrap.appendChild(t); paper.appendChild(wrap); }
+    });
+    body.appendChild(paper); viewer.appendChild(body); document.body.appendChild(viewer);
+  };
+  window.ftSaveActiveReport = async function () {
+    if (!active) return; var report = active, status = document.getElementById('ftReportStatus');
+    var file = new File([report.doc.output('blob')], report.name, { type: 'application/pdf' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      window.ftPdfHandoff = { uid: currentUser && currentUser.uid, kind: 'share', hidden: false };
+      try { await navigator.share({ files: [file], title: report.title }); status.textContent = 'Share completed. Choose a files app in the share sheet to save a copy.'; }
+      catch (error) { status.textContent = error.name === 'AbortError' ? 'Sharing cancelled. Your report is still open.' : 'File sharing is unavailable in this Android build. You can still read the complete report here.'; }
+      finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
+    } else if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+      status.textContent = 'This mobile build does not support saving PDF files. The full report is available above; downloading needs file-sharing support in the Android wrapper.';
+    } else { report.doc.save(report.name); status.textContent = 'PDF download started.'; }
+  };
+  window.ftShareOrSavePdf = function (doc, fileName, title, mode) { if (mode === 'view' || /Android|iPhone|iPad/i.test(navigator.userAgent)) ftShowReport(doc, fileName, title); else doc.save(fileName); };
+  var logout = window.handleLogout; window.handleLogout = function () { ftCloseReport(); return logout.apply(this, arguments); };
+})();
+</script>
+<script>
+(function () {
+  var libraries;
+  function load(url) { return new Promise(function (resolve, reject) { var script = document.createElement('script'); script.src = url; script.onload = resolve; script.onerror = function () { reject(new Error('Unable to load PDF tools. Check your internet connection and try again.')); }; document.head.appendChild(script); }); }
+  function ensureLibraries() {
+    if (!libraries) libraries = (async function () {
+      if (!window.jspdf || !window.jspdf.jsPDF) await load('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js');
+      if (typeof window.jspdf.jsPDF.API.autoTable !== 'function') await load('https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js');
+      if (typeof window.jspdf.jsPDF.API.autoTable !== 'function') throw new Error('PDF tables are unavailable. Please reconnect and try again.');
+    })().catch(function (error) { libraries = null; throw error; });
+    return libraries;
+  }
+  ['downloadHouseholdPDF', 'downloadCashbookPDF', 'downloadCashbookPDFByKey'].forEach(function (name) {
+    var original = window[name], busy = false;
+    window[name] = async function () {
+      if (busy) return; busy = true; var args = arguments;
+      var button = document.activeElement, label = button && button.tagName === 'BUTTON' ? button.innerHTML : null;
+      if (label !== null) { button.disabled = true; button.textContent = 'Preparing…'; }
+      try { await ensureLibraries(); return original.apply(window, args); }
+      catch (error) { alert('Could not open the PDF report: ' + error.message); }
+      finally { busy = false; if (label !== null) { button.disabled = false; button.innerHTML = label; } }
+    };
+  });
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack authentication helpers.
+/* global currentUser, get, ref, db, ftShowFinpinLock */
+(function () {
+  var hiddenAt = 0, lockGeneration = 0;
+  window.ftHandleAppVisibility = function () {
+    var handoff = window.ftPdfHandoff;
+    if (document.visibilityState === 'hidden') {
+      hiddenAt = Date.now(); lockGeneration++;
+      if (handoff && currentUser && handoff.uid === currentUser.uid) handoff.hidden = true;
+      return;
+    }
+    var elapsed = hiddenAt ? Date.now() - hiddenAt : 0; hiddenAt = 0;
+    if (handoff && handoff.hidden && currentUser && handoff.uid === currentUser.uid) { window.ftPdfHandoff = null; return; }
+    if (!elapsed || elapsed < 1500 || !currentUser || window._ftFinpinPendingUser || document.getElementById('appContainer').classList.contains('hidden')) return;
+    var uid = currentUser.uid, generation = ++lockGeneration;
+    get(ref(db, 'users/' + uid + '/finpin')).then(function (snapshot) {
+      if (!snapshot.val() || generation !== lockGeneration || document.visibilityState !== 'visible' || !currentUser || currentUser.uid !== uid) return;
+      if (window.ftCloseReport) window.ftCloseReport();
+      document.getElementById('appContainer').classList.add('hidden'); window._ftFinpinPendingUser = { uid: uid, dataKey: currentUser.loginId, isDormant: false }; ftShowFinpinLock();
+    }).catch(function (error) { console.error('Unable to check resume protection', error); });
+  };
+  document.addEventListener('visibilitychange', window.ftHandleAppVisibility);
+  var originalStatus = window.ftUpdateFinpinStatus;
+  window.ftUpdateFinpinStatus = async function () {
+    await originalStatus(); var el = document.getElementById('finpinStatusText'); if (!el) return;
+    var saved = el.textContent.indexOf('FinPIN is saved') === 0;
+    var notSaved = el.textContent.indexOf('FinPIN is not saved') === 0;
+    if (saved || notSaved) el.className = saved ? 'text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg py-2 px-3 text-center' : 'text-sm font-bold text-red-700 bg-red-50 border border-red-200 rounded-lg py-2 px-3 text-center';
+  };
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack financial helpers.
+/* global currentUser, state, isCurrencyAllowed, convertFromINR, convertToINR, dateMonth, currentMonthStr, ftOwnSplitShare, ftHhMyShare */
+(function () {
+  window.ftChartExpenseCategories = function (month, currency) {
+    var totals = {}, seen = new Set(), uid = currentUser && currentUser.uid;
+    function add(e, amount, fallback) { var cur = e.currency || 'INR'; amount = Number(amount); if (!Number.isFinite(amount) || !isCurrencyAllowed(cur)) return; var name = String(e.category || fallback || 'Other'); totals[name] = (totals[name] || 0) + convertFromINR(convertToINR(amount, cur), currency); }
+    ((state.expenses || {})[month] || []).forEach(function (e) { if (!e.isSplitShare) add(e, e.amount); });
+    ((state.friendSplits || {})[month] || []).forEach(function (e) { if (e.id != null) seen.add(String(e.ownerUid || uid) + '|' + e.id); add(e, ftOwnSplitShare(e), 'Friends Split'); });
+    (state.sharedSplits || []).forEach(function (e) { if (e.ftype === 'trip' || dateMonth(e.date) !== month) return; var key = e.sourceSplitId != null ? String(e.ownerUid) + '|' + e.sourceSplitId : 'shared|' + e.id; if (seen.has(key)) return; seen.add(key); add(e, ftOwnSplitShare(e), 'Friends Split'); });
+    (state.trips || []).forEach(function (trip) { Object.values(trip.splits || {}).forEach(function (e) { if (dateMonth(e.date) === month) add(e, ftOwnSplitShare(e, trip.members || []), 'Trip'); }); });
+    (state.householdExpenses || []).forEach(function (e) { if (dateMonth(e.date) === month || (!e.date && month === currentMonthStr())) add(e, ftHhMyShare(e), 'Household'); });
+    return totals;
+  };
+  window.ftChartIncome = function (month, currency) {
+    return (state.transfers || []).reduce(function (sum, t) { if (t.fromName !== 'External Deposit' || dateMonth(t.date) !== month) return sum; var bank = (state.banks || []).find(function (b) { return String(b.id) === String(t.toId); }); return sum + convertFromINR(convertToINR(Number(t.amount) || 0, bank ? bank.currency : 'INR'), currency); }, 0);
+  };
+})();
+</script>
+<script>
+// Classic script embedded after FinTrack, Chart.js and monthly-chart-data.
+/* global renderOverviewTrend, currentMonthStr, getSetting, getSecondCurrency, state, ftChartExpenseCategories, ftMonthlyExpenseTotals, convertFromINR, convertToINR, ftChartIncome, formatCurrency, Chart */
+(function () {
+  var selectedMonth = '', selectedCurrency = '', mode = 'expenses';
+  window.ftSelectMonthlyChart = function (next) { mode = next; renderOverviewTrend(); };
+  window.renderOverviewTrend = function () {
+    var wrap = document.getElementById('overviewTrendWrap'); if (!wrap) return;
+    if (!wrap.dataset.monthlyChart) {
+      if (window._ftTrendChart) { window._ftTrendChart.destroy(); window._ftTrendChart = null; }
+      wrap.dataset.monthlyChart = 'true'; wrap.classList.add('min-w-0');
+      wrap.innerHTML = '<div class="flex flex-wrap items-center justify-between gap-3 mb-3"><h3 class="font-bold text-slate-800 text-sm">Monthly Expenses &amp; Income</h3><div class="flex flex-wrap items-center gap-2"><label class="text-xs font-semibold text-slate-600">Month <input id="ftChartMonth" type="month" class="border border-slate-200 rounded p-1 bg-white text-xs" onchange="renderOverviewTrend()"></label><label class="text-xs font-semibold text-slate-600">Currency <select id="overviewTrendCurrency" class="border border-slate-200 rounded p-1 bg-white text-xs" onchange="renderOverviewTrend()"></select></label></div></div><div class="flex gap-2 mb-3"><button id="ftCategoryTab" type="button" onclick="ftSelectMonthlyChart(\'expenses\')" class="px-3 py-2 rounded-lg font-bold text-xs">Expenses by category</button><button id="ftCompareTab" type="button" onclick="ftSelectMonthlyChart(\'comparison\')" class="px-3 py-2 rounded-lg font-bold text-xs">Income vs expenses</button></div><p id="ftChartSummary" class="text-sm font-bold mb-2"></p><p id="ftChartEmpty" class="text-xs text-slate-500 mb-2" role="status"></p><div style="height:260px;position:relative;width:100%;min-width:0"><canvas id="overviewTrendCanvas" role="img" aria-label="Monthly financial chart"></canvas></div>';
+    }
+    var month = document.getElementById('ftChartMonth'), select = document.getElementById('overviewTrendCurrency');
+    selectedMonth = month.value || selectedMonth || (document.getElementById('expenseMonthSelect') || {}).value || currentMonthStr(); month.value = selectedMonth;
+    var allowed = getSetting('allowedCurrencies', []); var list = allowed && allowed.length ? allowed.slice() : ['INR', window.getSecondCurrency ? getSecondCurrency() : 'SAR']; list = Array.from(new Set(list));
+    selectedCurrency = select.value || selectedCurrency || state.displayCurrency || list[0]; if (list.indexOf(selectedCurrency) < 0) selectedCurrency = list[0];
+    select.replaceChildren(); list.forEach(function (cur) { var option = document.createElement('option'); option.value = cur; option.textContent = cur; option.selected = cur === selectedCurrency; select.appendChild(option); });
+    ['ftCategoryTab', 'ftCompareTab'].forEach(function (id, index) { var button = document.getElementById(id), active = mode === (index ? 'comparison' : 'expenses'); button.className = active ? 'px-3 py-2 rounded-lg font-bold text-xs bg-indigo-600 text-white' : 'px-3 py-2 rounded-lg font-bold text-xs bg-slate-100 text-slate-700'; button.setAttribute('aria-pressed', String(active)); });
+    var categories = ftChartExpenseCategories(selectedMonth, selectedCurrency), entries = Object.entries(categories).filter(function (entry) { return entry[1] !== 0; }).sort(function (a, b) { return b[1] - a[1]; });
+    var totals = ftMonthlyExpenseTotals(selectedMonth), expense = Object.keys(totals).reduce(function (sum, cur) { return sum + convertFromINR(convertToINR(totals[cur], cur), selectedCurrency); }, 0), income = ftChartIncome(selectedMonth, selectedCurrency), net = income - expense;
+    var summary = document.getElementById('ftChartSummary'); summary.textContent = mode === 'expenses' ? 'Expenses: ' + formatCurrency(expense, selectedCurrency) : 'Income: ' + formatCurrency(income, selectedCurrency) + ' · Expenses: ' + formatCurrency(expense, selectedCurrency) + ' · ' + (net >= 0 ? 'Savings: ' : 'Overspending: ') + formatCurrency(Math.abs(net), selectedCurrency);
+    summary.className = 'text-sm font-bold mb-2 ' + (mode === 'comparison' && net < 0 ? 'text-red-700' : 'text-slate-700');
+    document.getElementById('ftChartEmpty').textContent = mode === 'expenses' ? (entries.length ? 'Your own shares of split and household expenses are included.' : 'No expenses recorded for this month.') : (!income && !expense ? 'No income or expenses recorded for this month.' : 'Green = income · Red = expenses');
+    var canvas = document.getElementById('overviewTrendCanvas'); canvas.setAttribute('aria-label', summary.textContent);
+    if (window._ftTrendChart) window._ftTrendChart.destroy(); if (typeof Chart === 'undefined') { document.getElementById('ftChartEmpty').textContent = 'Chart tools could not load. The totals above are still available.'; return; }
+    var datasets = mode === 'expenses' ? [{ label: 'Expenses (' + selectedCurrency + ')', data: entries.map(function (e) { return e[1]; }), backgroundColor: '#6366F1', borderRadius: 4 }] : [{ label: 'Income', data: [income], backgroundColor: '#059669', borderRadius: 4 }, { label: 'Expenses', data: [expense], backgroundColor: '#DC2626', borderRadius: 4 }];
+    window._ftTrendChart = new Chart(canvas, { type: 'bar', data: { labels: mode === 'expenses' ? entries.map(function (e) { return e[0]; }) : [selectedMonth], datasets: datasets }, options: { indexAxis: mode === 'expenses' ? 'y' : 'x', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: mode === 'comparison', position: 'bottom' }, tooltip: { callbacks: { label: function (ctx) { return ctx.dataset.label + ': ' + formatCurrency(mode === 'expenses' ? ctx.parsed.x : ctx.parsed.y, selectedCurrency); } } } }, scales: { x: { beginAtZero: true, ticks: { maxTicksLimit: 5 } }, y: { beginAtZero: true, ticks: { autoSkip: false } } } } });
+  };
+  if (document.getElementById('overviewTrendWrap')) window.renderOverviewTrend();
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack host and Firebase scripts.
+/* global ref, db, auth, currentUser, onValue, firebase */
+(function () {
+  var session = null, connected = false, registered = {}, offset = 0, adminUid = '', adminUnsubscribe = null, generation = 0;
+  var sessionId = ref(db, 'users').push().key;
+  function isActive() { return auth.currentUser && currentUser && auth.currentUser.uid === currentUser.uid && document.visibilityState === 'visible' && !document.getElementById('appContainer').classList.contains('hidden'); }
+  function showError(text) { var el = document.getElementById('ftLiveUsersStatus'); if (el) el.textContent = text; }
+  function renderMetrics() {
+    if (!adminUid) return;
+    var users = Object.keys(registered).filter(function (uid) { var u = registered[uid]; return u && (u.email || ((u.password || u.name) && !u.migrated)); });
+    var online = 0, mobile = 0, web = 0, now = Date.now() + offset;
+    users.forEach(function (uid) { var sessions = Object.values(registered[uid].liveSessions || {}).filter(function (s) { return s && s.active && Number(s.lastSeen) > now - 90000; }); if (sessions.length) online++; if (sessions.some(function (s) { return s.platform === 'mobile'; })) mobile++; if (sessions.some(function (s) { return s.platform === 'web'; })) web++; });
+    [['ftAdminTotalUsers', users.length], ['ftAdminOnlineUsers', online], ['ftAdminMobileUsers', mobile], ['ftAdminWebUsers', web]].forEach(function (entry) { var el = document.getElementById(entry[0]); if (el) el.textContent = entry[1]; });
+    showError('Live connected users · One person on both platforms appears in both platform counts.');
+  }
+  function adminSync() {
+    var uid = currentUser && auth.currentUser && auth.currentUser.uid === currentUser.uid && (currentUser.role === 'admin' || currentUser.loginId === 'US') ? currentUser.uid : '';
+    if (uid === adminUid) return;
+    if (adminUnsubscribe) adminUnsubscribe(); adminUnsubscribe = null; adminUid = uid; registered = {};
+    if (!uid) return;
+    adminUnsubscribe = onValue(ref(db, 'users'), function (snapshot) { registered = snapshot.val() || {}; renderMetrics(); }, function (error) { ['ftAdminTotalUsers', 'ftAdminOnlineUsers', 'ftAdminMobileUsers', 'ftAdminWebUsers'].forEach(function (id) { var el = document.getElementById(id); if (el) el.textContent = '—'; }); showError('Live counts unavailable: Firebase must allow the administrator to read user records.'); console.error('Live counts unavailable', error); });
+  }
+  function stop() { generation++; if (session) { var old = session; session = null; old.remove().catch(function (error) { console.error('Unable to clear live session', error); }); } }
+  async function sync() {
+    adminSync();
+    if (!connected || !isActive()) { if (session) stop(); return; }
+    var uid = currentUser.uid;
+    if (session && session.parent.parent.key !== uid) stop();
+    if (!session) {
+      var target = ref(db, 'users/' + uid + '/liveSessions/' + sessionId), token = ++generation; session = target;
+      try { await target.onDisconnect().remove(); if (token !== generation || !isActive() || !connected) return; await target.set({ active: true, platform: /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'mobile' : 'web', lastSeen: firebase.database.ServerValue.TIMESTAMP }); }
+      catch (error) { if (session === target) session = null; showError('Live presence unavailable: user records must allow owners to update their liveSessions.'); console.error('Live presence unavailable', error); }
+    } else session.update({ lastSeen: firebase.database.ServerValue.TIMESTAMP }).catch(function (error) { console.error('Live session refresh failed', error); });
+  }
+  onValue(ref(db, '.info/serverTimeOffset'), function (snapshot) { offset = snapshot.val() || 0; });
+  onValue(ref(db, '.info/connected'), function (snapshot) { connected = snapshot.val() === true; if (!connected) { session = null; generation++; } sync(); });
+  auth.onAuthStateChanged(function () { sync(); });
+  document.addEventListener('visibilitychange', sync); window.addEventListener('pagehide', stop); window.addEventListener('pageshow', sync);
+  new MutationObserver(sync).observe(document.getElementById('appContainer'), { attributes: true, attributeFilter: ['class'] });
+  setInterval(function () { sync(); renderMetrics(); }, 30000);
+  sync();
+})();
+</script>
+</body>).
  * Section A — Date-validation IIFE (moved here verbatim from the main HTML
  *   so the main file could import this file; behaviour unchanged):
  *   enforces a 60-day look-back + no-future-date on tracked date inputs.
