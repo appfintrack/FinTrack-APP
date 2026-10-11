@@ -4484,7 +4484,17 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
       status.textContent = 'This mobile build does not support saving PDF files. The full report is available above; downloading needs file-sharing support in the Android wrapper.';
     } else { report.doc.save(report.name); status.textContent = 'PDF download started.'; }
   };
-  window.ftShareOrSavePdf = function (doc, fileName, title, mode) { if (mode === 'view' || /Android|iPhone|iPad/i.test(navigator.userAgent)) ftShowReport(doc, fileName, title); else doc.save(fileName); };
+  // View opens the in-app preview; download saves straight to the device — no preview.
+  window.ftShareOrSavePdf = async function (doc, fileName, title, mode) {
+    if (mode === 'view') { ftShowReport(doc, fileName, title); return; }
+    var file = new File([doc.output('blob')], fileName, { type: 'application/pdf' });
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent) && navigator.canShare && navigator.canShare({ files: [file] })) {
+      window.ftPdfHandoff = { uid: currentUser && currentUser.uid, kind: 'download', hidden: false };
+      try { await navigator.share({ files: [file], title: title || fileName }); }
+      catch (error) {}
+      finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
+    } else { doc.save(fileName); }
+  };
   var logout = window.handleLogout; window.handleLogout = function () { ftCloseReport(); return logout.apply(this, arguments); };
 })();
 </script>
