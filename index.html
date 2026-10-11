@@ -2873,15 +2873,10 @@ window.loadProfileNotifications = function(){
     const dateStr = n.createdAt ? new Date(n.createdAt).toLocaleDateString(undefined, {year:'numeric',month:'short',day:'numeric'}) : '';
     const bg = n.read ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200';
     const nid = n.id || '';
-    html += '<div class="'+bg+' border rounded-xl p-4 space-y-2 cursor-pointer hover:shadow-md transition" onclick="ftOpenNotifDetail('+idx+')"><div class="flex items-center justify-between"><span class="font-bold text-sm text-amber-800"><i class="fa-solid '+icon+' mr-1"></i>'+label+'</span><button onclick="event.stopPropagation(); deleteNotification(\''+nid+'\', \'\', \'\')" class="text-slate-400 hover:text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button></div><p class="text-sm text-slate-700">'+(n.message||'')+'</p><p class="text-xs text-slate-500">From: '+(n.fromName||'')+(dateStr?' &middot; '+dateStr:'')+'</p></div>';
+    html += '<div class="'+bg+' border rounded-xl p-4 space-y-2 cursor-pointer hover:shadow-md transition" onclick="ftOpenNotifDetail('+idx+')"><div class="flex items-center justify-between">'<span class="'+(n.read?'font-medium text-sm text-slate-500':'font-bold text-sm text-amber-800')+'"><i class="fa-solid '+icon+' mr-1"></i>'+label+'</span><button onclick="event.stopPropagation(); deleteNotification(\''+nid+'\', \'\', \'\')" class="text-slate-400 hover:text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button></div><p class="'+(n.read?'text-sm font-normal text-slate-600':'text-sm font-bold text-slate-800')+'">'+(n.message||'')+'</p><p class="text-xs '+(n.read?'text-slate-400':'text-slate-500')+'">From: '+(n.fromName||'')+(dateStr?' &middot; '+dateStr:'')+'</p></div>';
   });
   if (!html) html = '<div class="text-center py-6"><i class="fa-solid fa-bell-slash text-slate-300 text-3xl mb-2"></i><p class="text-xs text-slate-400">No notifications.</p></div>';
-  list.innerHTML = html;
-  const nOpen = document.getElementById('profileSectionNotifications');
-  const secOpen = document.getElementById('sec-profile');
-  if ((nOpen && !nOpen.classList.contains('hidden')) || (secOpen && !secOpen.classList.contains('hidden'))) {
-    if (typeof window._ftMarkNotifsRead === 'function') window._ftMarkNotifsRead();
-  }
+  list.innerHTML = html + (notifs.length ? '<button type="button" onclick="clearAllNotifications()" class="w-full py-2.5 mt-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg border border-red-200 text-xs"><i class="fa-solid fa-trash-can mr-1"></i> Clear All Notifications</button>' : '');
 };
 window.ftOpenNotifDetail = function(idx) {
   var notifs = window._ftNotifData || [];
@@ -4643,6 +4638,43 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   new MutationObserver(sync).observe(document.getElementById('appContainer'), { attributes: true, attributeFilter: ['class'] });
   setInterval(function () { sync(); renderMetrics(); }, 30000);
   sync();
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack host; notification read/clear controls.
+/* global db, ref, set, remove, currentUser, ftConfirm */
+(function () {
+  // Replaces the original detail opener: marks ONLY the opened notification read,
+  // so unread notifications stay bold in the list until they are actually viewed.
+  window.ftOpenNotifDetail = function (idx) {
+    var notifs = window._ftNotifData || [];
+    var n = notifs[idx];
+    if (!n) return;
+    var icon = n.type === 'reply' ? 'fa-reply' : (n.type === 'reminder' ? 'fa-bell' : (n.type === 'split' ? 'fa-scissors' : (n.type === 'admin' ? 'fa-bullhorn' : (n.type === 'settlement' ? 'fa-handshake' : (n.type === 'trip' ? 'fa-plane' : 'fa-bell')))));
+    var label = n.type === 'reply' ? 'Feedback Reply' : (n.type === 'reminder' ? 'Payment Reminder' : (n.type === 'split' ? 'New Split' : (n.type === 'admin' ? 'Admin Message' : (n.type === 'settlement' ? 'Settlement' : (n.type === 'trip' ? 'Trip Split' : 'Notification')))));
+    var dateStr = n.createdAt ? new Date(n.createdAt).toLocaleString() : '';
+    var titleEl = document.getElementById('notifDetailTitle');
+    var bodyEl = document.getElementById('notifDetailBody');
+    if (titleEl) titleEl.innerHTML = '<i class="fa-solid ' + icon + ' mr-2 text-amber-500"></i>' + label;
+    if (bodyEl) bodyEl.innerHTML = '<div class="bg-slate-50 rounded-xl p-4"><p class="text-sm text-slate-800 leading-relaxed">' + (n.message || '') + '</p></div><div class="text-xs text-slate-500 space-y-1 pt-2"><p><span class="font-bold">From:</span> ' + (n.fromName || 'System') + '</p>' + (dateStr ? '<p><span class="font-bold">Date:</span> ' + dateStr + '</p>' : '') + '</div>';
+    var modal = document.getElementById('modalNotifDetail');
+    if (modal) modal.classList.remove('hidden');
+    if (currentUser && currentUser.uid && n.id && !n.read) {
+      set(ref(db, 'users/' + currentUser.uid + '/notifications/' + n.id), Object.assign({}, n, { read: true, readAt: new Date().toISOString() })).catch(function () {});
+      n.read = true;
+      if (typeof window.ftUpdateNotifBadge === 'function') window.ftUpdateNotifBadge();
+    }
+  };
+  window.clearAllNotifications = function () {
+    if (!currentUser || !currentUser.uid) return;
+    ftConfirm('Delete ALL notifications? This cannot be undone.', function () {
+      remove(ref(db, 'users/' + currentUser.uid + '/notifications')).then(function () {
+        window._ftNotifData = [];
+        if (typeof window.ftUpdateNotifBadge === 'function') window.ftUpdateNotifBadge();
+        if (typeof window.loadProfileNotifications === 'function') window.loadProfileNotifications();
+      }).catch(function (err) { console.error(err); alert('Could not clear notifications.'); });
+    });
+  };
 })();
 </script>
 </body>
