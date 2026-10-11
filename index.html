@@ -316,6 +316,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
           <div class="w-14 h-14 mx-auto bg-amber-100 rounded-full flex items-center justify-center"><i class="fa-solid fa-key text-2xl text-amber-600"></i></div>
           <h3 class="text-lg font-black text-slate-800 mt-2">Set or Reset FinPIN</h3>
           <p class="text-xs text-slate-500">Enter your account password to verify ownership</p>
+          <p id="finpinSetupStatus" class="text-xs font-bold text-amber-700 mt-1"></p>
         </div>
         <input type="password" id="finpinVerifyPass" placeholder="Your account password" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:ring-2 focus:ring-violet-500 outline-none font-medium text-sm">
         <p id="finpinVerifyError" class="text-xs text-red-500 font-semibold hidden text-center"></p>
@@ -458,8 +459,8 @@ button:active, .ft-qa:active { transform:scale(.96); }
             <h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-shield-halved text-violet-600 mr-2"></i> Security</h3>
             <p class="text-xs text-slate-500 mt-1">Set a 4-digit FinPIN to quickly unlock FinTrack when you reopen the app.</p>
           </div>
+          <p id="finpinStatusText" class="text-xs font-bold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg py-1.5 px-2 text-center">Checking FinPIN…</p>
           <button type="button" onclick="ftOpenFinpinSetup()" class="w-full py-2.5 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded-lg text-sm flex items-center justify-center gap-2 transition-all"><i class="fa-solid fa-key"></i> Set or Reset FinPIN</button>
-          <p id="finpinStatusText" class="text-xs text-slate-500 text-center"></p>
         </div>
           <div class="pastel-slate p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-shield text-amber-600 mr-2"></i> Account Information</h3><div id="accountInfoContainer" class="space-y-2 text-sm"></div></div>
         </section>
@@ -649,7 +650,10 @@ window.handleLogin = async function(e) {
     try {
       window._ftManualLogin = true;
       await setPersistence(auth, document.getElementById('rememberMe').checked ? browserLocalPersistence : browserSessionPersistence);
-      const cred = await signInWithEmailAndPassword(auth, loginId.toLowerCase(), password); fbUser = cred.user;
+      var cred = null;
+      try { cred = await signInWithEmailAndPassword(auth, loginId.toLowerCase(), password); }
+      catch (_ftSignInErr) { var _ftCode = String((_ftSignInErr && _ftSignInErr.code) || ''); if (_ftCode.indexOf('wrong-password') > -1 || _ftCode.indexOf('invalid-credential') > -1 || _ftCode.indexOf('invalid-login-credentials') > -1 || _ftCode.indexOf('invalid-email') > -1 || _ftCode.indexOf('user-not-found') > -1 || _ftCode.indexOf('too-many-requests') > -1) throw _ftSignInErr; await new Promise(function(r) { setTimeout(r, 500); }); cred = await signInWithEmailAndPassword(auth, loginId.toLowerCase(), password); }
+      fbUser = cred.user;
     } catch(ferr) { /* maybe legacy */ }
     if (fbUser) {
       const profSnap = await get(ref(db, 'users/' + fbUser.uid));
@@ -662,7 +666,7 @@ window.handleLogin = async function(e) {
       if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar();
       var _ftIsDormant = false;
       if (prof.lastLogin) { var _ftDays = (Date.now() - new Date(prof.lastLogin).getTime()) / 86400000; if (_ftDays >= 7) _ftIsDormant = true; }
-      await update(ref(db, 'users/' + fbUser.uid), { lastLogin: new Date().toISOString(), lastPlatform: (function(){ var ua = (navigator.userAgent || '').toLowerCase(); if (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('mobile') > -1) return 'mobile'; return 'web'; })() });
+      update(ref(db, 'users/' + fbUser.uid), { lastLogin: new Date().toISOString(), lastPlatform: (function(){ var ua = (navigator.userAgent || '').toLowerCase(); if (ua.indexOf('android') > -1 || ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('mobile') > -1) return 'mobile'; return 'web'; })() }).catch(function(){});
       localStorage.removeItem('fintrack_remember_pass');
       if (document.getElementById('rememberMe').checked) { localStorage.setItem('fintrack_remember_email', loginId); } else { localStorage.removeItem('fintrack_remember_email'); }
       sessionStorage.removeItem('fintrack_pin_attempts_' + fbUser.uid);
@@ -877,7 +881,12 @@ window.ftUnlockWithFinpin = async function() {
   if (attempts >= 5) { message('Five incorrect attempts. Log in with your account password to continue.'); ftTogglePasswordLogin(true); return; }
   window._ftFinpinUnlockBusy = true; var button = document.getElementById('finpinUnlockButton'); button.disabled = true; var label = button.innerHTML; button.textContent = 'Verifying…';
   try {
-    var prof = (await get(ref(db, 'users/' + uid))).val() || {};
+    var prof = null;
+    for (var _ftTry = 0; _ftTry < 3 && !prof; _ftTry++) {
+      try { prof = (await get(ref(db, 'users/' + uid))).val() || {}; if (prof && prof.finpin) break; }
+      catch (_ftReadErr) { prof = null; if (_ftTry < 2) { try { await auth.currentUser.getIdToken(true); } catch (_ftTokErr) {} await new Promise(function(r) { setTimeout(r, 600); }); } }
+    }
+    if (!prof) { message('Connection hiccup — tap Unlock to try again.'); ftClearFinpinInputs('data-finpin-lock'); return; }
     if (!prof.finpin) { message('No FinPIN is set. Log in with your password, then set FinPIN in Settings → Security.'); ftTogglePasswordLogin(true); return; }
     var stored = String(prof.finpin); var parts = stored.split('$');
     var valid = parts[0] === 'pbkdf2' && parts.length === 3 ? (await ftDeriveFinpin(pin, uid, parts[1])) === parts[2] : stored === ftHashFinpin(pin);
@@ -925,6 +934,7 @@ window.ftFinpinQuickLogin = function() { ftShowFinpinLock(); };
 window.ftOpenFinpinSetup = function() {
   window._ftFinpinVerifiedUid = null;
   document.getElementById('modalFinpinSetup').classList.remove('hidden');
+  ftUpdateFinpinStatus();
   ftShowFinpinStep(1);
   document.getElementById('finpinVerifyPass').value = '';
   var errEl = document.getElementById('finpinVerifyError');
@@ -1011,28 +1021,39 @@ window.ftSaveFinpin = async function() {
 
 window.ftUpdateFinpinStatus = async function() {
   var statusEl = document.getElementById('finpinStatusText');
+  var setupEl = document.getElementById('finpinSetupStatus');
   if (!statusEl || !currentUser) return;
+  var setMsg = 'FinPIN is saved — it will be asked for when you reopen FinTrack.';
+  var setCls = 'text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg py-1.5 px-2 text-center';
+  var noneMsg = 'FinPIN is not saved yet — tap the button below to add one.';
+  var noneCls = 'text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg py-1.5 px-2 text-center';
   try {
     var profSnap = await get(ref(db, 'users/' + currentUser.uid));
     var prof = profSnap.val() || {};
     if (prof.finpin) {
-      statusEl.textContent = 'FinPIN is set. You will use it to unlock FinTrack.';
-      statusEl.className = 'text-xs text-emerald-600 font-semibold text-center';
+      statusEl.textContent = setMsg; statusEl.className = setCls;
+      if (setupEl) { setupEl.textContent = 'This account already has a FinPIN. Setting a new one will replace it.'; setupEl.className = 'text-xs font-bold text-violet-700 mt-1'; }
     } else {
-      statusEl.textContent = 'No FinPIN set. Click above to set one.';
-      statusEl.className = 'text-xs text-slate-500 text-center';
+      statusEl.textContent = noneMsg; statusEl.className = noneCls;
+      if (setupEl) { setupEl.textContent = 'No FinPIN is saved yet for this account.'; setupEl.className = 'text-xs font-bold text-amber-700 mt-1'; }
     }
-  } catch(e) { statusEl.textContent = ''; }
+  } catch(e) { statusEl.textContent = 'FinPIN status unavailable.'; statusEl.className = 'text-xs text-slate-500 text-center'; }
 };
 
-// App resume lock — visibilitychange
-var _ftWasHidden = false;
+// App resume lock — visibilitychange (locks only on real backgrounding; in-app overlays such as pickers, PDF viewers and share sheets must not lock)
+var _ftHiddenAt = 0;
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'hidden') {
-    _ftWasHidden = true;
-  } else if (document.visibilityState === 'visible' && _ftWasHidden && currentUser && !window._ftFinpinPendingUser) {
-    _ftWasHidden = false;
+    _ftHiddenAt = Date.now();
+    window._ftHiddenModalOpen = !!(currentUser && document.querySelector('div[id^="modal"].fixed.inset-0:not(.hidden)'));
+  } else if (document.visibilityState === 'visible' && _ftHiddenAt && currentUser && !window._ftFinpinPendingUser) {
+    var _ftGoneMs = Date.now() - _ftHiddenAt; _ftHiddenAt = 0;
     if (document.getElementById('appContainer').classList.contains('hidden')) return;
+    if (_ftGoneMs < 1500) return;
+    if (window._ftHiddenModalOpen) { window._ftHiddenModalOpen = false; return; }
+    window._ftHiddenModalOpen = false;
+    if (window._ftInAppHandoffAt && (Date.now() - window._ftInAppHandoffAt) < 1800000) { window._ftInAppHandoffAt = 0; return; }
+    window._ftInAppHandoffAt = 0;
     get(ref(db, 'users/' + currentUser.uid)).then(function(snap) {
       var prof = snap.val() || {};
       if (prof.finpin) {
@@ -1043,6 +1064,11 @@ document.addEventListener('visibilitychange', function() {
     }).catch(function(){});
   }
 });;
+
+document.addEventListener('click', function(e) {
+  var t = e.target;
+  while (t && t !== document.body) { if (t.tagName === 'INPUT' && t.type === 'file') { window._ftInAppHandoffAt = Date.now(); break; } t = t.parentElement; }
+}, true);
 
 window.openProfileUpdatePopup = function() {
   document.getElementById('profileUpdateForm').reset();
@@ -1247,7 +1273,7 @@ onAuthStateChanged(auth, async (fbUser) => {
       if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar();
       var _ftIsDormant = false;
       if (prof.lastLogin) { var _ftDays = (Date.now() - new Date(prof.lastLogin).getTime()) / 86400000; if (_ftDays >= 7) _ftIsDormant = true; }
-      await set(ref(db, 'users/' + fbUser.uid + '/lastLogin'), new Date().toISOString());
+      set(ref(db, 'users/' + fbUser.uid + '/lastLogin'), new Date().toISOString()).catch(function(){});
       if (prof.finpin && !window._ftFinpinForgotFlow) {
         window._ftFinpinPendingUser = { uid: fbUser.uid, dataKey: dataKey, isDormant: _ftIsDormant };
         ftShowFinpinLock();
@@ -2033,6 +2059,18 @@ window.ftUpdateHhSetAccountOptions = function() {
   }
 };
 window.ftFriendNetBalanceByCurrency=function(name){return window.ftHouseholdBilateralByCurrency(name);};
+window.ftShareOrSavePdf = function(doc, fileName, title) {
+  window._ftInAppHandoffAt = Date.now();
+  var _isWV = /; wv\)/.test(navigator.userAgent);
+  if (_isWV && navigator.canShare) {
+    try {
+      var _file = new File([doc.output('blob')], fileName, { type: 'application/pdf' });
+      if (navigator.canShare({ files: [_file] })) { navigator.share({ files: [_file], title: title || fileName }).catch(function() { try { doc.save(fileName); } catch(e2) {} }); return true; }
+    } catch(_shErr) {}
+  }
+  doc.save(fileName);
+};
+
 window.downloadHouseholdPDF = function() {
   const monthSel = document.getElementById('householdMonthSelect');
   const month = (monthSel && monthSel.value) ? monthSel.value : currentMonthStr();
@@ -2087,7 +2125,7 @@ window.downloadHouseholdPDF = function() {
     const setBody = settlements.map(function(s) { return [s.date || '', s.fromMember || '', s.toMember || '', formatCurrency(Number(s.amount || 0), s.currency || 'INR'), s.accountName || '-', s.notes || '-']; });
     if (settlements.length === 0) setBody.push(['No settlements for this month','','','','','']);
     doc.autoTable({ startY: cursorY, head: [['Date','From','To','Amount','Account','Notes']], body: setBody, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [124,58,237], textColor: 255, fontSize: 8 }, columnStyles: { 3: { halign: 'right' } } });
-    doc.save('Household_Settlement_' + month + '.pdf');
+    window.ftShareOrSavePdf(doc, 'Household_Settlement_' + month + '.pdf', 'Household Settlement ' + month);
   } catch(err) { alert('PDF generation failed: ' + (err.message || 'unknown error')); }
 };
 function renderCreditCardReminders() { const modal = document.getElementById('ccReminderModal'); const content = document.getElementById('ccReminderContent'); if (!modal || !content) return; const creditCards = (state.banks || []).filter(b => b.bankType === 3); const now = new Date(); const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const reminders = []; creditCards.forEach(card => { if (!card.cardDueDate || card.cardDueDate < 1 || card.cardDueDate > 31) return; let dueDate = new Date(now.getFullYear(), now.getMonth(), card.cardDueDate); if (dueDate < todayMid) dueDate = new Date(now.getFullYear(), now.getMonth() + 1, card.cardDueDate); const diffDays = Math.round((dueDate - todayMid) / 86400000); const outstanding = card.cardOutstanding || 0; if (outstanding <= 0) return; const cycleKey = `${now.getFullYear()}-${now.getMonth()}`; if (card.paymentCycles && card.paymentCycles[cycleKey]) return; if (diffDays >= 0 && diffDays <= 5) { const msgs = { 5: 'Credit card payment is due in 5 days. Please check your due amount.', 4: 'Credit card payment is due in 4 days. Please plan your payment.', 3: 'Credit card payment is due in 3 days. Please make sure your payment is ready.', 2: 'Credit card payment is due in 2 days. Please complete your payment on time.', 1: 'Credit card payment is due tomorrow. Please make your payment.', 0: 'Credit card payment is due today. Please complete your payment.' }; reminders.push(`<div class="p-2 bg-amber-50 border border-amber-200 rounded-lg"><p class="font-bold text-amber-800">${card.name}</p><p class="mt-0.5">${msgs[diffDays] || ''}</p><p class="mt-0.5 font-bold text-rose-700">Due amount: ${formatCurrency(outstanding, card.currency || 'INR')}</p></div>`); } }); if (reminders.length === 0) { modal.classList.add('hidden'); return; } content.innerHTML = reminders.join(''); const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`; const lsKey = `fintrack_cc_reminder_${currentUser ? currentUser.loginId : 'guest'}`; if (localStorage.getItem(lsKey) !== todayKey) { localStorage.setItem(lsKey, todayKey); modal.classList.remove('hidden'); } }
@@ -3145,8 +3183,8 @@ window.downloadCashbookPDF = function(mode) {
   var _pdfCurSel = document.getElementById('cashbookPdfCurrencySelect'); var _pdfCur = (_pdfCurSel && _pdfCurSel.value && currencies.indexOf(_pdfCurSel.value) !== -1) ? _pdfCurSel.value : (currencies[0] || 'INR'); { const entries = window._buildCashbookEntriesForCurrency(month, _pdfCur); addTable(_pdfCur === first ? 'Primary Currency Cashbook' : (_pdfCur === second ? 'Secondary Currency Cashbook' : _pdfCur + ' Cashbook'), entries, _pdfCur); }
   const cards = (state.banks||[]).filter(function(b){return b.bankType === 3 && (b.currency || 'INR') === _pdfCur;});
   cards.forEach(function(card){ const entries = window._buildCashbookEntriesForCard(month, card); addTable('Credit Card Cashbook - ' + card.name, entries, card.currency || 'INR'); });
-  if (mode === 'view') { try { var _pdfUrl = doc.output('bloburl'); if (_pdfUrl) { var _ftWin = window.open(_pdfUrl, '_blank'); if (_ftWin) return; } } catch(e) {} }
-  doc.save('FinTrack_Cashbook_' + month + '.pdf');
+  if (mode === 'view') { if (/; wv\)/.test(navigator.userAgent)) { window.ftShareOrSavePdf(doc, 'FinTrack_Cashbook_' + month + '.pdf', 'Cashbook ' + month); return; } window._ftInAppHandoffAt = Date.now(); try { var _pdfUrl = doc.output('bloburl'); if (_pdfUrl) { var _ftWin = window.open(_pdfUrl, '_blank'); if (_ftWin) return; } } catch(e) {} }
+  window.ftShareOrSavePdf(doc, 'FinTrack_Cashbook_' + month + '.pdf');
   } catch (err) { alert('Could not generate the cashbook PDF: ' + (err && err.message ? err.message : err)); }
 };
 window.downloadCashbookPDFByKey = function(key) {
@@ -3175,7 +3213,7 @@ window.downloadCashbookPDFByKey = function(key) {
   doc.autoTable({ startY: cursorY, head: [['Date','Description','Category','Type','Amount','Mode','Account','Total Expense']], body: body, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [30,41,59], textColor: 255, fontSize: 8 }, columnStyles: { 0: { cellWidth: 55 }, 4: { halign: 'right' }, 7: { halign: 'right' } } });
   let fy = cursorY + 20; try { fy = doc.lastAutoTable.finalY + 16; } catch(e2){}
   { var _incT=0,_expT=0; entries.forEach(function(e){ var _a=Number(e.amount||0); if(e.type==='Income'||e.type==='Payment')_incT+=_a; else if(e.type==='Expense'||e.type==='Charge')_expT+=_a; }); doc.setFontSize(10); doc.text('Income Added: ' + formatCurrency(_incT, currency) + '   |   Total Expense: ' + formatCurrency(_expT, currency), 40, fy); }
-  doc.save('FinTrack_' + key + '_' + month + '.pdf');
+  window.ftShareOrSavePdf(doc, 'FinTrack_' + key + '_' + month + '.pdf');
 };
 
 window.checkOrphanedMobile = async function() {
@@ -3899,7 +3937,7 @@ window.ftUpdateFooterStatus = function() {
 
   window.saveHouseholdExpense=async function(e){
     e.preventDefault();var form=document.getElementById('householdExpenseForm');if(window._ftHhSaveBusy||form.dataset.ftSaved==='1')return;window._ftHhSaveBusy=true;var buttons=Array.from(form.querySelectorAll('button[type="submit"]'));if(e.submitter&&buttons.indexOf(e.submitter)<0)buttons.push(e.submitter);buttons.forEach(function(b){b.disabled=true;});var oldAdjusted=false,newAdjusted=false,old=null,entry=null,operation='';
-    try{var amount=Number(document.getElementById('hhExpAmount').value),paidBy=document.getElementById('hhExpPaidBy').value,pm=document.getElementById('hhExpPaymentMethod').value,currency=document.getElementById('hhExpCurrency').value,accountId=document.getElementById('hhExpAccount').value,splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){return cb.value;})));if(!Number.isFinite(amount)||amount<=0||!paidBy||!splitAmong.length||!pm||!accountId)throw new Error('Enter an amount, payer, participants, payment method and account.');var date=document.getElementById('hhExpDate').value||ftLocalDateStr();var _b=window.ftHhDateBounds();if(date>_b.max)throw new Error('You cannot add an expense with a future date.');if(date<_b.min&&date!==document.getElementById('hhExpDate').dataset.orig)throw new Error('You can only add expenses from the last 60 days (from '+_b.min+' to today).');var description=document.getElementById('hhExpDesc').value,category=document.getElementById('hhExpCategory').value,splitAmongUids=splitAmong.map(function(name){var identity=window.ftFinancialIdentity(name);return identity.indexOf('uid:')===0?identity.slice(4):'';});var id=document.getElementById('hhExpId').value||ref(db,'households').push().key;document.getElementById('hhExpId').value=id;operation=form.dataset.ftPaymentKey||ref(db,'households').push().key;form.dataset.ftPaymentKey=operation;var payer=await window.ftHhPayerAccounts(paidBy),hid=payer.hid,expenseRef=ref(db,'households/'+hid+'/expenses/'+id);old=(await get(expenseRef)).val();if(old&&old.paymentOperation===operation){form.dataset.ftSaved='1';closeModal('modalHouseholdExpense');return;}entry={id:id,date:date,description:description,category:category,amount:amount,currency:currency,paidBy:paidBy,paidByUid:payer.uid,splitAmong:splitAmong,splitAmongUids:splitAmongUids,paymentMethod:pm,accountId:accountId,deductAmount:amount,paymentOperation:operation,createdByUid:_uid(),updatedAt:new Date().toISOString()};if(old&&old.accountId&&old.deductAmount){await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old');oldAdjusted=true;}await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm,operation+'_new');newAdjusted=true;if(state.householdId!==hid)throw new Error('The household changed before saving.');await set(expenseRef,entry);form.dataset.ftSaved='1';newAdjusted=false;oldAdjusted=false;var fresh=await get(ref(db,'households/'+hid));window._ftHhSnapshot={uid:_uid(),hid:hid,data:fresh.val()||{}};window.ftHhApplySharedState();saveData();window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(description||'')+' — '+formatCurrency(amount,currency),'household');renderHouseholdSettlement();renderExpenses();window.renderOverview();ftToast('Household expense '+(old?'updated':'added'));closeModal('modalHouseholdExpense');}
+    try{var amount=Number(document.getElementById('hhExpAmount').value),paidBy=document.getElementById('hhExpPaidBy').value,pm=document.getElementById('hhExpPaymentMethod').value,currency=document.getElementById('hhExpCurrency').value,accountId=document.getElementById('hhExpAccount').value,splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){return cb.value;})));if(!Number.isFinite(amount)||amount<=0||!paidBy||!splitAmong.length||!pm||!accountId)throw new Error('Enter an amount, payer, participants, payment method and account.');var date=document.getElementById('hhExpDate').value||ftLocalDateStr();var _b=window.ftHhDateBounds();if(date>_b.max)throw new Error('You cannot add an expense with a future date.');if(date<_b.min&&date!==document.getElementById('hhExpDate').dataset.orig)throw new Error('You can only add expenses from the last 60 days (from '+_b.min+' to today).');var description=document.getElementById('hhExpDesc').value,category=document.getElementById('hhExpCategory').value,splitAmongUids=splitAmong.map(function(name){var identity=window.ftFinancialIdentity(name);return identity.indexOf('uid:')===0?identity.slice(4):'';});ftToast('Household expense ' + (document.getElementById('hhExpId').value ? 'updated' : 'added'));closeModal('modalHouseholdExpense');var id=document.getElementById('hhExpId').value||ref(db,'households').push().key;document.getElementById('hhExpId').value=id;operation=form.dataset.ftPaymentKey||ref(db,'households').push().key;form.dataset.ftPaymentKey=operation;var payer=await window.ftHhPayerAccounts(paidBy),hid=payer.hid,expenseRef=ref(db,'households/'+hid+'/expenses/'+id);old=(await get(expenseRef)).val();if(old&&old.paymentOperation===operation){form.dataset.ftSaved='1';closeModal('modalHouseholdExpense');return;}entry={id:id,date:date,description:description,category:category,amount:amount,currency:currency,paidBy:paidBy,paidByUid:payer.uid,splitAmong:splitAmong,splitAmongUids:splitAmongUids,paymentMethod:pm,accountId:accountId,deductAmount:amount,paymentOperation:operation,createdByUid:_uid(),updatedAt:new Date().toISOString()};if(old&&old.accountId&&old.deductAmount){await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old');oldAdjusted=true;}await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm,operation+'_new');newAdjusted=true;if(state.householdId!==hid)throw new Error('The household changed before saving.');await set(expenseRef,entry);form.dataset.ftSaved='1';newAdjusted=false;oldAdjusted=false;if(window._ftHhSnapshot&&window._ftHhSnapshot.hid===hid&&window._ftHhSnapshot.data){try{var _ftMerged=JSON.parse(JSON.stringify(window._ftHhSnapshot.data));if(!_ftMerged.expenses)_ftMerged.expenses={};_ftMerged.expenses[id]=entry;}catch(_ftMergeErr){}}window.ftHhApplySharedState();get(ref(db,'households/'+hid)).then(function(fresh){window._ftHhSnapshot={uid:_uid(),hid:hid,data:fresh.val()||{}};window.ftHhApplySharedState();}).catch(function(){});saveData();window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(description||'')+' — '+formatCurrency(amount,currency),'household');renderHouseholdSettlement();renderExpenses();window.renderOverview();}
     catch(err){var reversalError=null;if(newAdjusted&&entry)try{await window.ftHhAdjustPayerAccount(entry.paidBy,entry.accountId,entry.amount,entry.currency,entry.paymentMethod,operation+'_new',true);}catch(undo){reversalError=undo;}if(oldAdjusted&&old)try{await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,-Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old',true);}catch(undo){reversalError=undo;}console.error(err);alert('Could not complete household expense: '+err.message+(reversalError?' The account reversal also needs attention: '+reversalError.message+' Do not submit a new payment.':''));}finally{window._ftHhSaveBusy=false;buttons.forEach(function(b){b.disabled=false;});}
   };
 
