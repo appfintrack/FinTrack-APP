@@ -1238,7 +1238,7 @@ window.deleteSharedSettlement = async function(id) {
   if (!window.__ftok) { ftConfirm('Delete this shared settlement? It will be removed for both users.', function() { window.__ftok = 1; deleteSharedSettlement(id); }); return; } window.__ftok = 0;
   try { await remove(ref(db, 'sharedSettlements/' + id)); } catch(err) { console.error(err); }
 };
-onAuthStateChanged(auth, async (fbUser) => {
+window.ftRestoreSession = async function (fbUser) {
   if (fbUser && !currentUser && !window._ftManualLogin) {
     try {
       const profSnap = await get(ref(db, 'users/' + fbUser.uid));
@@ -1268,9 +1268,11 @@ onAuthStateChanged(auth, async (fbUser) => {
       subscribeConnectionData(fbUser.uid); if (typeof window.subscribeNotifications === 'function') window.subscribeNotifications(fbUser.uid);
       if (_ftIsDormant && typeof window.ftShowDormantPopup1 === 'function') { setTimeout(function(){ window.ftShowDormantPopup1(); }, 800); }
       if (typeof window.ftCheckSubscriptionOnLogin === 'function') { setTimeout(function(){ window.ftCheckSubscriptionOnLogin(); }, 1500); }
-    } catch(e) { console.error('Session restore error:', e); }
+    } catch(e) { console.error('Session restore error:', e); if (window.ftIsNetworkDown ? window.ftIsNetworkDown() : !navigator.onLine) { window._ftPendingSessionRestoreUser = fbUser; } }
   }
-});
+};
+window.ftResumePendingSessionRestore = function () { if (window._ftPendingSessionRestoreUser && !currentUser) { var _ftRestoreUser = window._ftPendingSessionRestoreUser; window._ftPendingSessionRestoreUser = null; window.ftRestoreSession(_ftRestoreUser); } };
+onAuthStateChanged(auth, async (fbUser) => { if (fbUser && !currentUser && !window._ftManualLogin) window.ftRestoreSession(fbUser); });
 
 async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { if(!currentUser||currentUser.loginId!==loginId)return; const wasFirstLoad=isFirstLoad; dataLoaded = true; const val = snapshot.val(); if (val) {
     normalizeState(val);
@@ -1285,10 +1287,10 @@ async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); d
         if (hhOwners.length === 1) {state.householdOwnerUid=hhOwners[0];state.householdId='hh_'+hhOwners[0];}
       } catch(err){console.warn('Could not restore previous household membership:',err);}
     }
-  } else { if (loginId === 'US' && isFirstLoad) { await migrateExistingData(loginId); } else { Object.assign(state, { rates: { ...DEFAULT_RATES }, displayCurrency: 'INR', banks: [], debts: [], gold: [], sips: [], expenses: {}, settlements: {}, transfers: [], friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio', theme: 'default' } }); } } isFirstLoad = false; if (currentUser && currentUser.name) { const _dn = currentUser.name.trim().split(/\s+/).slice(0,2).join(' '); if (_dn && (!state.settings.people || state.settings.people.length === 0)) { if(!state.settings.people) state.settings.people = []; state.settings.people.push(_dn); saveData(); } } /* PATCH: permanently include logged-in user as a household member */ if (currentUser && getPeople()[0]) { const _hhMe = getPeople()[0]; if (!Array.isArray(state.householdMembers)) state.householdMembers = []; const _hhHasMe = state.householdMembers.some(function(m){ return m.name === _hhMe; }); if (!_hhHasMe) { state.householdMembers.unshift({ id: 'hh_self_' + (currentUser.uid || 'me'), name: _hhMe, isSelf: true }); window._ftNeedHhSave = true; } else { const _sm = state.householdMembers.find(function(m){ return m.name === _hhMe; }); if (_sm && !_sm.isSelf) { _sm.isSelf = true; window._ftNeedHhSave = true; } } } if (currentUser && !state.settings.firstTimeSetupDone && (state.banks||[]).length === 0 && Object.keys(state.expenses||{}).length === 0) { if (typeof window.showFirstTimeGuidance === 'function') window.showFirstTimeGuidance(); } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const _rc = (window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'); liveRateInput.value = (state.rates[_rc] || DEFAULT_RATES[_rc] || 1).toFixed(2); } const displaySelect = document.getElementById('displayCurrencySelect'); if (displaySelect) displaySelect.value = state.displayCurrency || 'INR'; if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect(); if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput(); if (typeof window.setCommonGoldPurity === 'function') window.setCommonGoldPurity(activeCommonPurity); const cm = currentMonthStr(); ['expenseMonthSelect','friendSplitMonthSelect','sharedSplitMonthSelect','settlementMonthSelect','transferMonthSelect','incomeMonthSelect','cashbookMonthSelect','cashbookPdfMonthSelect','householdMonthSelect'].forEach(id => { const el = document.getElementById(id); if(el&&(wasFirstLoad||!el.value))el.value=cm; }); updateAllMonthNavLabels(); applyVisibilitySettings(); if (typeof window.ftApplyTheme === 'function') window.ftApplyTheme(); if (typeof window.renderAll === 'function') window.renderAll(); renderCreditCardReminders(); setTimeout(function(){ if (window._ftNeedHhSave) { window._ftNeedHhSave = false; saveData(); } if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar(); if (typeof window.ftApplyDescriptionVisibility === 'function') window.ftApplyDescriptionVisibility(); if (typeof window.ftSubscribePremiumSettings === 'function') window.ftSubscribePremiumSettings(); if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); applyAdminBranding(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true); if (typeof window.ftHhEnsure === 'function') { try { window.ftHhEnsure(); } catch(_hhe){ console.warn('Household sync on load:', _hhe); } } if (typeof window.fetchLiveRates === 'function') { try { window.fetchLiveRates(true); } catch(_fe){} } }, 50); }, (error) => { console.error('Data load error:', error); alert('Could not load your saved data from the server (' + (error && error.message ? error.message : 'permission denied') + '). Your data has NOT been changed.'); }); }
+  } else { if (loginId === 'US' && isFirstLoad) { await migrateExistingData(loginId); } else { Object.assign(state, { rates: { ...DEFAULT_RATES }, displayCurrency: 'INR', banks: [], debts: [], gold: [], sips: [], expenses: {}, settlements: {}, transfers: [], friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio', theme: 'default' } }); } } isFirstLoad = false; if (currentUser && currentUser.name) { const _dn = currentUser.name.trim().split(/\s+/).slice(0,2).join(' '); if (_dn && (!state.settings.people || state.settings.people.length === 0)) { if(!state.settings.people) state.settings.people = []; state.settings.people.push(_dn); saveData(); } } /* PATCH: permanently include logged-in user as a household member */ if (currentUser && getPeople()[0]) { const _hhMe = getPeople()[0]; if (!Array.isArray(state.householdMembers)) state.householdMembers = []; const _hhHasMe = state.householdMembers.some(function(m){ return m.name === _hhMe; }); if (!_hhHasMe) { state.householdMembers.unshift({ id: 'hh_self_' + (currentUser.uid || 'me'), name: _hhMe, isSelf: true }); window._ftNeedHhSave = true; } else { const _sm = state.householdMembers.find(function(m){ return m.name === _hhMe; }); if (_sm && !_sm.isSelf) { _sm.isSelf = true; window._ftNeedHhSave = true; } } } if (currentUser && !state.settings.firstTimeSetupDone && (state.banks||[]).length === 0 && Object.keys(state.expenses||{}).length === 0) { if (typeof window.showFirstTimeGuidance === 'function') window.showFirstTimeGuidance(); } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const _rc = (window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'); liveRateInput.value = (state.rates[_rc] || DEFAULT_RATES[_rc] || 1).toFixed(2); } const displaySelect = document.getElementById('displayCurrencySelect'); if (displaySelect) displaySelect.value = state.displayCurrency || 'INR'; if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect(); if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput(); if (typeof window.setCommonGoldPurity === 'function') window.setCommonGoldPurity(activeCommonPurity); const cm = currentMonthStr(); ['expenseMonthSelect','friendSplitMonthSelect','sharedSplitMonthSelect','settlementMonthSelect','transferMonthSelect','incomeMonthSelect','cashbookMonthSelect','cashbookPdfMonthSelect','householdMonthSelect'].forEach(id => { const el = document.getElementById(id); if(el&&(wasFirstLoad||!el.value))el.value=cm; }); updateAllMonthNavLabels(); applyVisibilitySettings(); if (typeof window.ftApplyTheme === 'function') window.ftApplyTheme(); if (typeof window.renderAll === 'function') window.renderAll(); renderCreditCardReminders(); setTimeout(function(){ if (window._ftNeedHhSave) { window._ftNeedHhSave = false; saveData(); } if (typeof window.ftUpdateAvatar === 'function') window.ftUpdateAvatar(); if (typeof window.ftApplyDescriptionVisibility === 'function') window.ftApplyDescriptionVisibility(); if (typeof window.ftSubscribePremiumSettings === 'function') window.ftSubscribePremiumSettings(); if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); applyAdminBranding(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); if (typeof window.ftRefreshConnectionData === 'function') window.ftRefreshConnectionData(true); if (typeof window.ftHhEnsure === 'function') { try { window.ftHhEnsure(); } catch(_hhe){ console.warn('Household sync on load:', _hhe); } } if (typeof window.fetchLiveRates === 'function') { try { window.fetchLiveRates(true); } catch(_fe){} } }, 50); }, (error) => { console.error('Data load error:', error); if (window.ftShowNetworkNoticeIfDown && window.ftShowNetworkNoticeIfDown()) { } else { alert('Could not load your saved data from the server. Please try again after fixing your network connection.'); } }); }
 async function migrateExistingData(loginId) { try { const snapshot = await get(ref(db, 'fintrack_data')); const oldData = snapshot.val(); if (oldData) { const migratedState = { rates: { ...DEFAULT_RATES, ...(oldData.liveRate ? { SAR: oldData.liveRate } : {}), ...(oldData.rates || {}) }, displayCurrency: 'INR', banks: Array.isArray(oldData.banks) ? oldData.banks : (oldData.banks ? Object.values(oldData.banks) : []), debts: Array.isArray(oldData.debts) ? oldData.debts : (oldData.debts ? Object.values(oldData.debts) : []), gold: Array.isArray(oldData.gold) ? oldData.gold : (oldData.gold ? Object.values(oldData.gold) : []), sips: Array.isArray(oldData.sips) ? oldData.sips : (oldData.sips ? Object.values(oldData.sips) : []), expenses: oldData.expenses || {}, settlements: oldData.settlements || {}, transfers: Array.isArray(oldData.transfers) ? oldData.transfers : (oldData.transfers ? Object.values(oldData.transfers) : []), friends: [], friendSplits: {}, friendLedger: [], settings: { people: [], bankType1: DEFAULT_BANK_TYPE1, bankType2: DEFAULT_BANK_TYPE2, showSecondaryAccount: true, showLiabilities: false, showGoldSip: true, showTransfers: false, showCreditCard: true, showPendingPayments: true, showIndividualSummary: true, allowedCurrencies: [], adminLogo: '', adminTagline: 'Financial Planning & Portfolio' } }; migratedState.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.date) b.date = ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; }); migratedState.gold.forEach(g => { if (g.date) g.date = convertGoldDate(g.date); }); migratedState.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); }); await set(ref(db, `userData/${loginId}`), migratedState); const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } console.log("Migration complete: existing data moved to user-specific path."); } else { const userSnap = await get(ref(db, `users/${loginId}`)); if (!userSnap.exists()) { await set(ref(db, `users/${loginId}`), { name: 'Existing User', loginId, password: encodePassword('Juby@8055'), createdAt: new Date().toISOString() }); } } } catch(err) { console.error("Migration error:", err); } }
 function normalizeState(val) { if (!val) return; state.rates = val.rates || { ...DEFAULT_RATES }; state.displayCurrency = val.displayCurrency || 'INR'; state.banks = window.ftNormalizeBanks ? window.ftNormalizeBanks(val.banks) : (Array.isArray(val.banks) ? val.banks : (val.banks ? Object.values(val.banks) : [])); state.debts = Array.isArray(val.debts) ? val.debts : (val.debts ? Object.values(val.debts) : []); state.gold = Array.isArray(val.gold) ? val.gold : (val.gold ? Object.values(val.gold) : []); state.sips = Array.isArray(val.sips) ? val.sips : (val.sips ? Object.values(val.sips) : []); state.transfers = Array.isArray(val.transfers) ? val.transfers : (val.transfers ? Object.values(val.transfers) : []); state.expenses = val.expenses || {}; state.settlements = val.settlements || {}; state.friends = Array.isArray(val.friends) ? val.friends : (val.friends ? Object.values(val.friends) : []); state.friendSplits = val.friendSplits || {}; state.friendLedger = Array.isArray(val.friendLedger) ? val.friendLedger : []; state.householdMembers = state.householdId ? state.householdMembers : (Array.isArray(val.householdMembers) ? val.householdMembers : (val.householdMembers ? Object.values(val.householdMembers) : [])); state.householdExpenses = state.householdId ? state.householdExpenses : (Array.isArray(val.householdExpenses) ? val.householdExpenses : (val.householdExpenses ? Object.values(val.householdExpenses) : [])); state.householdSettlements = state.householdId ? state.householdSettlements : (Array.isArray(val.householdSettlements) ? val.householdSettlements : (val.householdSettlements ? Object.values(val.householdSettlements) : [])); state.householdOwnerUid = val.householdOwnerUid || ""; state.householdId = val.householdId || ""; state.householdMigrationComplete = !!val.householdMigrationComplete; state.settings = val.settings || { people: [] }; if (!state.settings.people) state.settings.people = []; if (!state.settings.bankType1) state.settings.bankType1 = DEFAULT_BANK_TYPE1; if (!state.settings.bankType2) state.settings.bankType2 = DEFAULT_BANK_TYPE2; if (state.settings.showSecondaryAccount === undefined) state.settings.showSecondaryAccount = true; if (state.settings.showLiabilities === undefined) state.settings.showLiabilities = false; if (state.settings.showGoldSip === undefined) state.settings.showGoldSip = true; if (state.settings.showTransfers === undefined) state.settings.showTransfers = false; if (state.settings.showCreditCard === undefined) state.settings.showCreditCard = true; if (state.settings.showPendingPayments === undefined) state.settings.showPendingPayments = true; if (state.settings.showIndividualSummary === undefined) state.settings.showIndividualSummary = true; if (!state.settings.allowedCurrencies) state.settings.allowedCurrencies = []; if (state.settings.adminLogo === undefined) state.settings.adminLogo = ''; if (state.settings.adminTagline === undefined) state.settings.adminTagline = 'Financial Planning & Portfolio'; if (state.settings.showTotalLiabilities === undefined) state.settings.showTotalLiabilities = false; if (state.settings.showTotalSavingsGold === undefined) state.settings.showTotalSavingsGold = false; if (state.settings.showMonthlyCashbook === undefined) state.settings.showMonthlyCashbook = true; if (!state.settings.theme) state.settings.theme = 'default'; if (typeof window.ftApplyTheme === 'function') window.ftApplyTheme(); state.banks.forEach(b => { if (!b.country) b.country = b.currency === 'INR' ? 'India' : 'Saudi Arabia'; if (!b.owner) b.owner = getPeople()[0] || ''; if (!b.bankType) b.bankType = (b.currency === 'INR') ? 1 : 2; if (!b.date) b.date = ''; }); state.debts.forEach(d => { if (!d.payments) d.payments = []; else if (!Array.isArray(d.payments)) d.payments = Object.values(d.payments); if (!d.currency) d.currency = 'INR'; }); state.gold.forEach(g => { if (!g.currency) g.currency = 'SAR'; }); state.sips.forEach(s => { if (!s.currency) s.currency = 'INR'; }); if (state.settings.people.length === 0 && state.banks.length > 0) { const owners = []; state.banks.forEach(b => { if (b.owner && !owners.includes(b.owner)) owners.push(b.owner); }); if (owners.length > 0) { state.settings.people = owners; saveData(); } } if (typeof val.liveRate === 'number' && !state.rates.SAR) state.rates.SAR = val.liveRate; if(window.ftHhApplySharedState)window.ftHhApplySharedState(); }
-window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, householdExpenses: state.householdExpenses, householdSettlements: state.householdSettlements, householdOwnerUid: state.householdOwnerUid, householdId: state.householdId, householdMigrationComplete: !!state.householdMigrationComplete, settings: state.settings })); const _banks=_save.banks;delete _save.banks;const _bankSave=window.ftSaveBankChanges(_banks);window._ftUserSavePromise=Promise.all([update(ref(db,'userData/'+currentUser.loginId),_save),_bankSave]).then(function(){return true;}).catch(function(err){console.error('Firebase sync error:',err);alert('Could not save changes to Firebase: '+err.message);return false;});return window._ftUserSavePromise; } catch(e) { console.error("saveData serialize error:", e); } } };
+window.saveData = function() { if (typeof window.renderAll === 'function') window.renderAll(); if (!dataLoaded) { console.warn('saveData skipped: user data has not loaded from the server yet.'); return; } if (currentUser) { try { const _save = JSON.parse(JSON.stringify({ rates: state.rates, displayCurrency: state.displayCurrency, banks: state.banks, debts: state.debts, gold: state.gold, sips: state.sips, expenses: state.expenses, settlements: state.settlements, transfers: state.transfers, friends: state.friends, friendSplits: state.friendSplits, friendLedger: state.friendLedger, householdMembers: state.householdMembers, householdExpenses: state.householdExpenses, householdSettlements: state.householdSettlements, householdOwnerUid: state.householdOwnerUid, householdId: state.householdId, householdMigrationComplete: !!state.householdMigrationComplete, settings: state.settings })); const _banks=_save.banks;delete _save.banks;const _bankSave=window.ftSaveBankChanges(_banks);window._ftUserSavePromise=Promise.all([update(ref(db,'userData/'+currentUser.loginId),_save),_bankSave]).then(function(){return true;}).catch(function(err){console.error('Firebase sync error:',err);if (window.ftShowNetworkNoticeIfDown && window.ftShowNetworkNoticeIfDown()) { } else { alert('Could not save changes to Firebase. Please try again after fixing your network connection.'); }return false;});return window._ftUserSavePromise; } catch(e) { console.error("saveData serialize error:", e); } } };
 window.updateExchangeRate = function(val) { const c = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; state.rates[c] = parseFloat(val) || DEFAULT_RATES[c] || 1; saveData(); };
 window.changeDisplayCurrency = function(curr) { state.displayCurrency = curr; saveData(); };
 window.fetchLiveRates = async function(silent) { try { const res = await fetch('https://api.exchangerate-api.com/v4/latest/INR'); const data = await res.json(); if (data && data.rates) { for (const curr of Object.keys(CURRENCIES)) { if (curr === 'INR') { state.rates.INR = 1; continue; } if (data.rates[curr]) state.rates[curr] = 1 / data.rates[curr]; } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const sc = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; liveRateInput.value = (state.rates[sc] || DEFAULT_RATES[sc] || 1).toFixed(2); } saveData(); if (!silent) alert("Live rates fetched successfully!"); if (typeof window.renderAll === 'function') window.renderAll(); } } catch(e) { console.warn("Live rate API error, retaining current rates.", e); if (!silent) alert("Unable to fetch live rates. You can enter rates manually in Settings."); } };
@@ -4443,6 +4445,111 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   var _t=0; var _b=setInterval(function(){ _t++; try{ window.ftNormalizeNames(); }catch(e){} if(typeof window.dataLoaded!=='undefined'&&window.dataLoaded&&typeof window.renderAll==='function'){ try{ window.renderAll(); }catch(e){} clearInterval(_b); } if(_t>40) clearInterval(_b); },500);
 })();
 </script><script>
+// Network status guard: one small, friendly notice during connectivity loss; hides itself on recovery.
+/* global db, ref, onValue */
+(function () {
+  var el = null, offline = !navigator.onLine, fbDown = false, fbEverConnected = false, fbDownSince = 0;
+  var MSG = 'Network unavailable. Please try again after fixing your network connection.';
+  function ensure() {
+    if (el && document.body && document.body.contains(el)) return el;
+    el = document.createElement('div');
+    el.id = 'ftNetworkNotice';
+    el.className = 'hidden';
+    el.setAttribute('role', 'status');
+    el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147483000;max-width:92vw;background:#ffffff;border:2px solid #fecaca;border-radius:14px;box-shadow:0 12px 32px rgba(15,23,42,.18);padding:12px 18px;text-align:center;pointer-events:none;';
+    el.innerHTML = '<p style="margin:0;font:700 13px/1.4 Inter,ui-sans-serif,system-ui,sans-serif;color:#b91c1c;"><i class="fa-solid fa-tower-broadcast" style="margin-right:8px"></i>' + MSG + '</p>';
+    (document.body || document.documentElement).appendChild(el);
+    return el;
+  }
+  function down() { return offline || (fbDown && (fbEverConnected || (fbDownSince && Date.now() - fbDownSince > 5000))); }
+  function refresh() {
+    var e = ensure();
+    if (down()) e.classList.remove('hidden'); else e.classList.add('hidden');
+    if (!down() && typeof window.ftResumePendingSessionRestore === 'function') window.ftResumePendingSessionRestore();
+  }
+  window.ftIsNetworkDown = function () { return down(); };
+  window.ftShowNetworkNoticeIfDown = function () { var d = down(); if (d) refresh(); return d; };
+  window.addEventListener('offline', function () { offline = true; refresh(); });
+  window.addEventListener('online', function () { offline = false; if (fbDown && !fbDownSince) fbDownSince = Date.now(); refresh(); });
+  // Firebase connection failures — resume normal operation automatically when restored.
+  try {
+    onValue(ref(db, '.info/connected'), function (snap) {
+      var connected = snap.val() === true;
+      if (connected) { fbEverConnected = true; fbDown = false; fbDownSince = 0; }
+      else { fbDown = true; if (!fbDownSince) fbDownSince = Date.now(); }
+      refresh();
+    });
+  } catch (e) {}
+  refresh();
+})();
+</script>
+<script>
+// Mandatory primary-currency setup for new users, plus financial-entry guards.
+/* global getSetting */
+(function () {
+  var modal = null;
+  window.ftPrimaryCurrencySet = function () {
+    try { var allowed = getSetting('allowedCurrencies', []); return Array.isArray(allowed) && allowed.length > 0; } catch (e) { return true; }
+  };
+  window.ftShowCurrencySetup = function () {
+    if (window.ftPrimaryCurrencySet()) return;
+    if (!modal || !document.body.contains(modal)) {
+      modal = document.createElement('div');
+      modal.id = 'ftCurrencySetupModal';
+      modal.className = 'fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4';
+      modal.style.zIndex = '96';
+      modal.setAttribute('role', 'dialog'); modal.setAttribute('aria-modal', 'true');
+      modal.innerHTML = '<div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 space-y-4 text-center relative">' +
+        '<button type="button" aria-label="Close" class="absolute top-3 right-3 text-slate-300 hover:text-slate-500 text-lg font-bold">&times;</button>' +
+        '<div class="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center"><i class="fa-solid fa-coins text-amber-600 text-2xl"></i></div>' +
+        '<h3 class="text-xl font-black text-slate-800">Complete Your Currency Setup</h3>' +
+        '<p class="text-sm text-slate-600">Please select at least one primary currency in Settings to start using FinTrack. You can also configure a secondary currency if needed.</p>' +
+        '<button type="button" id="ftGoCurrencySettings" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-xl shadow transition">Go to Settings</button>' +
+        '</div>';
+      document.body.appendChild(modal);
+      modal.querySelector('button[aria-label="Close"]').onclick = function () { modal.classList.add('hidden'); };
+      modal.querySelector('#ftGoCurrencySettings').onclick = function () {
+        modal.classList.add('hidden');
+        if (typeof window.switchTab === 'function') window.switchTab('settings');
+        if (typeof window.populateCurrencyRestriction === 'function') { try { window.populateCurrencyRestriction(); } catch (e) {} }
+        setTimeout(function () { var box = document.getElementById('currencyRestrictionContainer'); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
+      };
+    }
+    modal.classList.remove('hidden');
+  };
+  window.ftHideCurrencySetup = function () { if (modal) modal.classList.add('hidden'); };
+  // After the introduction pop-ups are completed or skipped, require the currency setup once.
+  ['_finishGuidance', '_ftGuideSkip'].forEach(function (name) {
+    var original = window[name];
+    if (typeof original !== 'function') return;
+    window[name] = function () {
+      var result = original.apply(this, arguments);
+      setTimeout(function () { if (!window.ftPrimaryCurrencySet()) window.ftShowCurrencySetup(); }, 400);
+      return result;
+    };
+  });
+  // Once a primary currency is saved, close the pop-up for good.
+  var origSaveCurrencies = window.saveAllowedCurrencies;
+  if (typeof origSaveCurrencies === 'function') {
+    window.saveAllowedCurrencies = function () {
+      var result = origSaveCurrencies.apply(this, arguments);
+      if (window.ftPrimaryCurrencySet()) window.ftHideCurrencySetup();
+      return result;
+    };
+  }
+  // Block financial entries until at least one primary currency is selected.
+  var FINANCIAL = /^(saveBankEntry|saveExpense|saveTransfer|saveAddMoney|saveDataEntry|saveDebtPayment|saveTrip|saveTripSplit|saveFriendSplit|saveFriendSettlement|saveHouseholdExpense|saveHouseholdSettlement|saveSharedSplit|saveSharedSettlement)\(/;
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form || form.tagName !== 'FORM') return;
+    if (!FINANCIAL.test(form.getAttribute('onsubmit') || '')) return;
+    if (window.ftPrimaryCurrencySet()) return;
+    e.preventDefault(); e.stopPropagation();
+    window.ftShowCurrencySetup();
+  }, true);
+})();
+</script>
+<script>
 // Classic script embedded after the standalone FinTrack host; report actions are window exports below.
 /* global ftCloseReport, ftSaveActiveReport, ftShowReport, currentUser */
 (function () {
