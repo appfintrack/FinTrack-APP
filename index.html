@@ -865,12 +865,18 @@ function ftSetupFinpinInputs(attr, onComplete) {
   });
 }
 window.ftShowFinpinLock = function() {
-  document.getElementById('authContainer').classList.remove('hidden'); showAuthScreen('finpinLockScreen'); ftTogglePasswordLogin(false);
-  ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); ftClearFinpinInputs('data-finpin-lock'); document.getElementById('finpinLockError').classList.add('hidden');
+  document.getElementById('authContainer').classList.remove('hidden');
+  var _ftLockWasActive = document.getElementById('finpinLockScreen').classList.contains('active');
+  showAuthScreen('finpinLockScreen'); ftTogglePasswordLogin(false);
+  ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin);
+  // Keep digits the user already typed when initialization, session restore or re-renders re-show the lock.
+  if (!_ftLockWasActive || ftReadFinpinInputs('data-finpin-lock').length === 0) ftClearFinpinInputs('data-finpin-lock');
+  document.getElementById('finpinLockError').classList.add('hidden');
 };
 window.ftUnlockWithFinpin = async function() {
   if (window._ftFinpinUnlockBusy) return;
   var pin = ftReadFinpinInputs('data-finpin-lock'); var errEl = document.getElementById('finpinLockError');
+  if (!window._ftAuthStateKnown) { errEl.textContent = 'FinTrack is still connecting. Please try again in a moment.'; errEl.classList.remove('hidden'); return; }
   function message(text) { errEl.textContent = text; errEl.classList.remove('hidden'); }
   if (!/^\d{4}$/.test(pin)) { message('Please enter all 4 digits.'); return; }
   if (!currentUser || !auth.currentUser || auth.currentUser.uid !== currentUser.uid) {
@@ -1272,10 +1278,10 @@ window.ftRestoreSession = async function (fbUser) {
   }
 };
 window.ftResumePendingSessionRestore = function () { if (window._ftPendingSessionRestoreUser && !currentUser) { var _ftRestoreUser = window._ftPendingSessionRestoreUser; window._ftPendingSessionRestoreUser = null; window.ftRestoreSession(_ftRestoreUser); } };
-onAuthStateChanged(auth, async (fbUser) => { if (fbUser && !currentUser && !window._ftManualLogin) window.ftRestoreSession(fbUser); });
+onAuthStateChanged(auth, async (fbUser) => { window._ftAuthStateKnown = true; if (typeof window.ftWatchPaidSubscriptions === 'function') window.ftWatchPaidSubscriptions();  if (fbUser && !currentUser && !window._ftManualLogin) window.ftRestoreSession(fbUser); });
 
 async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { if(!currentUser||currentUser.loginId!==loginId)return; const wasFirstLoad=isFirstLoad; dataLoaded = true; const val = snapshot.val(); if (val) {
-    normalizeState(val);
+    normalizeState(val); if (typeof window.ftApplyRetention === 'function') { try { window.ftApplyRetention(); } catch (_ftRetErr) { console.error('Retention pass error:', _ftRetErr); } }
     if (!state.householdOwnerUid && currentUser && currentUser.uid) {
       try {
         var hhProfile = (await get(ref(db, 'publicProfiles/' + currentUser.uid + '/householdConnections'))).val() || {};
@@ -1387,7 +1393,7 @@ window.renderRecentIncome = function() {
       '<button onclick="editIncomeEntry(\'' + t.id + '\')" class="text-slate-400 hover:text-indigo-600 px-1" title="Edit"><i class="fa-solid fa-pen text-[10px]"></i></button>' +
       '<button onclick="deleteIncomeEntry(\'' + t.id + '\')" class="text-slate-400 hover:text-red-600 px-1" title="Delete"><i class="fa-solid fa-trash text-[10px]"></i></button>' +
       '</div>';
-  }).join('') || '<p class="text-xs text-slate-400 text-center py-3">No income entries yet.</p>';
+  }).join('') || (window.ftMonthExpired && window.ftMonthExpired('income', incomeMonth) ? '<div class="text-center py-3"><p class="text-xs font-bold text-slate-700">Historical data unavailable</p><p class="text-xs text-slate-500 italic mt-1">Transactions and monthly totals older than 365 days are no longer available.</p></div>' : '<p class="text-xs text-slate-400 text-center py-3">No income entries yet.</p>');
   const vm = document.getElementById('recentIncomeViewMore');
   if (vm) vm.classList.toggle('hidden', !(all.length > showCount));
 };
@@ -1812,7 +1818,7 @@ function renderHouseholdSettlement() {
     (state.friendSplits[month] || []).forEach(function(fs) { const parts = fs.participants || []; if (!parts.some(function(p){return memberNames.includes(p);})) return; crossSplits.push({ date: fs.date, description: 'Friends Split: ' + (fs.description || ''), category: 'Friends Split', paidBy: fs.paidBy || (parts[0] || ''), amount: fs.amount, currency: fs.currency || 'INR', splitAmong: parts.slice(), isCrossSplit: true, id: fs.id }); });
     (state.trips || []).forEach(function(tr) { Object.values(tr.splits || {}).forEach(function(s) { if (dateMonth(s.date) !== month) return; const tMembers = (tr.members || []).map(function(m){return m.name || m;}); if (!tMembers.some(function(mn){return memberNames.includes(mn);})) return; crossSplits.push({ date: s.date, description: 'Trip Split: ' + (tr.name || 'Trip') + (s.description ? ' - ' + s.description : ''), category: 'Trip Split', paidBy: s.paidBy || '', amount: s.amount, currency: s.currency || 'INR', splitAmong: tMembers.slice(), isCrossSplit: true, id: s.id || Date.now() }); }); });
     const allExpenses = sortByDateDesc([...hhExpenses, ...crossSplits]);
-    if (allExpenses.length === 0) { expTbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">No household expenses recorded for this month.</td></tr>'; }
+    if (allExpenses.length === 0) { expTbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center">' + (window.ftMonthExpired && window.ftMonthExpired('household', month) ? '<p class="font-bold text-slate-700">Historical data unavailable</p><p class="text-slate-500 italic mt-1">Transactions and monthly totals older than 365 days are no longer available.</p>' : '<span class="text-slate-400 italic">No household expenses recorded for this month.</span>') + '</td></tr>'; }
     else { const limited = allExpenses.slice(0, getDisplayLimit('hhExpenses'));
       limited.forEach(function(e) { const splitAmong = (e.splitAmong && e.splitAmong.length > 0 ? e.splitAmong : (state.householdMembers || []).map(function(m){return m.name;})).join(', ');
         const catColor = e.isCrossSplit ? 'bg-amber-50 text-amber-700' : 'bg-teal-50 text-teal-700';
@@ -2580,7 +2586,7 @@ window.renderExpenses = function() {
   var _hasFs = (window.state.sharedSplits||[]).some(fs => fs.ftype!=='trip' && dateMonth(fs.date)===month && (fs.participants||[]).some(p=>p.uid===_myUid)) || _un && (window.state.friendSplits[month] || []).some(function(fs){ var _p = fs.participants || []; return isCurrencyAllowed(fs.currency) && _p.includes(_un); });
   var _hasTs = _myUid && (state.trips || []).some(function(trip){ var _m = trip.members || []; return _m.some(function(m){ return m.uid === _myUid; }) && Object.values(trip.splits||{}).some(function(s){ return dateMonth(s.date) === month && isCurrencyAllowed(s.currency); }); });
     var _hasHh = (window.state.householdExpenses || []).some(exp => window.ftHhInMonth(exp, month) && isCurrencyAllowed(exp.currency) && window.ftHhMyShare(exp)>0);
-  if (allExpenses.length === 0 && !_hasFs && !_hasTs && !_hasHh) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No expenses logged for this month yet.</td></tr>`; }
+  if (allExpenses.length === 0 && !_hasFs && !_hasTs && !_hasHh) { tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center">` + (window.ftMonthExpired && window.ftMonthExpired('expenses', month) ? '<span class="block font-bold text-slate-700">Historical data unavailable</span><span class="block mt-1 text-slate-500 italic">Transactions and monthly totals older than 365 days are no longer available.</span>' : '<span class="text-slate-400 italic">No expenses logged for this month yet.</span>') + `</td></tr>`; }
   else {
     if (allExpenses.length === 0) tbody.innerHTML = '';
     allExpenses.forEach(item => {
@@ -3566,6 +3572,7 @@ window.ftLoadPremiumSettings = async function() {
     window.ftPremiumSettings.featureAccess = data.featureAccess || {};
     window.ftPremiumSettings.featureLimits = data.featureLimits || {};
     window.ftPremiumSettings._loaded = true;
+    try { var _ftPaidSnap = await get(ref(db, 'settings/enable_paid_subscriptions')); window.ftPaidSubscriptionsEnabled = _ftPaidSnap.val() === true; } catch (_ftPaidErr) { console.warn('Subscription switch load error:', _ftPaidErr); }
     if (!snap.exists()) {
       try { await update(ref(db, 'app_config'), { premiumSettings: { requireSubscription: false, featureAccess: {}, featureLimits: {} } }); } catch(initErr) { console.error('Premium settings init error:', initErr); }
     }
@@ -3594,6 +3601,7 @@ window.ftRenderPremiumSettings = function() {
   var enforcementChecked = window.ftPremiumSettings.requireSubscription ? 'checked' : '';
   container.innerHTML = '<div class="space-y-4">' +
     '<div class="border-b border-slate-200 pb-3"><h4 class="font-bold text-slate-800 text-sm flex items-center"><i class="fa-solid fa-crown text-amber-500 mr-2"></i> Premium Subscription Settings</h4><p class="text-xs text-slate-500 mt-1">Admin-only controls for premium subscription configuration. Pricing & plan durations are managed exclusively via Google Play Console.</p></div>' +
+    '<div class="space-y-2 border-b border-slate-200 pb-3"><h5 class="text-xs font-bold text-slate-700 uppercase">Enable Google Play Subscriptions</h5><p class="text-[10px] text-slate-500">When OFF, everyone enjoys full access to premium features without Google Play billing. When ON, the Premium screen offers the Google Play plans (premium_1m, premium_3m, premium_6m, premium_1y).</p><label class="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg"><span class="text-xs font-bold text-slate-700">Google Play Subscriptions</span><input type="checkbox" onchange="ftSetPaidSubscriptions(this.checked)" ' + (window.ftPaidSubscriptionsEnabled ? 'checked' : '') + ' class="w-10 h-5 accent-amber-500"></label></div>' +
     '<div class="space-y-2"><h5 class="text-xs font-bold text-slate-700 uppercase">Feature Access &amp; Free Tier Limits</h5><p class="text-[10px] text-slate-500">Set Free/Premium access and numerical limits for free tier quantities. Leave limit empty for unlimited.</p><div class="space-y-1.5">' + featureRows + '</div><button onclick="ftSaveFeatureAccess()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg mt-2">Save Feature Access</button></div>' +
     '<div class="space-y-2 border-t border-slate-200 pt-3"><h5 class="text-xs font-bold text-slate-700 uppercase">Manual Subscription Grant</h5><p class="text-[10px] text-slate-500">Find a registered user by mobile number and grant a subscription (1, 3, 6 months or 1 year).</p><div class="flex gap-2"><select id="grantCC" class="w-24 px-2 py-1.5 text-xs border border-slate-300 rounded-lg"><option value="+91">+91</option><option value="+966">+966</option><option value="+971">+971</option><option value="+973">+973</option><option value="+968">+968</option><option value="+974">+974</option><option value="+965">+965</option><option value="+998">+998</option><option value="+1">+1</option><option value="+44">+44</option><option value="+61">+61</option></select><input type="tel" id="grantMobile" placeholder="Mobile number" class="flex-1 px-3 py-1.5 text-xs border border-slate-300 rounded-lg"><button type="button" onclick="ftSearchUserForGrant()" class="px-3 py-1.5 bg-slate-700 text-white text-xs font-bold rounded-lg">Find</button></div><div id="grantSearchResult" class="text-xs"></div><div id="grantPlans" class="hidden flex flex-wrap gap-2"><button type="button" onclick="ftGrantSubscription(1)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg">Grant 1 Month</button><button type="button" onclick="ftGrantSubscription(3)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg">Grant 3 Months</button><button type="button" onclick="ftGrantSubscription(6)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg">Grant 6 Months</button><button type="button" onclick="ftGrantSubscription(12)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg">Grant 1 Year</button></div></div>' +
     '<div class="space-y-2 border-t border-slate-200 pt-3"><h5 class="text-xs font-bold text-slate-700 uppercase">Master Control</h5><div class="flex items-center justify-between bg-slate-50 p-3 rounded-lg"><div><p class="text-xs font-bold text-slate-700">Require Subscription</p><p class="text-[10px] text-slate-500">When ON, users without an active subscription must subscribe via Google Play to continue.</p></div><input type="checkbox" id="requireSubscriptionToggle" onchange="ftToggleEnforcement()" ' + enforcementChecked + ' class="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"></div></div>' +
@@ -4797,16 +4805,50 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
 <script>
 // Classic script embedded after the standalone FinTrack host; internal Premium plans + Google Play billing hooks.
 // Product IDs below must match the in-app products created in Google Play Console.
-/* global ftToast, currentUser, db, ref, update, document, console, setTimeout, window */
+/* global ftToast, currentUser, db, ref, update, document, console, setTimeout, window, navigator, Intl */
 (function () {
+  // Display prices per country — keep these aligned with the Google Play Console amounts.
+  var PRICES = {
+    IN: { premium_1m: '₹49', premium_3m: '₹139', premium_6m: '₹279', premium_1y: '₹499' },
+    SA: { premium_1m: 'SAR 2.25', premium_3m: 'SAR 6.49', premium_6m: 'SAR 12.99', premium_1y: 'SAR 22.99' },
+    AE: { premium_1m: 'AED 2.19', premium_3m: 'AED 6.49', premium_6m: 'AED 12.99', premium_1y: 'AED 22.99' },
+    PK: { premium_1m: 'Rs 149', premium_3m: 'Rs 429', premium_6m: 'Rs 849', premium_1y: 'Rs 1,499' },
+    BD: { premium_1m: '৳59', premium_3m: '৳169', premium_6m: '৳339', premium_1y: '৳599' },
+    US: { premium_1m: '$0.59', premium_3m: '$1.69', premium_6m: '$3.29', premium_1y: '$5.99' }
+  };
+  var TIMEZONE_COUNTRY = { Riyadh: 'SA', Dubai: 'AE', Kolkata: 'IN', Calcutta: 'IN', Karachi: 'PK', Dhaka: 'BD' };
+  function detectCountry() {
+    var m = (navigator.language || '').match(/-([A-Za-z]{2})(?:$|[^A-Za-z])/);
+    var code = m ? m[1].toUpperCase() : null;
+    if (!code || !PRICES[code]) {
+      try {
+        var tz = (Intl.DateTimeFormat().resolvedOptions() && Intl.DateTimeFormat().resolvedOptions().timeZone) || '';
+        for (var city in TIMEZONE_COUNTRY) { if (tz.indexOf(city) !== -1) { code = TIMEZONE_COUNTRY[city]; break; } }
+      } catch (e) {}
+    }
+    return (code && PRICES[code]) ? code : 'US';
+  }
+  var prices = PRICES[detectCountry()];
   var PLANS = [
-    { id: 'premium_1m', name: '1 Month Plan', price: '₹49', note: 'Billed monthly' },
-    { id: 'premium_3m', name: '3 Months Plan', price: '₹139', note: 'Save vs monthly' },
-    { id: 'premium_6m', name: '6 Months Plan', price: '₹279', note: 'Save vs monthly' },
-    { id: 'premium_1y', name: '1 Year Plan', price: '₹499', note: 'Best value' }
+    { id: 'premium_1m', name: '1 Month Plan', price: prices.premium_1m, note: 'Billed monthly' },
+    { id: 'premium_3m', name: '3 Months Plan', price: prices.premium_3m, note: 'Save vs monthly' },
+    { id: 'premium_6m', name: '6 Months Plan', price: prices.premium_6m, note: 'Save vs monthly' },
+    { id: 'premium_1y', name: '1 Year Plan', price: prices.premium_1y, note: 'Best value' }
   ];
   var selected = null, busy = false, busyTimer = null;
   window.ftPremiumPlans = PLANS;
+
+  // The admin switch (settings/enable_paid_subscriptions) decides what the modal offers.
+  (function ensureOffNotice() {
+    var wrap = document.getElementById('ftPremiumPlans');
+    if (wrap && !document.getElementById('ftPremiumOffMsg')) {
+      var notice = document.createElement('p');
+      notice.id = 'ftPremiumOffMsg';
+      notice.className = 'hidden text-sm text-slate-600 italic text-center leading-relaxed';
+      notice.textContent = 'Enjoy full access to all FinTrack Premium options features for now. Unlock premium features without invoking Google Play Billing.';
+      wrap.parentNode.insertBefore(notice, wrap);
+    }
+  })();
 
   function show(message) {
     var el = document.getElementById('ftPremiumError');
@@ -4814,7 +4856,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   }
 
   window.ftSelectPremiumPlan = function (id) {
-    if (busy) return;
+    if (busy || window.ftPaidSubscriptionsEnabled !== true) return;
     selected = id; show('');
     document.querySelectorAll('.ft-plan-btn').forEach(function (btn) {
       var active = btn.getAttribute('data-ft-plan') === id;
@@ -4828,17 +4870,34 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   window.ftRenderPremiumPlans = function () {
     var wrap = document.getElementById('ftPremiumPlans');
     if (!wrap) return;
+    var notice = document.getElementById('ftPremiumOffMsg');
+    var subscribeBtn = document.getElementById('ftPremiumSubscribeBtn');
+    if (window.ftPaidSubscriptionsEnabled !== true) {
+      if (notice) notice.classList.remove('hidden');
+      wrap.classList.add('hidden'); wrap.innerHTML = '';
+      if (subscribeBtn) subscribeBtn.classList.add('hidden');
+      var errEl = document.getElementById('ftPremiumError');
+      if (errEl) { errEl.textContent = ''; errEl.className = 'hidden'; }
+      return;
+    }
+    if (notice) notice.classList.add('hidden');
+    wrap.classList.remove('hidden');
+    if (subscribeBtn) subscribeBtn.classList.remove('hidden');
     wrap.innerHTML = PLANS.map(function (p) {
       return '<button type="button" data-ft-plan="' + p.id + '" onclick="ftSelectPremiumPlan(\'' + p.id + '\')" role="radio" aria-checked="false" class="ft-plan-btn w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-slate-200 bg-white hover:border-amber-400 transition"><span class="text-left"><span class="block text-sm font-bold text-slate-800">' + p.name + '</span><span class="block text-[11px] text-slate-500">' + p.note + '</span></span><span class="text-base font-black text-[#EE5133]">' + p.price + '</span></button>';
     }).join('');
   };
 
-  // Android bridge contract: the WebView injects window.FinTrackBilling with
-  // purchase(productId) and calls window.ftOnPremiumPurchaseResult(success, productId) afterwards.
+  // Android bridge contract: the WebView injects one of these interfaces (via
+  // addJavascriptInterface) with a purchase/startPurchase(productId) method, and calls
+  // window.ftOnPremiumPurchaseResult(success, productId) afterwards.
   function getBillingBridge() {
-    if (window.FinTrackBilling && typeof window.FinTrackBilling.purchase === 'function') return window.FinTrackBilling;
-    if (window.AndroidBridge && typeof window.AndroidBridge.startPurchase === 'function') {
-      return { purchase: function (id) { window.AndroidBridge.startPurchase(id); } };
+    var names = ['FinTrackBilling', 'FinTrackAndroid', 'FinTrackApp', 'AndroidBridge', 'Android'];
+    for (var i = 0; i < names.length; i++) {
+      var bridge = window[names[i]];
+      if (!bridge) continue;
+      if (typeof bridge.purchase === 'function') return { purchase: bridge.purchase.bind(bridge) };
+      if (typeof bridge.startPurchase === 'function') return { purchase: bridge.startPurchase.bind(bridge) };
     }
     return null;
   }
@@ -4848,7 +4907,13 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     var btn = document.getElementById('ftPremiumSubscribeBtn');
     if (!selected) { show('Please select a plan first.'); return; }
     var bridge = getBillingBridge();
-    if (!bridge) { show('Google Play billing is only available inside the Android app.'); return; }
+    if (!bridge) {
+      var inWrapper = /FinTrack/i.test(navigator.userAgent);
+      show(inWrapper
+        ? 'Google Play billing is unavailable in this app version. Please update FinTrack from the Play Store.'
+        : 'Google Play billing is only available inside the Android app.');
+      return;
+    }
     busy = true; show('');
     if (btn) { btn.disabled = true; btn.textContent = 'Opening Google Play…'; }
     try {
@@ -4922,6 +4987,210 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     if (btn) { btn.disabled = false; btn.textContent = 'Subscribe'; }
     window.ftRenderPremiumPlans();
     if (origOpen) return origOpen.apply(this, arguments);
+  };
+})();
+</script>
+<script>
+// Keeps background content still while the profile panel (notifications, etc.) is open.
+// The panel itself scrolls; the page behind must not scroll with it.
+/* global document, window, MutationObserver */
+(function () {
+  var style = document.createElement('style');
+  style.textContent =
+    '#modalProfilePanel .overflow-y-auto{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}' +
+    'html.ft-panel-lock,html.ft-panel-lock body{overflow:hidden !important;}';
+  document.head.appendChild(style);
+  var lock = function (on) { document.documentElement.classList.toggle('ft-panel-lock', !!on); };
+  var panel = document.getElementById('modalProfilePanel');
+  if (panel && typeof MutationObserver === 'function') {
+    var sync = function () { lock(!panel.classList.contains('hidden')); };
+    new MutationObserver(sync).observe(panel, { attributes: true, attributeFilter: ['class'] });
+    sync();
+  }
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack host.
+// Global admin switch: settings/enable_paid_subscriptions (default false).
+// OFF: the Premium modal shows a free-access notice instead of Google Play plans.
+// ON: the existing Google Play plans and purchase verification are shown.
+/* global auth, db, ref, onValue, update, document, window, console */
+(function () {
+  window.ftPaidSubscriptionsEnabled = false;
+  var _watched = false;
+  window.ftWatchPaidSubscriptions = function () {
+    if (_watched || !auth || !auth.currentUser) return;
+    _watched = true;
+    try {
+      onValue(ref(db, 'settings/enable_paid_subscriptions'), function (snap) {
+        var wasEnabled = window.ftPaidSubscriptionsEnabled;
+        window.ftPaidSubscriptionsEnabled = snap.val() === true;
+        if (wasEnabled !== window.ftPaidSubscriptionsEnabled && typeof window.ftRenderPremiumPlans === 'function') window.ftRenderPremiumPlans();
+      }, function (err) { console.warn('Subscription switch unavailable:', err && err.message ? err.message : err); });
+    } catch (e) { console.warn('Subscription switch unavailable:', e); }
+  };
+  window.ftSetPaidSubscriptions = function (enabled) {
+    try { update(ref(db, 'settings'), { enable_paid_subscriptions: !!enabled }); }
+    catch (e) { console.error('Could not save subscription switch:', e); alert('Could not save the subscription switch. Please try again.'); }
+  };
+})();
+</script>
+<script>
+// Classic script embedded after the standalone FinTrack host.
+// Rolling 365-day retention: every transaction expires PERMANENTLY one year after its
+// ORIGINAL creation timestamp (never the selected transaction date). Expired records
+// and their monthly totals are deleted for good — no historical archive is kept.
+// A month whose data has fully expired is marked under userData/{loginId}/expiredMonths
+// (household markers also go to the shared household node) so the views can show the
+// "Historical data unavailable" notice instead of a plain empty state.
+/* global state, currentUser, db, ref, get, set, update, remove, saveData, renderAll, dateMonth, currentMonthStr, document, window, console, Date, JSON */
+(function () {
+  var RETENTION_MS = 365 * 86400000;
+  function monthOf(dateStr) { return (typeof dateMonth === 'function') ? dateMonth(dateStr) : String(dateStr || '').slice(0, 7); }
+  function currentMonth() {
+    if (typeof currentMonthStr === 'function') return currentMonthStr();
+    var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+  // The ORIGINAL creation timestamp: explicit createdAt, else the record id (Date.now()
+  // at creation), else the record date as the last resort for legacy records.
+  function creationTs(record) {
+    var t = Number(record.createdAt || record.created_at || record.timestamp || 0);
+    if (!t) { var id = Number(record.id); if (Number.isFinite(id) && id >= 1000000000000) t = id; }
+    if (!t && record.date) { var d = new Date(record.date + 'T00:00:00'); if (!isNaN(d.getTime())) t = d.getTime(); }
+    return t || 0;
+  }
+  function expireMs(record) {
+    if (record.expireAt) { var v = new Date(record.expireAt).getTime(); if (Number.isFinite(v)) return v; }
+    var t = creationTs(record);
+    record.expireAt = new Date((t || Date.now()) + RETENTION_MS).toISOString();
+    return (t || Date.now()) + RETENTION_MS;
+  }
+  function isExpired(record) { return expireMs(record) <= Date.now(); }
+
+  // True when the selected month's data in this bucket has fully expired under retention.
+  window.ftMonthExpired = function (bucket, month) {
+    var store = (window._ftExpiredMonths || {})[bucket];
+    return !!(store && store[month]);
+  };
+  function markExpired(markers, bucket, month) {
+    if (!markers[bucket]) markers[bucket] = {};
+    if (markers[bucket][month]) return false;
+    markers[bucket][month] = { expiredAt: new Date().toISOString() };
+    if (!window._ftExpiredMonths[bucket]) window._ftExpiredMonths[bucket] = {};
+    window._ftExpiredMonths[bucket][month] = markers[bucket][month];
+    return true;
+  }
+  function hasLiveRecords(st, bucket, month) {
+    if (bucket === 'expenses') {
+      var list = st.expenses[month]; if (!Array.isArray(list)) return false;
+      // Derived split-share rows (backed by unexpiring friend splits) count as live.
+      return list.length > 0;
+    }
+    if (bucket === 'income') {
+      return (st.transfers || []).some(function (t) { return t.fromName === 'External Deposit' && monthOf(t.date) === month && !isExpired(t); });
+    }
+    if (bucket === 'household') {
+      return (st.householdExpenses || []).some(function (e) { return (e.date ? monthOf(e.date) : currentMonth()) === month && !isExpired(e); });
+    }
+    return false;
+  }
+
+  // Runs after user data loads from Firebase: stamps expireAt, deletes expired records
+  // (and their monthly totals) permanently, and marks fully-expired months.
+  window.ftApplyRetention = async function () {
+    var user = window.currentUser || (typeof currentUser !== 'undefined' ? currentUser : null);
+    var st = window.state;
+    if (!user || !user.loginId || !st) return;
+    var basePath = 'userData/' + user.loginId;
+    var recordsChanged = false, stampedNew = false, markersChanged = false;
+    // Expired-month markers from previous cleanups (in-memory + Firebase).
+    window._ftExpiredMonths = { expenses: {}, income: {}, household: {} };
+    var markers;
+    try {
+      var snap = await get(ref(db, basePath + '/expiredMonths'));
+      markers = snap.val() || {};
+    } catch (e) { console.warn('Could not load expired-month markers:', e); markers = {}; }
+    ['expenses', 'income', 'household'].forEach(function (b) { if (!markers[b]) markers[b] = {}; });
+    window._ftExpiredMonths = JSON.parse(JSON.stringify(markers));
+    // Household markers are shared with every member through the household node.
+    if (st.householdId) {
+      try {
+        var shared = await get(ref(db, 'households/' + st.householdId + '/expiredMonths'));
+        var sh = shared.val() || {};
+        Object.keys(sh).forEach(function (m) { window._ftExpiredMonths.household[m] = { expiredAt: sh[m] }; });
+      } catch (e) { console.warn('Could not load shared household markers:', e); }
+    }
+
+    function stamp(record) {
+      var had = record.expireAt; var ms = expireMs(record);
+      if (!had) stampedNew = true;
+      return ms;
+    }
+    // Months touched this pass — re-checked after removal to mark fully-expired ones.
+    var touched = { expenses: {}, income: {}, household: {} };
+
+    // Monthly expenses (derived split-share rows are skipped; their sources live elsewhere).
+    Object.keys(st.expenses || {}).forEach(function (month) {
+      var list = st.expenses[month]; if (!Array.isArray(list)) return;
+      var kept = [];
+      list.forEach(function (e) {
+        if (e.isSplitShare) { kept.push(e); return; }
+        if (stamp(e) <= Date.now()) { touched.expenses[month] = true; recordsChanged = true; return; }
+        kept.push(e);
+      });
+      if (kept.length !== list.length) { if (kept.length) st.expenses[month] = kept; else delete st.expenses[month]; }
+    });
+    // Income entries (External Deposit records only; account-to-account transfers are kept).
+    if (Array.isArray(st.transfers)) {
+      var keptT = [];
+      st.transfers.forEach(function (t) {
+        if (t.fromName !== 'External Deposit') { keptT.push(t); return; }
+        if (stamp(t) <= Date.now()) { touched.income[monthOf(t.date)] = true; recordsChanged = true; return; }
+        keptT.push(t);
+      });
+      if (keptT.length !== st.transfers.length) st.transfers = keptT;
+    }
+    // Household expenses: solo records go with the normal save; shared records are
+    // deleted from the household node so every member sees them removed.
+    if (Array.isArray(st.householdExpenses)) {
+      var removedHh = [], keptH = [];
+      st.householdExpenses.forEach(function (e) {
+        var month = e.date ? monthOf(e.date) : currentMonth();
+        if (stamp(e) <= Date.now()) { touched.household[month] = true; removedHh.push(e); recordsChanged = true; return; }
+        keptH.push(e);
+      });
+      if (keptH.length !== st.householdExpenses.length) st.householdExpenses = keptH;
+      if (removedHh.length && st.householdId) {
+        for (var i = 0; i < removedHh.length; i++) {
+          var id = removedHh[i] && removedHh[i].id;
+          if (!id) continue;
+          try { await remove(ref(db, 'households/' + st.householdId + '/expenses/' + id)); }
+          catch (err) { console.warn('Could not delete an expired household expense:', err); }
+        }
+      }
+    }
+
+    // Mark a month expired only when NOTHING is left live for it in that bucket.
+    ['expenses', 'income', 'household'].forEach(function (bucket) {
+      Object.keys(touched[bucket]).forEach(function (month) {
+        if (hasLiveRecords(st, bucket, month)) return;
+        if (markExpired(markers, bucket, month)) markersChanged = true;
+        // Share the household marker with every member through the household node.
+        if (bucket === 'household' && st.householdId) {
+          var sharedMarker = {}; sharedMarker[month] = markers.household[month].expiredAt;
+          try { update(ref(db, 'households/' + st.householdId + '/expiredMonths'), sharedMarker); }
+          catch (e) { console.warn('Could not share the household expiry marker:', e); }
+        }
+      });
+    });
+    if (recordsChanged || stampedNew) { if (typeof saveData === 'function') { try { saveData(); } catch (e) { console.error('Retention save error:', e); } } }
+    if (markersChanged) { try { await set(ref(db, basePath + '/expiredMonths'), markers); } catch (e) { console.warn('Could not save expired-month markers:', e); } }
+    // Revert the earlier archive: the stored monthlyTotals node is deleted outright.
+    // Expired months' totals go with it; live months' summaries are recomputed from the
+    // unexpired records, so nothing historical is retained and nothing live is touched.
+    try { await remove(ref(db, basePath + '/monthlyTotals')); }
+    catch (e) { console.warn('Could not clear the old monthly totals archive:', e); }
+    if (recordsChanged) { if (typeof renderAll === 'function') { try { renderAll(); } catch (e) {} } }
   };
 })();
 </script>
