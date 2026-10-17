@@ -857,16 +857,15 @@ window.ftShowWelcomeSplash = function () {
   var existing = document.getElementById('ftWelcomeSplash'); if (existing) existing.remove();
   var splash = document.createElement('div');
   splash.id = 'ftWelcomeSplash';
-  splash.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);opacity:0;transition:opacity .4s ease;pointer-events:none;';
-  splash.innerHTML = '<div style="text-align:center;color:#fff;padding:24px;">' +
-    '<div style="font-size:52px;line-height:1;margin-bottom:14px;">💰</div>' +
-    '<div style="font-size:22px;font-weight:700;letter-spacing:.3px;">Welcome to FinTrack</div>' +
-    '<div style="margin-top:10px;font-size:13px;opacity:.85;">Loading your finances…</div>' +
-    '<div style="margin-top:18px;width:120px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#fff;border-radius:2px;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
+  splash.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;opacity:0;transition:opacity .35s ease;pointer-events:none;';
+  splash.innerHTML = '<div style="text-align:center;padding:24px;">' +
+    '<img src="https://media.base44.com/images/public/6ad26e00e3010881748b402e/5cb88cb1c_fdd21755-fec9-4bae-af68-9225de0483fa.jpg" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
+    '<div style="font-size:22px;font-weight:800;letter-spacing:.3px;color:#1e293b;">Welcome to FinTrack</div>' +
+    '<div style="margin:20px auto 0;width:120px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#EE5133;border-radius:2px;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
     '</div>';
   document.body.appendChild(splash);
   requestAnimationFrame(function () { splash.style.opacity = '1'; });
-  setTimeout(function () { splash.style.opacity = '0'; setTimeout(function () { if (splash.parentNode) splash.remove(); }, 450); }, 1200);
+  setTimeout(function () { splash.style.opacity = '0'; setTimeout(function () { if (splash.parentNode) splash.remove(); }, 400); }, 1100);
 };
 function ftSetupFinpinInputs(attr, onComplete) {
   var inputs = Array.from(document.querySelectorAll('input[' + attr + ']'));
