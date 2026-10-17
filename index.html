@@ -259,6 +259,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
           </div>
           <button id="finpinUnlockButton" type="button" onclick="ftUnlockWithFinpin()" class="w-full py-3 bg-[#EE5133] hover:bg-[#d44420] text-white font-bold rounded-lg shadow-md transition-all">Unlock FinTrack <i class="fa-solid fa-unlock ml-1"></i></button>
           <div class="text-center"><button type="button" onclick="ftFinpinForgot()" class="text-indigo-600 hover:text-indigo-700 font-semibold text-xs">Forgot FinPIN?</button></div>
+          <button id="finpinBiometricButton" type="button" onclick="ftTryBiometricUnlock()" class="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-lg border border-emerald-200 transition-all text-sm hidden"><i class="fa-solid fa-fingerprint mr-1"></i> Unlock with Biometrics</button>
         </div>
         <p id="finpinLockError" role="alert" class="text-center text-xs text-red-500 font-semibold hidden"></p>
         <form id="loginForm" class="hidden" onsubmit="handleLogin(event)">
@@ -872,6 +873,7 @@ window.ftShowFinpinLock = function() {
   // Keep digits the user already typed when initialization, session restore or re-renders re-show the lock.
   if (!_ftLockWasActive || ftReadFinpinInputs('data-finpin-lock').length === 0) ftClearFinpinInputs('data-finpin-lock');
   document.getElementById('finpinLockError').classList.add('hidden');
+  if (typeof window.ftRefreshBiometricButton === 'function') window.ftRefreshBiometricButton();
 };
 window.ftUnlockWithFinpin = async function() {
   if (window._ftFinpinUnlockBusy) return;
@@ -2400,7 +2402,7 @@ window.showAllAdminFeedback = function(){ var list=document.getElementById('admi
 window.cleanupExpiredFeedback = async function(){ try{ var snap=await get(ref(db, 'publicProfiles')); var all=snap.val()||{}; var now=Date.now(); var sixMonthsMs=6*30*24*60*60*1000; Object.keys(all).forEach(function(uid){ var r=(all[uid]&&all[uid].rating)||null; if(r && r.createdAt){ var age=now-new Date(r.createdAt).getTime(); if(age>sixMonthsMs){ set(ref(db, 'publicProfiles/'+uid+'/rating'), null).catch(function(){}); } } }); }catch(e){ console.error('cleanupExpiredFeedback', e); } };
 window.toggleUserBlocked = async function(loginId, blocked) { try { const snap = await get(ref(db, `users/${loginId}`)); if (!snap.exists()) { alert("Account not found."); return; } const user = snap.val(); user.blocked = !blocked; await set(ref(db, `users/${loginId}`), user); loadAdminInfo(); } catch(err) { console.error(err); alert("Could not update this account. Please try again."); } };
 window.deleteUserAccount = async function(loginId) { try { const snap = await get(ref(db, `users/${loginId}`)); const u = snap.exists() ? snap.val() : {}; const _dispName = u.name || u.email || loginId; const _dispEmail = u.email || '(no email on file)'; if (!window.__ftok) { ftConfirm('Permanently delete account "' + _dispName + '" (' + _dispEmail + ') and ALL of its data? This cannot be undone.', function() { window.__ftok = 1; deleteUserAccount(loginId); }); return; } window.__ftok = 0; await remove(ref(db, `users/${loginId}`)); await remove(ref(db, `userData/${loginId}`)); await remove(ref(db, `publicProfiles/${loginId}`)); if (u.legacyLoginId && u.legacyLoginId !== loginId) { await remove(ref(db, `userData/${u.legacyLoginId}`)); await remove(ref(db, `users/${u.legacyLoginId}`)); } loadAdminInfo(); } catch(err) { console.error(err); alert("Could not delete this account. Please try again."); } };
-window.addEventListener('DOMContentLoaded', () => { const rem = localStorage.getItem('fintrack_remember_email'); if (rem) { document.getElementById('loginId').value = rem; document.getElementById('rememberMe').checked = true; } localStorage.removeItem('fintrack_remember_pass'); ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); if (document.getElementById('appContainer').classList.contains('hidden')) ftShowFinpinLock(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); });
+window.addEventListener('DOMContentLoaded', () => { const rem = localStorage.getItem('fintrack_remember_email'); if (rem) { document.getElementById('loginId').value = rem; document.getElementById('rememberMe').checked = true; } localStorage.removeItem('fintrack_remember_pass'); ftSetupFinpinInputs('data-finpin-lock', ftUnlockWithFinpin); if (document.getElementById('appContainer').classList.contains('hidden')) ftShowFinpinLock(); if (typeof window.ftInitLocalNotifications === 'function') window.ftInitLocalNotifications(); if (typeof window.subscribeActiveLogo === 'function') window.subscribeActiveLogo(); });
 window.renderProfile = function() { const container = document.getElementById('profileInfoContainer'); if (!container) return; if (!currentUser) { container.innerHTML = '<p class="text-slate-400 text-xs">Not logged in.</p>'; return; } const fullName = currentUser.name || '-'; const userId = currentUser.email || currentUser.loginId || '-'; const mobileStr = (currentUser.countryCode ? currentUser.countryCode + ' ' : '') + (currentUser.mobile || '-'); let joiningDate = currentUser.createdAt || '-'; if (joiningDate && joiningDate !== '-') { try { const d = new Date(joiningDate); joiningDate = d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }); } catch(e) {} } container.innerHTML = '<div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Name:</span><span class="font-bold text-slate-800">' + fullName + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">User ID (Email):</span><span class="font-bold text-slate-800">' + userId + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Mobile Number:</span><span class="font-bold text-slate-800">' + mobileStr + '</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Date of Joining:</span><span class="font-bold text-slate-800">' + joiningDate + '</span></div><div class="flex justify-between"><span class="text-slate-500 font-bold">Subscription Status:</span><span class="font-bold text-slate-800" id="subscriptionStatusValue">' + (typeof window.ftGetSubscriptionStatusLabel==='function' ? window.ftGetSubscriptionStatusLabel() : 'Free') + '</span></div>'; if (typeof window.ftShowPremiumAdminNav === 'function') window.ftShowPremiumAdminNav(); };
   window.openEditMobileModal = function() { if (!currentUser || !currentUser.uid) { alert('Please log in to update your profile.'); return; } document.getElementById('editMobileForm').reset(); if (currentUser.name) document.getElementById('editProfileName').value = (currentUser.name||'').toUpperCase(); if (currentUser.countryCode) document.getElementById('editMobileCountryCode').value = currentUser.countryCode; if (currentUser.mobile) document.getElementById('editMobileNumber').value = currentUser.mobile; document.getElementById('modalEditMobile').classList.remove('hidden'); };
   window.handleSaveMobile = async function(e) { e.preventDefault(); var newName=(document.getElementById('editProfileName').value.trim()||'').toUpperCase(); var newCountryCode=document.getElementById('editMobileCountryCode').value; var newMobile=document.getElementById('editMobileNumber').value.trim(); var password=document.getElementById('editMobilePassword').value; if(!newName){alert('Please enter your name.');return;} if(!currentUser||!currentUser.email){alert('Session expired. Please log in again.');return;} var oldName=(currentUser.name||'').toUpperCase(); var oldCC=currentUser.countryCode||''; var oldMob=currentUser.mobile||''; var oldKey=oldCC+oldMob; var newKey=newCountryCode+newMobile; var nameChanged=newName!==oldName; var mobileChanged=!!newMobile&&(newMobile!==oldMob||newCountryCode!==oldCC); if(!nameChanged&&!mobileChanged){closeModal('modalEditMobile');return;} if(mobileChanged){ if(!password){alert('Please enter your password to change your mobile number.');return;} ftConfirm('WARNING: You are changing your mobile number from '+oldCC+' '+oldMob+' to '+newCountryCode+' '+newMobile+'. All your connections, friend splits, and linked data will be updated to the new mobile number. This action cannot be undone. Do you want to continue?',function(result){ if(!result)return; window._doProfileUpdate(nameChanged,mobileChanged,newName,newCountryCode,newMobile,password,oldKey,newKey); }); } else { window._doProfileUpdate(nameChanged,mobileChanged,newName,newCountryCode,newMobile,'',oldKey,newKey); } }; window._doProfileUpdate = async function(nameChanged,mobileChanged,newName,newCountryCode,newMobile,password,oldKey,newKey){ try{ if(mobileChanged){ var dupSnap=await get(ref(db,'mobileLookup/'+newKey)); if(dupSnap.exists()&&dupSnap.val()!==currentUser.uid){alert('This mobile number is already registered to another user. Please use a different mobile number.');return;} await signInWithEmailAndPassword(auth,currentUser.email,password); } if(nameChanged){ await set(ref(db,'publicProfiles/'+currentUser.uid+'/name'),newName); try{ var myConnSnap=await get(ref(db,'publicProfiles/'+currentUser.uid+'/connections')); var myConns=myConnSnap.val()||{}; var updates={}; for(var otherUid in myConns){updates['publicProfiles/'+otherUid+'/connections/'+currentUser.uid+'/name']=newName;} if(Object.keys(updates).length>0){await update(ref(db),updates);} }catch(e){console.error('Connection name update error:',e);} try{ var splits=(state.sharedSplits||[]); for(var i=0;i<splits.length;i++){ var sp=splits[i]; if(sp&&sp.participants&&Array.isArray(sp.participants)){ var hasMe=sp.participants.some(function(p){return p.uid===currentUser.uid;}); if(hasMe){ var uSp=JSON.parse(JSON.stringify(sp)); uSp.participants=uSp.participants.map(function(p){return p.uid===currentUser.uid?Object.assign({},p,{name:newName}):p;}); await set(ref(db,'sharedSplits/'+sp.id),uSp); sp.participants.forEach(function(p){if(p.uid===currentUser.uid)p.name=newName;}); } } } }catch(e){console.error('Split name update error:',e);} currentUser.name=newName; } if(mobileChanged){ await set(ref(db,'users/'+currentUser.uid+'/mobile'),newMobile); await set(ref(db,'users/'+currentUser.uid+'/countryCode'),newCountryCode); await set(ref(db,'publicProfiles/'+currentUser.uid+'/mobile'),newMobile); await set(ref(db,'publicProfiles/'+currentUser.uid+'/countryCode'),newCountryCode); if(oldKey&&oldKey!==newKey){await remove(ref(db,'mobileLookup/'+oldKey));} await set(ref(db,'mobileLookup/'+newKey),currentUser.uid); currentUser.mobile=newMobile; currentUser.countryCode=newCountryCode; } window.currentUser=currentUser; closeModal('modalEditMobile'); alert('Profile updated successfully!'); renderProfile(); if(typeof renderAll==='function')renderAll(); }catch(err){ console.error('Profile update error:',err); if(err.code==='auth/wrong-password'||err.code==='auth/invalid-credential'){alert('Password verification failed. Please enter your correct current password.');} else{alert('Could not update profile: '+(err.message||'please try again.'));} } };
@@ -3438,6 +3440,7 @@ window.subscribeNotifications = function(uid) {
   try { get(ref(db, 'notifications/' + uid)).then(function(oldSnap){ var oldN = oldSnap.val() || {}; var keys = Object.keys(oldN); if (keys.length === 0) return; var updates = {}; keys.forEach(function(k){ if (oldN[k] && oldN[k].id) { updates['users/' + uid + '/notifications/' + oldN[k].id] = oldN[k]; updates['notifications/' + uid + '/' + k] = null; } }); if (Object.keys(updates).length > 0) update(ref(db), updates).catch(function(){}); }).catch(function(){}); } catch(_migrateErr) { console.warn('Notification migration error:', _migrateErr); }
   try { onValue(ref(db, 'users/' + uid + '/subscription'), function(ss) { window._ftMySubscription = ss.val() || null; var _subEl = document.getElementById('subscriptionStatusValue'); if (_subEl && typeof window.ftGetSubscriptionStatusLabel === 'function') _subEl.innerText = window.ftGetSubscriptionStatusLabel(); }, function(){}); } catch(_subE) {}
   var _oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+  window._ftNotifSeenKeys = window._ftNotifSeenKeys || {};
   window._ftNotifUnsub = onValue(ref(db, 'users/' + uid + '/notifications'), function(snap) {
     var all = snap.val() || {};
     var now = Date.now();
@@ -3452,6 +3455,7 @@ window.subscribeNotifications = function(uid) {
         delete all[key];
       }
     });
+    try { if (typeof window.scheduleLocalNotification === 'function') { Object.keys(all).forEach(function(key){ if (window._ftNotifSeenKeys[key]) return; window._ftNotifSeenKeys[key] = true; var _n = all[key] || {}; if (_n.createdAt && (now - new Date(_n.createdAt).getTime()) < 60000 && _n.message) { window.scheduleLocalNotification('FinTrack', _n.message); } }); } } catch(_ftNotifSchedErr) {}
     var list = Object.keys(all).map(function(k){ return all[k]; }).filter(function(n){ return n && (n.message || n.type); });
     list.sort(function(a,b){ return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); });
     window._ftNotifData = list;
@@ -4614,7 +4618,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   };
   window.ftCapSavePdf = async function (doc, fileName, title, openShare) {
     var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && (!window.Capacitor.isNativePlatform || window.Capacitor.isNativePlatform())) {
       try {
         var FS = window.Capacitor.Plugins.Filesystem;
         var base64 = await window.ftPdfToBase64(doc);
@@ -4648,7 +4652,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
       try { await navigator.share({ files: [file], title: title || fileName }); return true; }
       catch (e) { if (e && e.name !== 'AbortError') console.error('Web share failed', e); return false; }
     }
-    try { doc.save(fileName); if (!isMobile && typeof ftToast === 'function') ftToast('PDF download started.'); return true; }
+    try { return window.ftWebDownloadPdf(doc, fileName); }
     catch (e) { console.error('PDF download failed', e); if (typeof alert === 'function') alert('Could not save the PDF. Please try again.'); return false; }
   };
   window.ftSaveActiveReport = async function () {
@@ -4662,7 +4666,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     if (mode === 'view') { ftShowReport(doc, fileName, title); return; }
     window._ftInAppHandoffAt = Date.now();
     var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && (!window.Capacitor.isNativePlatform || window.Capacitor.isNativePlatform())) {
       window.ftPdfHandoff = { uid: currentUser && currentUser.uid, kind: 'download', hidden: false };
       try { await window.ftCapSavePdf(doc, fileName, title, true); }
       finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
@@ -4674,7 +4678,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
       try { await navigator.share({ files: [file], title: title || fileName }); }
       catch (error) {}
       finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
-    } else { try { doc.save(fileName); } catch (e) { console.error('PDF download failed', e); } }
+    } else { try { window.ftWebDownloadPdf(doc, fileName); } catch (e) { console.error('PDF download failed', e); } }
   };
   var logout = window.handleLogout; window.handleLogout = function () { ftCloseReport(); return logout.apply(this, arguments); };
 })();
@@ -5285,6 +5289,97 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     try { await remove(ref(db, basePath + '/monthlyTotals')); }
     catch (e) { console.warn('Could not clear the old monthly totals archive:', e); }
     if (recordsChanged) { if (typeof renderAll === 'function') { try { renderAll(); } catch (e) {} } }
+  };
+})();
+</script>
+<script>
+/* FinTrack native (Capacitor) integration: biometrics, local notifications, PDF web fallback.
+   Every call is guarded so this is safe in a regular browser with no Capacitor present. */
+(function () {
+  function hasCap() { return !!(window.Capacitor && window.Capacitor.Plugins); }
+  function isNative() { try { return !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform()); } catch (e) { return false; } }
+  function plugin(name) { try { return hasCap() ? window.Capacitor.Plugins[name] : null; } catch (e) { return null; } }
+
+  /* ---------- Biometric authentication ---------- */
+  window.ftBiometricAvailable = async function () {
+    try {
+      var Bio = plugin('NativeBiometric');
+      if (!Bio || typeof Bio.isAvailable !== 'function') return false;
+      var res = await Bio.isAvailable();
+      return !!(res && res.isAvailable !== false);
+    } catch (e) { return false; }
+  };
+  window.ftRefreshBiometricButton = async function () {
+    var btn = document.getElementById('finpinBiometricButton');
+    if (!btn) return;
+    if (!window._ftFinpinPendingUser || !isNative()) { btn.classList.add('hidden'); return; }
+    try { btn.classList.toggle('hidden', !(await window.ftBiometricAvailable())); }
+    catch (e) { btn.classList.add('hidden'); }
+  };
+  window.ftTryBiometricUnlock = async function () {
+    if (window._ftFinpinUnlockBusy) return;
+    if (!window._ftFinpinPendingUser) { if (typeof ftToast === 'function') ftToast('Sign in with your password first.'); return; }
+    var btn = document.getElementById('finpinBiometricButton');
+    try {
+      var Bio = plugin('NativeBiometric');
+      if (!Bio || typeof Bio.verifyIdentity !== 'function') { if (typeof ftToast === 'function') ftToast('Biometrics not available on this device.'); return; }
+      if (!(await window.ftBiometricAvailable())) { if (typeof ftToast === 'function') ftToast('Biometrics not set up on this device.'); return; }
+      if (btn) { btn.disabled = true; btn.textContent = 'Verifying…'; }
+      await Bio.verifyIdentity({ reason: 'Unlock FinTrack', title: 'FinTrack Unlock', description: 'Authenticate to unlock FinTrack' });
+      if (typeof ftToast === 'function') ftToast('Unlocked with biometrics.');
+      if (typeof window.ftFinpinUnlockSuccess === 'function') window.ftFinpinUnlockSuccess();
+    } catch (e) {
+      var msg = (e && (e.message || e.code)) ? String(e.message || e.code) : '';
+      if (!(msg.indexOf('cancel') > -1 || msg === 'CANCEL' || msg === 'BIOMETRIC_AUTH_CANCELED')) {
+        console.warn('Biometric unlock failed:', e);
+        if (typeof ftToast === 'function') ftToast('Biometric unlock failed. Use your FinPIN.');
+      }
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-fingerprint mr-1"></i> Unlock with Biometrics'; }
+      if (typeof window.ftRefreshBiometricButton === 'function') window.ftRefreshBiometricButton();
+    }
+  };
+
+  /* ---------- Local notifications ---------- */
+  var _ftNotifInitDone = false;
+  window.ftInitLocalNotifications = async function () {
+    if (_ftNotifInitDone) return;
+    _ftNotifInitDone = true;
+    try {
+      var LN = plugin('LocalNotifications');
+      if (!LN || typeof LN.requestPermissions !== 'function') return;
+      await LN.requestPermissions();
+    } catch (e) { /* unsupported / denied — never block startup */ }
+  };
+  window.scheduleLocalNotification = async function (title, body) {
+    try {
+      if (!isNative()) return false;
+      var LN = plugin('LocalNotifications');
+      if (!LN || typeof LN.schedule !== 'function') return false;
+      var perm = (typeof LN.checkPermissions === 'function') ? await LN.checkPermissions() : { display: 'granted' };
+      if (perm && perm.display === 'denied') return false;
+      var id = Math.floor(Math.random() * 1000000) + 1;
+      await LN.schedule({ notifications: [{ id: id, title: String(title || 'FinTrack'), body: String(body || ''), schedule: { at: new Date(Date.now() + 50) } }] });
+      return true;
+    } catch (e) { return false; }
+  };
+
+  /* ---------- PDF web fallback: createObjectURL + anchor + revoke ---------- */
+  window.ftWebDownloadPdf = function (doc, fileName) {
+    try {
+      var blob = doc.output('blob');
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = fileName || 'FinTrack-Report.pdf';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { try { document.body.removeChild(a); } catch (e2) {} try { URL.revokeObjectURL(url); } catch (e3) {} }, 1500);
+      if (typeof ftToast === 'function') ftToast('PDF download started.');
+      return true;
+    } catch (e) {
+      console.error('PDF web download failed', e);
+      try { doc.save(fileName); } catch (e2) { if (typeof alert === 'function') alert('Could not save the PDF. Please try again.'); }
+      return false;
+    }
   };
 })();
 </script>
