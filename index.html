@@ -439,9 +439,9 @@ button:active, .ft-qa:active { transform:scale(.96); }
 <div id="modalTrip" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="font-bold text-base mb-4">Group Trip</h3><p class="text-[10px] text-slate-500 mb-3"><i class="fa-solid fa-crown text-amber-500 mr-1"></i>You will be the Trip Leader. Only the leader can delete or complete the trip.</p><form id="tripForm" onsubmit="saveTrip(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Trip Name</label><input type="text" id="tripName" required class="fintrack-field p-2 border rounded-lg w-full"></div><div><label class="block font-bold text-slate-600 mb-1">Friends</label><div id="tripMembersList" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto"></div></div><div class="flex gap-2 pt-2"><button type="button" onclick="document.getElementById('modalTrip').classList.add('hidden')" class="flex-1 px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-sky-600 text-white font-bold rounded-lg">Save Trip</button></div></form></div></div>
 <div id="modalTripSplit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="font-bold text-base mb-4">Trip Split</h3><form id="tripSplitForm" onsubmit="saveTripSplit(event)" class="space-y-3 text-xs"><input type="hidden" id="tripSplitTripId"><input type="hidden" id="tripSplitId"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="tripSplitDate" required class="fintrack-field p-2 border rounded-lg w-full"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="tripSplitAmount" required class="fintrack-field p-2 border rounded-lg w-full"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="tripSplitCurrency" onchange="ftUpdateTripAccountOptions()" class="fintrack-field p-2 border rounded-lg w-full"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="UZS">UZS</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Paid By</label><select id="tripSplitPaidBy" onchange="ftUpdateTripAccountOptions()" class="fintrack-field p-2 border rounded-lg w-full"></select></div><div id="tripSplitAccountWrap" class="hidden p-3 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2"><input type="hidden" id="tripSplitPaymentMethod" value=""><div><label class="block font-bold text-indigo-900">Payment Method <span class="text-red-500">*</span></label><div class="flex flex-wrap gap-2"><button type="button" data-pm="bank" onclick="ftSelectTripPaymentMethod('bank')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-building-columns mr-1"></i>Bank Account</button><button type="button" data-pm="cash" onclick="ftSelectTripPaymentMethod('cash')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-wallet mr-1"></i>Cash in Hand</button><button type="button" data-pm="credit" onclick="ftSelectTripPaymentMethod('credit')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-credit-card mr-1"></i>Credit Card</button></div></div><div><label class="block font-bold text-indigo-900 mb-1">Deduct From</label><select id="tripSplitAccount" class="fintrack-field p-2 border rounded-lg bg-white w-full"></select></div><p class="text-[10px] text-indigo-700">Your full payment is deducted; only your share counts as a personal expense.</p></div><div class="flex gap-2 pt-2"><button type="button" onclick="document.getElementById('modalTripSplit').classList.add('hidden')" class="flex-1 px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-sky-600 text-white font-bold rounded-lg">Save</button></div></form></div></div>
 <section id="sec-expenses" class="tab-content hidden space-y-6"><div class="hidden"><input id="cashbookMonthSelect" type="hidden"><select id="cashbookCurrencySelect"></select><span id="cashbookPeriod"></span><div id="cashbookContainer"></div></div><div class="pastel-rose p-5 rounded-2xl border border-rose-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-rose-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Monthly Expenses</h3><p class="text-xs text-slate-500">Real-time tracker. Logs update instantly upon saving.</p></div><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-rose-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_expenseMonthSelect"></span><button onclick="navMonthNext('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="expenseMonthSelect" value=""><button onclick="openNewExpenseModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg shadow">+ Add Expense</button></div></div><div id="expenseSummaryContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div><div class="overflow-x-auto border rounded-lg border-rose-200"><table class="w-full text-left text-xs"><thead><tr class="bg-rose-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3 text-center">Paid By</th><th class="p-3 text-center">Category</th><th class="p-3">Description</th><th class="p-3 text-center">Account</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="expensesTable" class="divide-y divide-rose-100 font-medium text-slate-700"></tbody></table></div><div id="expensesViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('expenses')" class="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-xs rounded-lg transition">View More</button></div><div class="mt-6 border-t pt-4"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-clock-rotate-left mr-1 text-slate-400"></i> Settlement Transfer Logs (this month)</h4><div class="overflow-x-auto"><table class="w-full text-left text-xs bg-slate-50 rounded-lg"><tbody id="settlementsTable" class="divide-y divide-slate-200 text-slate-600"></tbody></table></div></div></div></section>
-        <section id="sec-friends" class="tab-content hidden space-y-6"><div id="findUserBlock" class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-magnifying-glass text-sky-600 mr-2"></i> Find Registered FinTrack User</h3><p class="text-xs text-slate-500">Search a registered user by their mobile number. This is not a public directory.</p></div></div><div class="flex flex-wrap items-end gap-2"><div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Country Code</label><select id="searchCountryCode" class="px-2 py-2 border rounded-lg font-bold text-sm"><option value="+91">+91</option><option value="+966">+966</option><option value="+971">+971</option><option value="+973">+973</option><option value="+968">+968</option><option value="+974">+974</option><option value="+965">+965</option><option value="+998">+998</option><option value="+1">+1</option><option value="+44">+44</option><option value="+61">+61</option></select></div><div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mobile Number</label><input type="tel" id="searchMobile" class="px-3 py-2 border rounded-lg font-bold text-sm" placeholder="Mobile number"></div><button onclick="searchUserByMobile()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">Search</button></div><div id="searchResult" class="text-xs text-slate-500"></div></div><div id="sharedSplitsBlock" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-amber-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-link text-amber-600 mr-2"></i> Shared Splits (Synced)</h3></div><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-amber-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('sharedSplitMonthSelect','renderSharedTables()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_sharedSplitMonthSelect"></span><button onclick="navMonthNext('sharedSplitMonthSelect','renderSharedTables()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('sharedSplitMonthSelect','renderSharedTables()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="sharedSplitMonthSelect" value=""></div></div><div class="overflow-x-auto overflow-y-auto max-h-96 border rounded-lg border-amber-200"><table class="w-full text-left text-xs"><thead><tr class="bg-amber-50 text-slate-600 uppercase font-bold border-b sticky top-0"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3 text-center">Paid By</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">With</th><th class="p-3 text-center">Share</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="sharedSplitsTable" class="divide-y divide-amber-100 font-medium text-slate-700"></tbody></table></div></div><div id="receivablePayableBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-scale-balanced text-emerald-600 mr-2"></i> Receivable & Payable Summary</h3></div><div id="receivablePayableContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div><div id="friendsListBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-group text-emerald-600 mr-2"></i> Friends List</h3><button onclick="openAddFriendFromOverview()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow">+ Add Friend</button></div><div id="friendsListContainer" class="space-y-2"></div></div><div id="friendSplitsBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-receipt text-amber-600 mr-2"></i> Friends Split Transactions</h3><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-amber-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_friendSplitMonthSelect"></span><button onclick="navMonthNext('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="friendSplitMonthSelect" value=""></div><button onclick="openFriendSplitModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">+ Add Split Expense</button></div><div class="overflow-x-auto border rounded-lg border-emerald-200"><table class="w-full text-left text-xs"><thead><tr class="bg-emerald-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3 text-center">Paid By</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Participants</th><th class="p-3 text-center">Share / Person</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="friendSplitsTable" class="divide-y divide-emerald-100 font-medium text-slate-700"></tbody></table></div><div id="friendSplitsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('friendSplits')" class="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-xs rounded-lg transition">View More</button></div></div><div id="tripsBlock" class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-plane text-sky-600 mr-2"></i> Group Trip Expenses</h3><button onclick="ftOpenTripModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">+ Add Trip</button></div><div id="tripsContainer" class="space-y-4"></div></div></section>
+        <section id="sec-friends" class="tab-content hidden space-y-6"><div id="findUserBlock" class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-magnifying-glass text-sky-600 mr-2"></i> Find Registered FinTrack User</h3><p class="text-xs text-slate-500">Search a registered user by their mobile number. This is not a public directory.</p></div></div><div class="flex flex-wrap items-end gap-2"><div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Country Code</label><select id="searchCountryCode" class="px-2 py-2 border rounded-lg font-bold text-sm"><option value="+91">+91</option><option value="+966">+966</option><option value="+971">+971</option><option value="+973">+973</option><option value="+968">+968</option><option value="+974">+974</option><option value="+965">+965</option><option value="+998">+998</option><option value="+1">+1</option><option value="+44">+44</option><option value="+61">+61</option></select></div><div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mobile Number</label><input type="tel" id="searchMobile" class="px-3 py-2 border rounded-lg font-bold text-sm" placeholder="Mobile number"></div><button onclick="searchUserByMobile()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">Search</button></div><div id="searchResult" class="text-xs text-slate-500"></div></div><div id="receivablePayableBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-scale-balanced text-emerald-600 mr-2"></i> Receivable & Payable Summary</h3></div><div id="receivablePayableContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div><div id="friendsListBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-group text-emerald-600 mr-2"></i> Friends List</h3><button onclick="openAddFriendFromOverview()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow">+ Add Friend</button></div><div id="friendsListContainer" class="space-y-2"></div></div><div id="friendSplitsBlock" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-receipt text-amber-600 mr-2"></i> Friends Split Transactions</h3><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-amber-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_friendSplitMonthSelect"></span><button onclick="navMonthNext('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('friendSplitMonthSelect','renderFriendsSplit()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="friendSplitMonthSelect" value=""></div><button onclick="openFriendSplitModal()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">+ Add Split Expense</button></div><div class="overflow-x-auto border rounded-lg border-emerald-200"><table class="w-full text-left text-xs"><thead><tr class="bg-emerald-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3 text-center">Paid By</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Participants</th><th class="p-3 text-center">Share / Person</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="friendSplitsTable" class="divide-y divide-emerald-100 font-medium text-slate-700"></tbody></table></div><div id="friendSplitsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('friendSplits')" class="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-xs rounded-lg transition">View More</button></div></div><div id="tripsBlock" class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-plane text-sky-600 mr-2"></i> Group Trip Expenses</h3><button onclick="ftOpenTripModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">+ Add Trip</button></div><div id="tripsContainer" class="space-y-4"></div></div></section>
         <section id="sec-settlements" class="tab-content hidden space-y-6"><div class="pastel-violet p-5 rounded-2xl border border-violet-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-violet-200 pb-4"><div class="min-w-0"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-group text-violet-600 mr-2"></i> Friends Split Settlement</h3><p class="text-xs text-slate-500">Settlements related to Friends Split transactions only. Running balance with each friend — automatically carries forward across months. Outstanding balances are calculated automatically from Friends Split entries plus any recorded settlements.</p></div><button onclick="openFriendSettlementModal()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">+ Record Friend Settlement</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="bg-red-50 border border-red-200 p-4 rounded-xl"><p class="text-[10px] font-bold text-red-600 uppercase">Total You Need To Pay</p><h4 class="text-base font-black money-expense break-words fin-value fin-card-val" id="fsTotalOwe">0</h4></div><div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl"><p class="text-[10px] font-bold text-emerald-700 uppercase">Total Friends Owe You</p><h4 class="text-base font-black money-income break-words fin-value fin-card-val" id="fsTotalOwed">0</h4></div><div class="bg-white/70 border border-slate-200 p-4 rounded-xl"><p class="text-[10px] font-bold text-slate-600 uppercase">Net Settlement Position</p><h4 class="text-base font-black money-neutral break-words fin-value fin-card-val" id="fsNetPosition">0</h4></div></div><div class="overflow-x-auto border rounded-lg border-violet-200"><table class="w-full text-left text-xs"><thead><tr class="bg-violet-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Friend</th><th class="p-3">Status</th><th class="p-3 text-right">Outstanding</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="friendLedgerSummaryTable" class="divide-y divide-violet-100 font-medium text-slate-700"></tbody></table></div><h4 class="font-bold text-slate-800 text-sm border-t border-violet-200 pt-4"><i class="fa-solid fa-clock-rotate-left mr-1 text-slate-400"></i> Friend Settlement History</h4><div class="overflow-x-auto border rounded-lg border-violet-200"><table class="w-full text-left text-xs"><thead><tr class="bg-violet-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">Friend</th><th class="p-3">Direction</th><th class="p-3 text-right">Amount</th><th class="p-3">Account</th><th class="p-3">Notes</th><th class="p-3 text-right">Prev. Balance</th><th class="p-3 text-right">Balance After</th><th class="p-3 text-center">Delete</th></tr></thead><tbody id="friendLedgerHistoryTable" class="divide-y divide-violet-100 font-medium text-slate-700"></tbody></table></div><div id="friendLedgerViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('friendLedger')" class="px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
-        <section id="sec-household" class="tab-content hidden space-y-6 module-section-household"><div class="pastel-teal p-5 rounded-2xl border border-teal-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-teal-200 pb-4"><div class="min-w-0"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-house-chimney-window text-teal-600 mr-2"></i> Household</h3><p class="text-xs text-slate-500">Track shared household expenses (rent, utilities, groceries, etc.) among housemates or family members. Automatically calculates who owes whom and lets you record settlements.</p></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-teal-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_householdMonthSelect"></span><button onclick="navMonthNext('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="householdMonthSelect" value=""><button onclick="downloadHouseholdPDF()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-file-pdf mr-1"></i>PDF</button><button onclick="openHouseholdMemberModal()" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg shadow">+ Add Member</button><button onclick="openHouseholdExpenseModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg shadow">+ Add Household Expense</button><button onclick="openHouseholdSettlementModal()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">+ Record Settlement</button></div></div><div id="hhBalanceCards" class="space-y-2"></div><div id="hhPaymentPlan" class="space-y-3"></div><div class="bg-white/70 p-4 rounded-xl border border-teal-200"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-users mr-1 text-teal-500"></i> Household Members</h4><div id="hhMembersList" class="flex flex-wrap gap-2"></div></div><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Member</th><th class="p-3">Status</th><th class="p-3 text-right">Outstanding</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="hhSummaryTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><h4 class="font-bold text-slate-800 text-sm border-t border-teal-200 pt-4"><i class="fa-solid fa-receipt mr-1 text-slate-400"></i> Household Expenses</h4><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3">Category</th><th class="p-3">Paid By</th><th class="p-3 text-right">Amount</th><th class="p-3">Split Among</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="hhExpensesTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><div id="hhExpensesViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('hhExpenses')" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg transition">View More</button></div><h4 class="font-bold text-slate-800 text-sm border-t border-teal-200 pt-4"><i class="fa-solid fa-clock-rotate-left mr-1 text-slate-400"></i> Settlement History</h4><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">From</th><th class="p-3">To</th><th class="p-3 text-right">Amount</th><th class="p-3">Account</th><th class="p-3">Notes</th><th class="p-3 text-center">Delete</th></tr></thead><tbody id="hhSettlementsTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><div id="hhSettlementsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('hhSettlements')" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section><section id="sec-liabilities" class="tab-content hidden space-y-6 module-section-liabilities"><div class="pastel-red p-5 rounded-2xl border border-red-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-red-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Liabilities & Debt Management</h3><p class="text-xs text-slate-500">Track loan payments with exact dates, logs, and closing status.</p></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-red-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_debtMonthSelect"></span><button onclick="navMonthNext('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="debtMonthSelect" value=""><button onclick="openForm('modalDebt', 'debtForm')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow">+ Add New Debt</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="debtsContainer"></div><div id="debtsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('debts')" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
+        <section id="sec-household" class="tab-content hidden space-y-6 module-section-household"><div class="pastel-teal p-5 rounded-2xl border border-teal-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-teal-200 pb-4"><div class="min-w-0"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-house-chimney-window text-teal-600 mr-2"></i> Household</h3><p class="text-xs text-slate-500">Track shared household expenses (rent, utilities, groceries, etc.) among housemates or family members. Automatically calculates who owes whom and lets you record settlements.</p></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-teal-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_householdMonthSelect"></span><button onclick="navMonthNext('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('householdMonthSelect','renderHouseholdSettlement()')" class="text-slate-500 hover:text-teal-600 px-2 py-1 rounded hover:bg-teal-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="householdMonthSelect" value=""><div class="relative"><button onclick="window.ftToggleHhMenu(event)" class="px-2.5 py-2 bg-white/80 border border-teal-200 hover:bg-teal-50 text-slate-600 rounded-lg shadow" title="Household options"><i class="fa-solid fa-ellipsis-vertical text-xs"></i></button><div id="hhMenuPanel" class="hidden absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-xl shadow-xl p-1 z-50 text-left"><button onclick="window.ftHhMenuAction('expense')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-teal-50"><i class="fa-solid fa-receipt w-4 text-teal-600"></i> Add household expense</button><button onclick="window.ftHhMenuAction('settlement')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-teal-50"><i class="fa-solid fa-handshake w-4 text-violet-600"></i> Record settlement</button><button onclick="window.ftHhMenuAction('member')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-teal-50"><i class="fa-solid fa-user-plus w-4 text-teal-600"></i> Add member</button><button onclick="window.ftHhMenuAction('pdf')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-teal-50"><i class="fa-solid fa-file-pdf w-4 text-slate-600"></i> Download PDF report</button><div class="h-px bg-slate-100 my-1"></div><button onclick="window.ftHhMenuAction('leave')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50"><i class="fa-solid fa-right-from-bracket w-4"></i> Leave household</button><button onclick="window.ftHhMenuAction('delete')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50"><i class="fa-solid fa-trash w-4"></i> Delete household</button></div></div><button onclick="downloadHouseholdPDF()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-file-pdf mr-1"></i>PDF</button><button onclick="openHouseholdMemberModal()" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg shadow">+ Add Member</button><button onclick="openHouseholdExpenseModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg shadow">+ Add Household Expense</button><button onclick="openHouseholdSettlementModal()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">+ Record Settlement</button></div></div><div id="hhBalanceCards" class="space-y-2"></div><div id="hhPaymentPlan" class="space-y-3"></div><div class="bg-white/70 p-4 rounded-xl border border-teal-200"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-users mr-1 text-teal-500"></i> Household Members</h4><div id="hhMembersList" class="flex flex-wrap gap-2"></div></div><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Member</th><th class="p-3">Status</th><th class="p-3 text-right">Outstanding</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="hhSummaryTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><h4 class="font-bold text-slate-800 text-sm border-t border-teal-200 pt-4"><i class="fa-solid fa-receipt mr-1 text-slate-400"></i> Household Expenses</h4><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">Description</th><th class="p-3">Category</th><th class="p-3">Paid By</th><th class="p-3 text-right">Amount</th><th class="p-3">Split Among</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="hhExpensesTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><div id="hhExpensesViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('hhExpenses')" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg transition">View More</button></div><h4 class="font-bold text-slate-800 text-sm border-t border-teal-200 pt-4"><i class="fa-solid fa-clock-rotate-left mr-1 text-slate-400"></i> Settlement History</h4><div class="overflow-x-auto border rounded-lg border-teal-200"><table class="w-full text-left text-xs"><thead><tr class="bg-teal-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">From</th><th class="p-3">To</th><th class="p-3 text-right">Amount</th><th class="p-3">Account</th><th class="p-3">Notes</th><th class="p-3 text-center">Delete</th></tr></thead><tbody id="hhSettlementsTable" class="divide-y divide-teal-100 font-medium text-slate-700"></tbody></table></div><div id="hhSettlementsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('hhSettlements')" class="px-4 py-2 bg-teal-100 hover:bg-teal-200 text-teal-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section><section id="sec-liabilities" class="tab-content hidden space-y-6 module-section-liabilities"><div class="pastel-red p-5 rounded-2xl border border-red-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-red-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Liabilities & Debt Management</h3><p class="text-xs text-slate-500">Track loan payments with exact dates, logs, and closing status.</p></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-red-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_debtMonthSelect"></span><button onclick="navMonthNext('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('debtMonthSelect','renderDebts()')" class="text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="debtMonthSelect" value=""><button onclick="openForm('modalDebt', 'debtForm')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg shadow">+ Add New Debt</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="debtsContainer"></div><div id="debtsViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('debts')" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
         <section id="sec-gold-sip" class="tab-content hidden space-y-6 module-section-goldsip"><div class="gold-card p-5 rounded-2xl border shadow-sm space-y-5"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-amber-200 pb-4"><div><h3 class="font-black text-amber-900 text-base flex items-center"><i class="fa-solid fa-coins text-amber-500 mr-2"></i> Gold Purchase & Dual Conversion Analysis</h3><p class="text-xs text-amber-800 mt-1">Compare physical gold value vs purchase-day conversion rate & live today conversion rate.</p></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-amber-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('goldSipMonthSelect','renderGoldAndSip()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_goldSipMonthSelect"></span><button onclick="navMonthNext('goldSipMonthSelect','renderGoldAndSip()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('goldSipMonthSelect','renderGoldAndSip()')" class="text-slate-500 hover:text-amber-600 px-2 py-1 rounded hover:bg-amber-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="goldSipMonthSelect" value=""><button onclick="openForm('modalGold', 'goldForm')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-lg shadow">+ Add Gold Purchase</button></div></div><div class="bg-white/90 p-4 rounded-xl border border-amber-200 shadow-xs flex flex-wrap items-center justify-between gap-4"><div class="flex items-center space-x-2"><span class="text-xs font-bold text-amber-900 uppercase"><i class="fa-solid fa-tags text-amber-600 mr-1"></i> Common Today's Rate Update:</span></div><div class="flex flex-wrap items-center gap-2"><div class="inline-flex rounded-lg border border-amber-300 bg-amber-50 p-1"><button type="button" onclick="setCommonGoldPurity('24K')" id="commonPurity24K" class="px-3 py-1 text-xs font-bold rounded-md bg-amber-500 text-white transition">24K</button><button type="button" onclick="setCommonGoldPurity('22K')" id="commonPurity22K" class="px-3 py-1 text-xs font-bold rounded-md text-amber-900 hover:bg-amber-100 transition">22K</button><button type="button" onclick="setCommonGoldPurity('18K')" id="commonPurity18K" class="px-3 py-1 text-xs font-bold rounded-md text-amber-900 hover:bg-amber-100 transition">18K</button></div><div class="flex items-center space-x-1"><input type="number" id="commonTodayRateInput" placeholder="Enter rate..." class="w-28 px-2 py-1.5 bg-white border border-amber-300 rounded-lg text-xs font-bold text-amber-900 outline-none focus:border-amber-500"></div><button type="button" onclick="applyCommonGoldRate()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow transition">Update All <span id="currentCommonPurityLabel">(24K)</span></button></div></div><div class="grid grid-cols-2 md:grid-cols-5 gap-3 bg-white/80 p-4 rounded-xl border border-amber-200/60 shadow-xs"><div><p class="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1" id="goldSummarySarLabel">Total <select id="goldInvestedCurrencySelect" onchange="changeGoldInvestedCurrency()" class="bg-transparent border border-amber-300 rounded px-1 py-0.5 text-[10px] font-bold text-slate-700 uppercase outline-none focus:border-amber-500 cursor-pointer"></select> Invested</p><h4 class="text-base md:text-lg font-black text-slate-800" id="goldSummarySar">0 SAR</h4></div><div><p class="text-[10px] font-bold text-amber-700 uppercase">Purchase Day Conv. Total</p><h4 class="text-base md:text-lg font-black text-amber-800" id="goldSummaryPurchaseInr">0</h4><p class="text-[9px] text-amber-600/80">Based on purchase day rates</p></div><div><p class="text-[10px] font-bold text-indigo-700 uppercase">Converted Today (Live)</p><h4 class="text-base md:text-lg font-black text-indigo-800" id="goldSummaryTodayInr">0</h4><p class="text-[9px] text-indigo-600/80">If SAR remitted today</p></div><div><p class="text-[10px] font-bold text-amber-600 uppercase">Today's Gold Market Value</p><h4 class="text-base md:text-lg font-black text-amber-600" id="goldSummaryValue">0</h4><p class="text-[9px] text-amber-600/80">Physical gold current value</p></div><div class="col-span-2 md:col-span-1 border-t md:border-t-0 md:border-l pl-0 md:pl-3 border-amber-300 pt-2 md:pt-0"><p class="text-[10px] font-bold text-slate-800 uppercase">Net Profit vs Purchase</p><h4 class="text-base md:text-lg font-black" id="goldSummaryProfit">0</h4><p class="text-[9px] text-slate-500" id="goldSummaryProfitSub">vs Today Remit: 0</p></div></div><div class="overflow-x-auto bg-white rounded-lg border border-amber-200"><table class="w-full text-left text-xs"><thead><tr class="bg-amber-100/60 text-amber-950 font-bold border-b border-amber-200 uppercase"><th class="p-2.5">Date</th><th class="p-2.5 text-center">Grams</th><th class="p-2.5 text-right">Bought</th><th class="p-2.5 text-right">Day Rate</th><th class="p-2.5 text-right bg-amber-50/50">Purchase Day Conv.</th><th class="p-2.5 text-right bg-indigo-50/30">Converted Today</th><th class="p-2.5 text-right">Today Rate</th><th class="p-2.5 text-right bg-amber-100/40">Today Gold Value</th><th class="p-2.5 text-right">Profit vs Purchase</th><th class="p-2.5 text-center">Actions</th></tr></thead><tbody id="goldTable" class="divide-y divide-amber-100 font-medium text-slate-700"></tbody></table></div><div id="goldViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('gold')" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold text-xs rounded-lg transition">View More</button></div></div><div class="pastel-indigo p-5 rounded-2xl border border-indigo-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-indigo-200 pb-4"><h3 class="font-bold text-slate-800 text-base">SIP & Money Investments</h3><button onclick="openForm('modalSip', 'sipForm')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow">+ Add SIP</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-indigo-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">SIP Name</th><th class="p-3">Category</th><th class="p-3 text-right">Monthly</th><th class="p-3 text-right">Current Value</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="sipTable" class="divide-y divide-indigo-100 font-medium text-slate-700"></tbody></table></div><div id="sipViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('sips')" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
         <section id="sec-transfers" class="tab-content hidden space-y-6 module-section-transfers"><div class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Bank & Cash Transfers</h3><p class="text-xs text-slate-500">Record transfers between your accounts or cash in hand balances.</p></div><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-sky-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_transferMonthSelect"></span><button onclick="navMonthNext('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="transferMonthSelect" value=""><button onclick="openTransferModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">+ New Transfer</button></div></div><div class="overflow-x-auto border rounded-lg border-sky-200"><table class="w-full text-left text-xs"><thead><tr class="bg-sky-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">From Account</th><th class="p-3">To Account</th><th class="p-3 text-right">Amount</th><th class="p-3">Notes</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="transfersTable" class="divide-y divide-sky-100 font-medium text-slate-700"></tbody></table></div><div id="transfersViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('transfers')" class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
         <section id="sec-profile" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-circle text-indigo-600 mr-2"></i> Profile</h3><p class="text-xs text-slate-500 mt-1">Your account information and mobile number settings.</p></div><div id="profileInfoContainer" class="space-y-3 text-sm"></div><div class="pt-3 border-t border-slate-200"><button onclick="openEditMobileModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-pen mr-1"></i> Update Profile</button></div></div><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-bell text-amber-500 mr-2"></i> Notifications</h3><p class="text-xs text-slate-500 mt-1">Friend requests, new splits and payment reminders — in real time.</p></div><div id="profileNotificationsList" class="space-y-3"></div></div></section>
@@ -1635,176 +1635,224 @@ window.saveFriendSettlement = function(e) { e.preventDefault(); const t = docume
 window.deleteFriendLedgerEntry = function(id) { if (!window.__ftok) { ftConfirm('Delete this settlement record? Its account balance effect will be reversed and balances recalculated.', function() { window.__ftok = 1; deleteFriendLedgerEntry(id); }); return; } window.__ftok = 0; if (!Array.isArray(state.friendLedger)) state.friendLedger = []; const idx = state.friendLedger.findIndex(t => String(t.id) === String(id)); if (idx === -1) return; const entry = state.friendLedger[idx]; if (entry.accountId) { const acc = (state.banks || []).find(b => String(b.id) === String(entry.accountId)); if (acc) { if (entry.type === 'they_paid') accountDeduct(acc, entry.amount); else if (entry.type === 'i_paid') accountAdd(acc, entry.amount); } } state.friendLedger.splice(idx, 1); recomputeFriendLedgerBalances(); saveData(); };
 function renderFriendLedger() { recomputeFriendLedgerBalances(); const sumTbody = document.getElementById('friendLedgerSummaryTable'); if (!sumTbody) return; sumTbody.innerHTML = ''; let totalOweInr = 0, totalOwedInr = 0; const totalOweByCurr = {}, totalOwedByCurr = {}; var _ftAll = []; (state.connectedFriends || []).forEach(function(cf){ _ftAll.push({ key:'c_'+cf.uid, name:cf.name, registered:true, manualId:null }); }); var _seen = {}; _ftAll.forEach(function(f){ _seen[(f.name||'').toLowerCase()] = true; }); (state.friends || []).forEach(function(f){ var nm=(f.name||'').toLowerCase(); if(!_seen[nm]){ _ftAll.push({ key:'m_'+f.id, name:f.name, registered:false, manualId:f.id }); _seen[nm]=true; } }); _ftAll.forEach(function(fr){ var balByCurr = window.ftFriendNetBalanceByCurrency(fr.name); var balInr = Object.keys(balByCurr).reduce(function(s,c){ return s + convertToINR(balByCurr[c], c); }, 0); fr._balInr = balInr; fr._balByCurr = balByCurr; fr._hasBal = Math.abs(balInr) > 0.01; if (balInr > 0.01) totalOwedInr += balInr; else if (balInr < -0.01) totalOweInr += Math.abs(balInr); Object.keys(balByCurr).forEach(function(c){ var v = balByCurr[c]; if (v > 0.01) totalOwedByCurr[c] = (totalOwedByCurr[c] || 0) + v; else if (v < -0.01) totalOweByCurr[c] = (totalOweByCurr[c] || 0) + Math.abs(v); }); }); _ftAll.sort(function(a,b){ var pa=a._hasBal?1:0, pb=b._hasBal?1:0; if(pb!==pa) return pb-pa; return (a.name||'').localeCompare(b.name||''); }); if (_ftAll.length === 0) { sumTbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">No friends added yet. Add friends in the Friends Split tab.</td></tr>'; } else { var _INIT=5; var expanded = viewMoreState['friendLedgerSummary'] === 'expanded'; var list = expanded ? _ftAll : _ftAll.slice(0, _INIT); var rows = ''; list.forEach(function(fr){ var balByCurr=fr._balByCurr, balInr=fr._balInr; var statusText, statusClass, outText; if(Math.abs(balInr)<0.01){ statusText='Settled'; statusClass='bg-slate-100 text-slate-600'; outText=formatMultiCurrency({}); } else if(balInr>0){ statusText='They owe you'; statusClass='bg-emerald-100 text-emerald-700'; outText='<span class="money-income">'+formatMultiCurrency(balByCurr)+'</span>'; } else { statusText='You owe'; statusClass='bg-red-100 text-red-700'; outText='<span class="money-expense">'+formatMultiCurrency(balByCurr)+'</span>'; } var settleArg = fr.manualId ? "'"+fr.manualId+"'" : "''"; rows += '<tr><td class="p-3 font-bold">'+fr.name+(fr.registered?' <i class="fa-solid fa-circle-check text-sky-500 text-[9px]" title="Registered"></i>':'')+'</td><td class="p-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase tracking-wider '+statusClass+'">'+statusText+'</span></td><td class="p-3 text-right font-black">'+outText+'</td><td class="p-3 text-center"><button onclick="openFriendSettlementModal('+settleArg+')" class="px-2 py-1 bg-violet-600 hover:bg-violet-700 text-white rounded text-[10px] font-bold">+ Settlement</button></td></tr>'; }); if (_ftAll.length > _INIT) { var btnLabel = expanded ? 'View Less' : 'View More'; var btnOnclick = expanded ? "showLessEntries('friendLedgerSummary')" : "showAllEntries('friendLedgerSummary')"; var moreCount = _ftAll.length - _INIT; rows += '<tr><td colspan="4" class="p-3 text-center"><button onclick="'+btnOnclick+'" class="px-4 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold text-xs rounded-lg transition">'+btnLabel+(expanded?'':' ('+moreCount+' more)')+'</button></td></tr>'; } sumTbody.innerHTML = rows; var wrap = sumTbody.closest('.overflow-x-auto'); if (wrap) { wrap.style.maxHeight = (expanded && _ftAll.length > _INIT) ? '340px' : ''; wrap.style.overflowY = (expanded && _ftAll.length > _INIT) ? 'auto' : ''; } } document.getElementById('fsTotalOwe').innerText = formatMultiCurrency(totalOweByCurr); document.getElementById('fsTotalOwed').innerText = formatMultiCurrency(totalOwedByCurr); const netByCurr = {}; new Set([...Object.keys(totalOwedByCurr), ...Object.keys(totalOweByCurr)]).forEach(c => { const v = (totalOwedByCurr[c] || 0) - (totalOweByCurr[c] || 0); if (Math.abs(v) > 0.001) netByCurr[c] = v; }); const netInr = totalOwedInr - totalOweInr; const netEl = document.getElementById('fsNetPosition'); netEl.innerText = formatMultiCurrency(netByCurr) + ' ' + (netInr >= 0 ? 'receivable' : 'payable'); netEl.className = 'text-base font-black ' + (netInr >= 0 ? 'money-income' : 'money-expense'); const hTbody = document.getElementById('friendLedgerHistoryTable'); hTbody.innerHTML = ''; const entries = sortByDateDesc(state.friendLedger || []); if (entries.length === 0) { hTbody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-slate-400 italic">No friend settlement records yet.</td></tr>'; return; } const limitedEntries = entries.slice(0, getDisplayLimit('friendLedger')); limitedEntries.forEach(t => { let dirHtml; if (t.type === 'they_paid') dirHtml = `<span class="font-bold text-emerald-700">${t.friendName} → You</span>`; else if (t.type === 'i_paid') dirHtml = `<span class="font-bold text-red-700">You → ${t.friendName}</span>`; else if (t.type === 'they_owe') dirHtml = `<span class="font-bold text-amber-700">${t.friendName} owes You</span>`; else dirHtml = `<span class="font-bold text-violet-700">You owe ${t.friendName}</span>`; const balAfterInr = (t.balanceAfter || 0); hTbody.innerHTML += `<tr><td class="p-3">${t.date}</td><td class="p-3 font-bold">${t.friendName}</td><td class="p-3">${dirHtml}</td><td class="p-3 text-right font-bold money-neutral">${t.amount.toLocaleString()} ${t.currency}</td><td class="p-3 text-[11px] text-slate-500">${t.accountName || '-'}</td><td class="p-3 text-slate-500">${t.notes || '-'}</td><td class="p-3 text-right text-slate-500">${formatMultiCurrency(t.prevBalanceByCurr || {})}</td><td class="p-3 text-right font-bold ${balAfterInr >= 0 ? 'money-income' : 'money-expense'}">${formatMultiCurrency(t.balanceAfterByCurr || {})}</td><td class="p-3 text-center text-slate-400"><button onclick="deleteFriendLedgerEntry(${t.id})" class="hover:text-red-600"><i class="fa-solid fa-trash"></i></button></td></tr>`; }); const viewMoreContainer = document.getElementById('friendLedgerViewMoreContainer'); if (viewMoreContainer) viewMoreContainer.classList.toggle('hidden', !shouldShowViewMore('friendLedger', entries.length)); }
 window.renderFriendLedger = renderFriendLedger;
-function householdBalanceByCurrency(memberName) {
-  const bal = {}, members = state.householdMembers || [];
-  const me = currentUser && currentUser.uid, myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  function who(person){return window.ftFinancialIdentity(person);}
-  const target = who(memberName);
-  function obligation(payer, debtor, amount, currency) {
-    const p = who(payer), d = who(debtor), value = Number(amount) || 0;
-    if (!p || !d || p === d || !value) return;
-    const c = currency || 'INR';
-    if (p === target) bal[c] = (bal[c] || 0) + value;
-    if (d === target) bal[c] = (bal[c] || 0) - value;
+/* ===== Unified obligation engine (single source of truth for all shared money) =====
+   Every shared record (household expense, friends split, settlement, ledger entry)
+   is converted ONCE into a creditor -> debtor pair. Household balances, friend
+   balances and the settlement plan all read the same pairs, so the amount one
+   person must pay always equals the amount the other expects to receive. */
+function ftIdentityOf(person) {
+  if (window.ftFinancialIdentity) { try { return window.ftFinancialIdentity(person); } catch (e) {} }
+  if (person && typeof person === 'object') return person.uid ? ('uid:' + person.uid) : ('name:' + String(person.name || '').trim().toLowerCase());
+  return 'name:' + String(person || '').trim().toLowerCase();
+}
+function ftPersonKeys(person) {
+  var keys = [];
+  var id = ftIdentityOf(person);
+  if (id) keys.push(id);
+  var nm = (person && typeof person === 'object') ? person.name : person;
+  nm = String(nm || '').trim().toLowerCase();
+  if (nm) { keys.push('name:' + nm); keys.push('n:' + nm.split(/\s+/).slice(0, 2).join(' ')); }
+  if (person && typeof person === 'object' && person.uid) keys.push('uid:' + person.uid);
+  return keys;
+}
+function ftHhMemberList() {
+  try { if (typeof window.ftHhUniqueMembers === 'function') return window.ftHhUniqueMembers() || []; } catch (e) {}
+  return state.householdMembers || [];
+}
+function ftHhMemberKeys() {
+  var set = {};
+  var myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
+  ftPersonKeys(myName).forEach(function (k) { set[k] = true; });
+  if (currentUser && currentUser.uid) set['uid:' + currentUser.uid] = true;
+  ftHhMemberList().forEach(function (m) {
+    var refP = (m && m.uid) ? { uid: m.uid, name: m.name } : (m && m.name ? m.name : m);
+    ftPersonKeys(refP).forEach(function (k) { set[k] = true; });
+  });
+  return set;
+}
+function ftDisplayName(identity) {
+  var list = [];
+  (ftHhMemberList() || []).forEach(function (m) { if (m && m.name) list.push({ name: m.name, uid: m.uid }); });
+  (state.connectedFriends || []).forEach(function (c) { if (c && c.name) list.push({ name: c.name, uid: c.uid }); });
+  (state.friends || []).forEach(function (f) { if (f && f.name) list.push({ name: f.name }); });
+  var myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
+  list.push({ name: myName, uid: (currentUser && currentUser.uid) || '' });
+  for (var i = 0; i < list.length; i++) {
+    var refP = list[i].uid ? { uid: list[i].uid, name: list[i].name } : list[i].name;
+    if (ftIdentityOf(refP) === identity) return list[i].name;
   }
-  (state.householdExpenses || []).forEach(function(exp) {
-    const parts=window.ftHhExpensePeople(exp);
-    if (!parts.length) return;
-    parts.forEach(function(p) { obligation(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
+  return String(identity || '').replace(/^uid:/, '').replace(/^name:/, '');
+}
+function ftBuildObligationPairs(opts) {
+  opts = opts || {};
+  var onlyHousehold = !!opts.householdOnly;
+  var onlyHouseholdSources = !!opts.householdSourcesOnly;
+  var memberKeys = onlyHousehold ? ftHhMemberKeys() : null;
+  var pairs = [], index = {};
+  var myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
+  var myUid = (currentUser && currentUser.uid) || '';
+
+  function isMember(person) {
+    if (!memberKeys) return true;
+    var keys = ftPersonKeys(person);
+    for (var i = 0; i < keys.length; i++) { if (memberKeys[keys[i]]) return true; }
+    return false;
+  }
+  function add(payer, debtor, amount, currency) {
+    var value = Number(amount) || 0;
+    if (!value || Math.abs(value) < 0.000001) return;
+    if (!isMember(payer) || !isMember(debtor)) return;
+    var from = ftIdentityOf(payer), to = ftIdentityOf(debtor), c = currency || 'INR';
+    if (!from || !to || from === to) return;
+    if (value < 0) { var t = from; from = to; to = t; value = -value; }
+    var key = from + '|' + to + '|' + c;
+    if (!index[key]) { index[key] = { from: from, to: to, currency: c, amount: 0 }; pairs.push(index[key]); }
+    index[key].amount += value;
+  }
+
+  /* 1. Household expenses: the payer covers each member's share exactly once. */
+  (state.householdExpenses || []).forEach(function (exp) {
+    var parts = [];
+    try { parts = (typeof window.ftHhExpensePeople === 'function') ? window.ftHhExpensePeople(exp) : (exp.splitAmong || []); } catch (e) { parts = exp.splitAmong || []; }
+    if (!parts || !parts.length) return;
+    var share = (Number(exp.amount) || 0) / parts.length;
+    var payer = exp.paidByUid ? { uid: exp.paidByUid, name: exp.paidBy } : exp.paidBy;
+    parts.forEach(function (p) { add(payer, p, share, exp.currency); });
   });
-  (state.householdSettlements || []).forEach(function(s) { obligation(s.fromMember, s.toMember, s.amount, s.currency); });
-  Object.keys(state.friendSplits || {}).forEach(function(month) {
-    (state.friendSplits[month] || []).forEach(function(fs) {
-      const parts = fs.participants || [];
-      if (!parts.length) return;
-      parts.forEach(function(p) { obligation(fs.paidBy, p, fs.shares && fs.shares[p] != null ? fs.shares[p] : Number(fs.amount || 0) / parts.length, fs.currency); });
-    });
-  });
-  (state.sharedSplits || []).forEach(function(s) {
-    if (s.ftype === 'trip' || (s.sourceSplitId && String(s.ownerUid) === String(me))) return;
-    const parts = s.participants || [];
-    if (s.sourceSplitId) {
-      parts.filter(function(p) { return p.uid && String(p.uid) !== String(s.ownerUid); }).forEach(function(p) {
-        obligation(s.paidByUid || s.paidByName, p, s.shares && s.shares[p.uid] != null ? s.shares[p.uid] : Number(s.amount || 0) / (s.participantCount || parts.length || 1), s.currency);
+  /* 2. Household settlements already recorded. */
+  (state.householdSettlements || []).forEach(function (s) { if (!s) return; var _sst = String(s.status || 'approved'); if (_sst === 'pending' || _sst === 'rejected') return; add(s.fromMember, s.toMember, s.amount, s.currency); });
+
+  if (!onlyHouseholdSources) {
+    /* 3. My own Friends Split transactions - one consolidated record each. */
+    Object.keys(state.friendSplits || {}).forEach(function (m) {
+      (state.friendSplits[m] || []).forEach(function (fs) {
+        var parts = fs.participants || [];
+        if (!parts.length) return;
+        parts.forEach(function (p) {
+          var share = (typeof window.ftSplitShareOf === 'function') ? window.ftSplitShareOf(fs, p) : (Number(fs.amount || 0) / parts.length);
+          add(fs.paidBy, p, share, fs.currency);
+        });
       });
-    } else if (parts.length === 2) {
-      const payer = s.paidBy === 'me' ? parts.find(function(p) { return String(p.uid) === String(s.ownerUid); }) : parts.find(function(p) { return String(p.uid) !== String(s.ownerUid); });
-      parts.forEach(function(p) { obligation(payer, p, Number(s.amount || 0) / 2, s.currency); });
-    }
-  });
-  (state.trips || []).forEach(function(trip) {
-    const parts = trip.members || [];
-    if (!parts.length) return;
-    Object.values(trip.splits || {}).forEach(function(s) {
-      parts.forEach(function(p) { obligation(s.paidByUid || s.paidByName, p, Number(s.amount || 0) / parts.length, s.currency); });
     });
-  });
-  (state.friendLedger || []).forEach(function(t) {
-    const friend = (state.friends || []).find(function(f) { return String(f.id) === String(t.friendId); });
-    if(!friend&&!t.friendName&&!t.friendUid)return;
-    const signed = (t.type === 'they_owe' || t.type === 'i_paid') ? Number(t.amount || 0) : -Number(t.amount || 0);
-    obligation(myName,t.friendUid?{uid:t.friendUid,name:t.friendName}:friend?friend.name:t.friendName,signed,t.currency);
-  });
-  (state.sharedSettlements || []).forEach(function(s) {
-    const parts = s.participants || [], owner = parts.find(function(p) { return String(p.uid) === String(s.ownerUid); });
-    const other = parts.find(function(p) { return String(p.uid) !== String(s.ownerUid); });
-    if (owner && other) obligation(s.direction === 'i_paid' ? owner : other, s.direction === 'i_paid' ? other : owner, s.amount, s.currency);
+    /* 4. Friends Split records shared by other members (same expense, other side). */
+    (state.sharedSplits || []).forEach(function (s) {
+      if (!s || s.ftype === 'trip') return;
+      if (s.sourceSplitId) {
+        if (String(s.ownerUid) === String(myUid)) return;
+        var parts = s.participants || [];
+        if (!parts.length) return;
+        var payer = s.paidByUid ? { uid: s.paidByUid, name: s.paidByName || '' } : (s.paidByName || '');
+        var count = Number(s.participantCount) || parts.length || 1;
+        parts.forEach(function (p) {
+          var nm = (p && p.name) ? p.name : p;
+          var u = (p && p.uid) ? p.uid : '';
+          var v = null;
+          if (s.shares) {
+            if (s.shares[nm] != null) v = Number(s.shares[nm]);
+            else if (u && s.shares[u] != null) v = Number(s.shares[u]);
+          }
+          add(payer, p, (v == null ? (Number(s.amount || 0) / count) : v), s.currency);
+        });
+      } else if ((s.participants || []).length === 2) {
+        var ps = s.participants || [];
+        var ownerP = ps.filter(function (p) { return String(p && p.uid) === String(s.ownerUid); })[0] || ps[0];
+        var payer2 = s.paidBy === 'me' ? ownerP : ps.filter(function (p) { return String(p && p.uid) !== String(s.ownerUid); })[0];
+        ps.forEach(function (p) { add(payer2, p, Number(s.amount || 0) / 2, s.currency); });
+      }
+    });
+    /* 5. Trip splits. */
+    (state.trips || []).forEach(function (trip) {
+      var parts = trip.members || [];
+      if (!parts.length) return;
+      Object.keys(trip.splits || {}).forEach(function (k) {
+        var s = (trip.splits || {})[k]; if (!s) return;
+        parts.forEach(function (p) { add(s.paidByUid || s.paidByName, p, Number(s.amount || 0) / parts.length, s.currency); });
+      });
+    });
+    /* 6. Friend ledger entries (payments recorded between me and a friend). */
+    (state.friendLedger || []).forEach(function (t) {
+      var friend = (state.friends || []).filter(function (f) { return String(f.id) === String(t.friendId); })[0];
+      if (!friend && !t.friendName && !t.friendUid) return;
+      var signed = (t.type === 'they_owe' || t.type === 'i_paid') ? Number(t.amount || 0) : -Number(t.amount || 0);
+      add(myName, t.friendUid ? { uid: t.friendUid, name: t.friendName } : (friend ? friend.name : t.friendName), signed, t.currency);
+    });
+    /* 7. Settlement records - only once the receiver has approved them. */
+    (state.sharedSettlements || []).forEach(function (s) {
+      if (!s) return;
+      var st = String(s.status || 'approved');
+      if (st === 'pending' || st === 'rejected') return;
+      if (s.kind === 'friend_settlement' && s.payerUid && s.payeeUid) {
+        add({ uid: s.payerUid, name: s.payerName || '' }, { uid: s.payeeUid, name: s.payeeName || '' }, s.amount, s.currency);
+        return;
+      }
+      var parts = s.participants || [];
+      var owner = parts.filter(function (p) { return String(p && p.uid) === String(s.ownerUid); })[0];
+      var other = parts.filter(function (p) { return String(p && p.uid) !== String(s.ownerUid); })[0];
+      if (owner && other) add(s.direction === 'i_paid' ? owner : other, s.direction === 'i_paid' ? other : owner, s.amount, s.currency);
+    });
+  }
+  return pairs;
+}
+function ftRoundCurrencyMap(bal) {
+  Object.keys(bal).forEach(function (c) {
+    bal[c] = Math.round(bal[c] * 100) / 100;
+    if (Math.abs(bal[c]) < 0.01) delete bal[c];
   });
   return bal;
 }
-window.householdBalanceByCurrency = householdBalanceByCurrency;
-window.ftHouseholdBilateralByCurrency = function(otherName) {
-  const bal = {}, members = state.householdMembers || [];
-  const me = currentUser && currentUser.uid, myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  function who(person){return window.ftFinancialIdentity(person);}
-  const meKey = who(myName) || '@self';
-  const otherKey = who(otherName);
-  if (!otherKey || otherKey === meKey) return bal;
-  function bil(payer, debtor, amount, currency) {
-    const p = who(payer), d = who(debtor), value = Number(amount) || 0;
-    if (!p || !d || p === d || !value) return;
-    const pair = [p, d];
-    if (!(pair.includes(meKey) && pair.includes(otherKey))) return;
-    const c = currency || 'INR';
-    if (p === meKey) bal[c] = (bal[c] || 0) + value;
-    if (d === meKey) bal[c] = (bal[c] || 0) - value;
-  }
-  (state.householdExpenses || []).forEach(function(exp) {
-    const parts=window.ftHhExpensePeople(exp);
-    if (!parts.length) return;
-    parts.forEach(function(p) { bil(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
-  });
-  (state.householdSettlements || []).forEach(function(s) { bil(s.fromMember, s.toMember, s.amount, s.currency); });
-  Object.keys(state.friendSplits || {}).forEach(function(month) {
-    (state.friendSplits[month] || []).forEach(function(fs) {
-      const parts = fs.participants || [];
-      if (!parts.length) return;
-        parts.forEach(function(p) { bil(fs.paidBy, p, fs.shares && fs.shares[p] != null ? fs.shares[p] : Number(fs.amount || 0) / parts.length, fs.currency); });
-    });
-  });
-  (state.sharedSplits || []).forEach(function(s) {
-    if (s.ftype === 'trip' || (s.sourceSplitId && String(s.ownerUid) === String(me))) return;
-    const parts = s.participants || [];
-    if (s.sourceSplitId) {
-      parts.filter(function(p) { return p.uid && String(p.uid) !== String(s.ownerUid); }).forEach(function(p) {
-        bil(s.paidByUid || s.paidByName, p, s.shares && s.shares[p.uid] != null ? s.shares[p.uid] : Number(s.amount || 0) / (s.participantCount || parts.length || 1), s.currency);
-      });
-    } else if (parts.length === 2) {
-      const payer = s.paidBy === 'me' ? parts.find(function(p) { return String(p.uid) === String(s.ownerUid); }) : parts.find(function(p) { return String(p.uid) !== String(s.ownerUid); });
-      parts.forEach(function(p) { bil(payer, p, Number(s.amount || 0) / 2, s.currency); });
-    }
-  });
-  (state.trips || []).forEach(function(trip) {
-    const parts = trip.members || [];
-    if (!parts.length) return;
-    Object.values(trip.splits || {}).forEach(function(s) {
-        parts.forEach(function(p) { bil(s.paidByUid || s.paidByName, p, Number(s.amount || 0) / parts.length, s.currency); });
-    });
-  });
-  (state.friendLedger || []).forEach(function(t) {
-    const friend = (state.friends || []).find(function(f) { return String(f.id) === String(t.friendId); });
-    if(!friend&&!t.friendName&&!t.friendUid)return;
-    const signed = (t.type === 'they_owe' || t.type === 'i_paid') ? Number(t.amount || 0) : -Number(t.amount || 0);
-    bil(myName,t.friendUid?{uid:t.friendUid,name:t.friendName}:friend?friend.name:t.friendName,signed,t.currency);
-  });
-  (state.sharedSettlements || []).forEach(function(s) {
-    const parts = s.participants || [], owner = parts.find(function(p) { return String(p.uid) === String(s.ownerUid); });
-    const other = parts.find(function(p) { return String(p.uid) !== String(s.ownerUid); });
-    if (owner && other) bil(s.direction === 'i_paid' ? owner : other, s.direction === 'i_paid' ? other : owner, s.amount, s.currency);
-  });
-  return bal;
-};
-
-function householdObligationByCurrency(memberName) {
-  const bal = {}, members = state.householdMembers || [];
-  const myName = getPeople()[0] || (currentUser && currentUser.name) || 'Me';
-  function who(person){return window.ftFinancialIdentity(person);}
-  const target = who(memberName);
+function ftBalanceFromPairs(pairs, person) {
+  var target = ftIdentityOf(person), bal = {};
   if (!target) return bal;
-  function obligation(payer, debtor, amount, currency) {
-    const p = who(payer), d = who(debtor), value = Number(amount) || 0;
-    if (!p || !d || p === d || !value) return;
-    const c = currency || 'INR';
-    if (p === target) bal[c] = (bal[c] || 0) + value;
-    if (d === target) bal[c] = (bal[c] || 0) - value;
-  }
-  (state.householdExpenses || []).forEach(function(exp) {
-    const parts=window.ftHhExpensePeople(exp);
-    if (!parts.length) return;
-    parts.forEach(function(p) { obligation(exp.paidByUid?{uid:exp.paidByUid,name:exp.paidBy}:exp.paidBy, p, Number(exp.amount || 0) / parts.length, exp.currency); });
+  pairs.forEach(function (p) {
+    if (p.from === target) bal[p.currency] = (bal[p.currency] || 0) + p.amount;
+    else if (p.to === target) bal[p.currency] = (bal[p.currency] || 0) - p.amount;
   });
-  (state.householdSettlements || []).forEach(function(s) { obligation(s.fromMember, s.toMember, s.amount, s.currency); });
-  return bal;
+  return ftRoundCurrencyMap(bal);
+}
+function ftPairNet(pairs, otherName) {
+  var meKey = ftIdentityOf(getPeople()[0] || (currentUser && currentUser.name) || 'Me');
+  var otherKey = ftIdentityOf(otherName);
+  var bal = {};
+  if (!otherKey || otherKey === meKey) return bal;
+  pairs.forEach(function (p) {
+    if (p.from === meKey && p.to === otherKey) bal[p.currency] = (bal[p.currency] || 0) + p.amount;
+    else if (p.from === otherKey && p.to === meKey) bal[p.currency] = (bal[p.currency] || 0) - p.amount;
+  });
+  return ftRoundCurrencyMap(bal);
+}
+function householdBalanceByCurrency(memberName) {
+  return ftBalanceFromPairs(ftBuildObligationPairs({ householdOnly: true }), memberName);
+}
+window.householdBalanceByCurrency = householdBalanceByCurrency;
+window.ftHouseholdBilateralByCurrency = function (otherName) {
+  return ftPairNet(ftBuildObligationPairs({ householdOnly: true }), otherName);
+};
+function householdObligationByCurrency(memberName) {
+  return ftBalanceFromPairs(ftBuildObligationPairs({ householdOnly: true, householdSourcesOnly: true }), memberName);
 }
 window.householdObligationByCurrency = householdObligationByCurrency;
 function householdSettlementPlan() {
-  const members = window.ftHhUniqueMembers();
-  const byCurr = {};
-  members.forEach(function(m) {
-    const bal = householdBalanceByCurrency(m.name);
-    Object.keys(bal).forEach(function(c) {
-      const v = bal[c];
-      if (Math.abs(v) < 0.01) return;
-      if (!byCurr[c]) byCurr[c] = [];
-      byCurr[c].push({ name: m.name, bal: v });
-    });
+  var payments = [];
+  var pairs = ftBuildObligationPairs({ householdOnly: true });
+  var byPair = {};
+  pairs.forEach(function (p) {
+    var key = (p.from < p.to ? p.from + '|' + p.to : p.to + '|' + p.from) + '|' + p.currency;
+    if (!byPair[key]) byPair[key] = { a: (p.from < p.to ? p.from : p.to), b: (p.from < p.to ? p.to : p.from), currency: p.currency, net: 0 };
+    var dir = (byPair[key].a === p.from) ? 1 : -1;
+    byPair[key].net += dir * p.amount;
   });
-  const payments = [];
-  Object.keys(byCurr).forEach(function(c) {
-    const debtors = byCurr[c].filter(function(e){ return e.bal < -0.01; }).map(function(e){ return { name: e.name, amt: -e.bal }; }).sort(function(a,b){ return b.amt - a.amt; });
-    const creditors = byCurr[c].filter(function(e){ return e.bal > 0.01; }).map(function(e){ return { name: e.name, amt: e.bal }; }).sort(function(a,b){ return b.amt - a.amt; });
-    let i = 0, j = 0;
-    while (i < debtors.length && j < creditors.length) {
-      const pay = Math.min(debtors[i].amt, creditors[j].amt);
-      if (pay > 0.01) payments.push({ from: debtors[i].name, to: creditors[j].name, amount: pay, currency: c });
-      debtors[i].amt -= pay; creditors[j].amt -= pay;
-      if (debtors[i].amt < 0.01) i++;
-      if (creditors[j].amt < 0.01) j++;
-    }
+  Object.keys(byPair).forEach(function (k) {
+    var e = byPair[k];
+    var v = Math.round(e.net * 100) / 100;
+    if (Math.abs(v) < 0.01) return;
+    var nameA = ftDisplayName(e.a), nameB = ftDisplayName(e.b);
+    if (v > 0) payments.push({ from: nameB, to: nameA, amount: v, currency: e.currency });
+    else payments.push({ from: nameA, to: nameB, amount: -v, currency: e.currency });
   });
   return payments;
 }
 window.householdSettlementPlan = householdSettlementPlan;
+
 function renderHouseholdSettlement() {
   const members = window.ftHhUniqueMembers();
   const monthSel = document.getElementById('householdMonthSelect');
@@ -1864,19 +1912,37 @@ function renderHouseholdSettlement() {
     (state.trips || []).forEach(function(tr) { Object.values(tr.splits || {}).forEach(function(s) { if (dateMonth(s.date) !== month) return; const tMembers = (tr.members || []).map(function(m){return m.name || m;}); if (!tMembers.some(function(mn){return memberNames.includes(mn);})) return; crossSplits.push({ date: s.date, description: 'Trip Split: ' + (tr.name || 'Trip') + (s.description ? ' - ' + s.description : ''), category: 'Trip Split', paidBy: s.paidBy || '', amount: s.amount, currency: s.currency || 'INR', splitAmong: tMembers.slice(), isCrossSplit: true, id: s.id || Date.now() }); }); });
     const allExpenses = sortByDateDesc([...hhExpenses, ...crossSplits]);
     if (allExpenses.length === 0) { expTbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center">' + (window.ftMonthExpired && window.ftMonthExpired('household', month) ? '<p class="font-bold text-slate-700">Historical data unavailable</p><p class="text-slate-500 italic mt-1">Transactions and monthly totals older than 365 days are no longer available.</p>' : '<span class="text-slate-400 italic">No household expenses recorded for this month.</span>') + '</td></tr>'; }
-    else { const limited = allExpenses.slice(0, getDisplayLimit('hhExpenses'));
+    else { 
+    if (!window._ftHhHist) window._ftHhHist = { expanded: false, limit: 10 };
+    if (!window.ftHhHistLimit) {
+      window.ftHhHistLimit = function () { return window._ftHhHist.expanded ? window._ftHhHist.limit : 10; };
+      window.ftHhHistSet = function (mode, total) {
+        if (mode === 'more') { window._ftHhHist.expanded = true; window._ftHhHist.limit = Math.min(window._ftHhHist.limit + 10, total); }
+        else { window._ftHhHist.expanded = false; window._ftHhHist.limit = 10; }
+        if (typeof renderHouseholdSettlement === 'function') renderHouseholdSettlement();
+      };
+      window.ftHhHistButtons = function (total) {
+        if (total <= 10) return '';
+        var cls = 'px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg shadow';
+        var out = '';
+        if (window._ftHhHist.limit < total) out += '<button onclick="window.ftHhHistSet(\'more\',' + total + ')" class="' + cls + '">' + (window._ftHhHist.expanded ? 'Load More' : 'View More') + '</button>';
+        if (window._ftHhHist.expanded) out += ' <button onclick="window.ftHhHistSet(\'less\',' + total + ')" class="px-4 py-2 bg-white border border-teal-200 hover:bg-teal-50 text-teal-700 font-bold text-xs rounded-lg shadow">Show Less</button>';
+        return out;
+      };
+    }
+    const limited = allExpenses.slice(0, window.ftHhHistLimit());
       limited.forEach(function(e) { const splitAmong = (e.splitAmong && e.splitAmong.length > 0 ? e.splitAmong : (state.householdMembers || []).map(function(m){return m.name;})).join(', ');
         const catColor = e.isCrossSplit ? 'bg-amber-50 text-amber-700' : 'bg-teal-50 text-teal-700';
         const delBtn = e.isCrossSplit ? '<span class="text-slate-300 text-[10px]" title="Managed in Splits section">synced</span>' : '<button onclick="editHouseholdExpense(\'' + e.id + '\')" class="hover:text-teal-600 mr-2" title="Edit"><i class="fa-solid fa-pen"></i></button><button onclick="deleteHouseholdExpense(\'' + e.id + '\')" class="hover:text-red-600" title="Delete"><i class="fa-solid fa-trash"></i></button>';
         expTbody.innerHTML += '<tr><td class="p-3">' + (e.date || '') + '</td><td class="p-3 font-bold">' + (e.description || '') + '</td><td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ' + catColor + '">' + (e.category || 'Other') + '</span></td><td class="p-3">' + (e.paidBy || '') + '</td><td class="p-3 text-right font-bold money-neutral">' + formatCurrency(Number(e.amount || 0), e.currency || 'INR') + '</td><td class="p-3 text-[11px] text-slate-500">' + splitAmong + '</td><td class="p-3 text-center text-slate-400">' + delBtn + '</td></tr>'; }); }
-    const vmc = document.getElementById('hhExpensesViewMoreContainer'); if (vmc) vmc.classList.toggle('hidden', !shouldShowViewMore('hhExpenses', allExpenses.length));
+    const vmc = document.getElementById('hhExpensesViewMoreContainer'); if (vmc) { var _hhh = window._ftHhHist || { expanded: false, limit: 10 }; if (_hhh.expanded) { vmc.classList.remove('hidden'); } else { vmc.classList.toggle('hidden', allExpenses.length <= 10); } vmc.innerHTML = window.ftHhHistButtons(allExpenses.length); }
   }
   const setTbody = document.getElementById('hhSettlementsTable');
   if (setTbody) {
     setTbody.innerHTML = ''; const settlements = sortByDateDesc((state.householdSettlements || []).filter(function(s){return dateMonth(s.date) === month;}));
     if (settlements.length === 0) { setTbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">No household settlements recorded for this month.</td></tr>'; }
     else { const limited = settlements.slice(0, getDisplayLimit('hhSettlements'));
-      limited.forEach(function(s) { setTbody.innerHTML += '<tr><td class="p-3">' + (s.date || '') + '</td><td class="p-3 font-bold">' + (s.fromMember || '') + '</td><td class="p-3 font-bold">' + (s.toMember || '') + '</td><td class="p-3 text-right font-bold money-neutral">' + formatCurrency(Number(s.amount || 0), s.currency || 'INR') + '</td><td class="p-3 text-[11px] text-slate-500">' + (s.fromAccountName ? (s.fromAccountName + (s.toAccountName ? ' &rarr; ' + s.toAccountName : '')) : (s.accountName || '-')) + '</td><td class="p-3 text-slate-500">' + (s.notes || '-') + '</td><td class="p-3 text-center text-slate-400"><button onclick="deleteHouseholdSettlement(\'' + s.id + '\')" class="hover:text-red-600"><i class="fa-solid fa-trash"></i></button></td></tr>'; }); }
+      limited.forEach(function(s) { setTbody.innerHTML += '<tr><td class="p-3">' + (s.date || '') + '</td><td class="p-3 font-bold">' + (s.fromMember || '') + '</td><td class="p-3 font-bold">' + (s.toMember || '') + '</td><td class="p-3 text-right font-bold money-neutral">' + formatCurrency(Number(s.amount || 0), s.currency || 'INR') + '</td><td class="p-3 text-[11px] text-slate-500">' + (s.fromAccountName ? (s.fromAccountName + (s.toAccountName ? ' &rarr; ' + s.toAccountName : '')) : (s.accountName || '-')) + '</td><td class="p-3 text-slate-500">' + (s.notes || '-') + '</td><td class="p-3 text-center text-slate-400">' + _hhSetStatusHtml(s) + '<button onclick="deleteHouseholdSettlement(\'' + s.id + '\')" class="hover:text-red-600"><i class="fa-solid fa-trash"></i></button></td></tr>'; }); }
     const vmc2 = document.getElementById('hhSettlementsViewMoreContainer'); if (vmc2) vmc2.classList.toggle('hidden', !shouldShowViewMore('hhSettlements', settlements.length));
   }
   var _hhPlan = householdSettlementPlan();
@@ -3472,6 +3538,32 @@ window.subscribeNotifications = function(uid) {
   try { get(ref(db, 'notifications/' + uid)).then(function(oldSnap){ var oldN = oldSnap.val() || {}; var keys = Object.keys(oldN); if (keys.length === 0) return; var updates = {}; keys.forEach(function(k){ if (oldN[k] && oldN[k].id) { updates['users/' + uid + '/notifications/' + oldN[k].id] = oldN[k]; updates['notifications/' + uid + '/' + k] = null; } }); if (Object.keys(updates).length > 0) update(ref(db), updates).catch(function(){}); }).catch(function(){}); } catch(_migrateErr) { console.warn('Notification migration error:', _migrateErr); }
   try { onValue(ref(db, 'users/' + uid + '/subscription'), function(ss) { window._ftMySubscription = ss.val() || null; var _subEl = document.getElementById('subscriptionStatusValue'); if (_subEl && typeof window.ftGetSubscriptionStatusLabel === 'function') _subEl.innerText = window.ftGetSubscriptionStatusLabel(); }, function(){}); } catch(_subE) {}
   var _oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+  window.ftShowNotifPopup = function (n) {
+    if (!n || !n.message) return;
+    var old = document.getElementById('ftNotifPopup'); if (old) old.remove();
+    var label = n.type === 'settlement' ? 'Settlement' : n.type === 'split' ? 'Split' : n.type === 'friend_request' ? 'Friend Request' : n.type === 'reminder' ? 'Reminder' : 'Notification';
+    var msg = (typeof window.ftNotifEscape === 'function') ? window.ftNotifEscape(n.message) : String(n.message).replace(/</g, '&lt;');
+    var wrap = document.createElement('div');
+    wrap.id = 'ftNotifPopup';
+    wrap.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.45);padding:18px;';
+    wrap.innerHTML = '<div style="background:#fff;border-radius:20px;max-width:360px;width:100%;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.28)">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:40px;height:40px;border-radius:14px;background:#ECFDF5;color:#0B4632;display:flex;align-items:center;justify-content:center;font-size:16px"><i class="fa-solid fa-bell"></i></div><div style="font-weight:800;color:#0f172a;font-size:13px">' + label + '</div></div>' +
+      '<p style="font-size:13px;color:#334155;line-height:1.5;margin:0 0 16px">' + msg + '</p>' +
+      '<div style="display:flex;gap:8px"><button id="ftNotifPopupDismiss" style="flex:1;padding:10px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;color:#475569;font-weight:700;font-size:12px">Dismiss</button>' +
+      '<button id="ftNotifPopupView" style="flex:1;padding:10px;border-radius:12px;border:0;background:#0B4632;color:#fff;font-weight:700;font-size:12px">View</button></div></div>';
+    document.body.appendChild(wrap);
+    var close = function () { var el = document.getElementById('ftNotifPopup'); if (el) el.remove(); };
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    document.getElementById('ftNotifPopupDismiss').onclick = function () {
+      close();
+      try { if (typeof window.markNotifRead === 'function') window.markNotifRead(n.id); } catch (e) {}
+    };
+    document.getElementById('ftNotifPopupView').onclick = function () {
+      close();
+      try { if (typeof switchTab === 'function') switchTab('profile'); } catch (e) {}
+      try { var l = document.getElementById('profileNotificationsList'); if (l) l.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    };
+  };
   window._ftNotifSeenKeys = window._ftNotifSeenKeys || {};
   window._ftNotifUnsub = onValue(ref(db, 'users/' + uid + '/notifications'), function(snap) {
     var all = snap.val() || {};
@@ -3487,7 +3579,7 @@ window.subscribeNotifications = function(uid) {
         delete all[key];
       }
     });
-    try { if (typeof window.scheduleLocalNotification === 'function') { Object.keys(all).forEach(function(key){ if (window._ftNotifSeenKeys[key]) return; window._ftNotifSeenKeys[key] = true; var _n = all[key] || {}; if (_n.createdAt && (now - new Date(_n.createdAt).getTime()) < 60000 && _n.message) { window.scheduleLocalNotification('FinTrack', _n.message); } }); } } catch(_ftNotifSchedErr) {}
+    try { if (typeof window.scheduleLocalNotification === 'function') { Object.keys(all).forEach(function(key){ if (window._ftNotifSeenKeys[key]) return; window._ftNotifSeenKeys[key] = true; var _n = all[key] || {}; if (_n.createdAt && (now - new Date(_n.createdAt).getTime()) < 60000 && _n.message) { window.scheduleLocalNotification('FinTrack', _n.message); try { if (typeof window.ftShowNotifPopup === 'function') window.ftShowNotifPopup(_n); } catch(_popErr) {} } }); } } catch(_ftNotifSchedErr) {}
     var list = Object.keys(all).map(function(k){ return all[k]; }).filter(function(n){ return n && (n.message || n.type); });
     list.sort(function(a,b){ return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(); });
     window._ftNotifData = list;
@@ -4039,7 +4131,7 @@ window.ftUpdateFooterStatus = function() {
     if (toMember === me && toAccVal) { var acc2 = (state.banks || []).find(function(b){ return String(b.id) === String(toAccVal); }); if (acc2) { toAccountId = acc2.id; toAccountName = acc2.name + ' (' + acc2.currency + ')'; accountAdd(acc2, amount); } }
     else if (toMember !== me && toAccVal) { toAccountName = toAccVal.replace(toMember + '_', toMember + ' - '); }
     var id = String(Date.now());
-    var entry = { id: id, date: document.getElementById('hhSetDate').value, fromMember: fromMember, toMember: toMember, amount: amount, currency: currency, notes: document.getElementById('hhSetNotes').value, fromAccountId: fromAccountId, fromAccountName: fromAccountName, toAccountId: toAccountId, toAccountName: toAccountName, byUid: _uid() };
+    var entry = { id: id, status: 'pending', date: document.getElementById('hhSetDate').value, fromMember: fromMember, toMember: toMember, amount: amount, currency: currency, notes: document.getElementById('hhSetNotes').value, fromAccountId: fromAccountId, fromAccountName: fromAccountName, toAccountId: toAccountId, toAccountName: toAccountName, byUid: _uid() };
     if (fromMember === me || toMember === me) { try { saveData(); } catch(e){} }
     var hid = state.householdId;
     if (hid) {
@@ -4051,6 +4143,31 @@ window.ftUpdateFooterStatus = function() {
     }
     ftToast('Household Settlement added');
     closeModal('modalHouseholdSettlement');
+  };
+
+
+  window.approveHouseholdSettlement = function (id) {
+    var s = (state.householdSettlements || []).filter(function (x) { return String(x.id) === String(id); })[0];
+    if (!s) return;
+    var me = _meName();
+    if (String(s.toMember) !== String(me)) { ftToast('Only the receiver can approve this settlement.'); return; }
+    s.status = 'approved'; s.approvedBy = me; s.approvedAt = new Date().toISOString();
+    try {
+      if (state.householdId) update(ref(db, 'households/' + state.householdId + '/settlements/' + id), { status: 'approved', approvedBy: me, approvedAt: s.approvedAt }).catch(function (e) { console.error(e); });
+      saveData();
+    } catch (e) {}
+    ftToast('Settlement approved');
+    if (typeof renderAll === 'function') renderAll();
+  };
+  window._hhSetStatusHtml = function (s) {
+    var st = String((s && s.status) || 'approved');
+    if (st === 'pending') {
+      var canApprove = String(s.toMember) === String(_meName());
+      return '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 mr-1">Pending</span>' +
+        (canApprove ? '<button onclick="approveHouseholdSettlement(\'' + s.id + '\')" class="text-emerald-600 hover:text-emerald-700 mr-1" title="Approve settlement"><i class="fa-solid fa-check"></i></button>' : '');
+    }
+    if (st === 'rejected') return '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 mr-1">Rejected</span>';
+    return '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 mr-1">Approved</span>';
   };
 
   window.deleteHouseholdSettlement = function(id){
@@ -4744,23 +4861,16 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
 // Classic script embedded after the standalone FinTrack authentication helpers.
 /* global currentUser, get, ref, db, ftShowFinpinLock */
 (function () {
-  var hiddenAt = 0, lockGeneration = 0;
+  // FinPIN is only requested on a genuine fresh open (page load / app relaunch, handled by
+  // ftRestoreSession) and after logout. Switching to another app or tab and coming back must
+  // never re-lock the session, so returning to the app only clears the PDF handoff flag.
   window.ftHandleAppVisibility = function () {
     var handoff = window.ftPdfHandoff;
     if (document.visibilityState === 'hidden') {
-      hiddenAt = Date.now(); lockGeneration++;
       if (handoff && currentUser && handoff.uid === currentUser.uid) handoff.hidden = true;
       return;
     }
-    var elapsed = hiddenAt ? Date.now() - hiddenAt : 0; hiddenAt = 0;
-    if (handoff && handoff.hidden && currentUser && handoff.uid === currentUser.uid) { window.ftPdfHandoff = null; return; }
-    if (!elapsed || elapsed < 1500 || !currentUser || window._ftFinpinPendingUser || document.getElementById('appContainer').classList.contains('hidden')) return;
-    var uid = currentUser.uid, generation = ++lockGeneration;
-    get(ref(db, 'users/' + uid + '/finpin')).then(function (snapshot) {
-      if (!snapshot.val() || generation !== lockGeneration || document.visibilityState !== 'visible' || !currentUser || currentUser.uid !== uid) return;
-      if (window.ftCloseReport) window.ftCloseReport();
-      document.getElementById('appContainer').classList.add('hidden'); window._ftFinpinPendingUser = { uid: uid, dataKey: currentUser.loginId, isDormant: false }; ftShowFinpinLock();
-    }).catch(function (error) { console.error('Unable to check resume protection', error); });
+    if (handoff && handoff.hidden && currentUser && handoff.uid === currentUser.uid) window.ftPdfHandoff = null;
   };
   document.addEventListener('visibilitychange', window.ftHandleAppVisibility);
   var originalStatus = window.ftUpdateFinpinStatus;
@@ -5376,6 +5486,28 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     }
   };
 
+window.ftToggleHhMenu = function (e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    var p = document.getElementById('hhMenuPanel'); if (!p) return;
+    p.classList.toggle('hidden');
+  };
+  window.ftHhMenuAction = function (action) {
+    var p = document.getElementById('hhMenuPanel'); if (p) p.classList.add('hidden');
+    try {
+      if (action === 'expense' && typeof openHouseholdExpenseModal === 'function') return openHouseholdExpenseModal();
+      if (action === 'settlement' && typeof openHouseholdSettlementModal === 'function') return openHouseholdSettlementModal();
+      if (action === 'member' && typeof openHouseholdMemberModal === 'function') return openHouseholdMemberModal();
+      if (action === 'pdf' && typeof downloadHouseholdPDF === 'function') return downloadHouseholdPDF();
+      if (action === 'leave' && typeof leaveHousehold === 'function') return leaveHousehold();
+      if (action === 'delete' && typeof deleteHousehold === 'function') return deleteHousehold();
+      ftToast('Not available yet');
+    } catch (err) { console.error(err); }
+  };
+  document.addEventListener('click', function (e) {
+    var p = document.getElementById('hhMenuPanel');
+    if (p && !p.classList.contains('hidden') && !e.target.closest('#hhMenuPanel') && !e.target.closest('[onclick*="ftToggleHhMenu"]')) p.classList.add('hidden');
+  });
+
   /* ---------- Local notifications ---------- */
   var _ftNotifInitDone = false;
   window.ftInitLocalNotifications = async function () {
@@ -5384,18 +5516,36 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     try {
       var LN = plugin('LocalNotifications');
       if (!LN || typeof LN.requestPermissions !== 'function') return;
-      await LN.requestPermissions();
+      /* Android 8+ needs a channel; Android 13+ needs an explicit POST_NOTIFICATIONS grant */
+      try {
+        if (LN.createChannel) {
+          await LN.createChannel({ id: 'fintrack_alerts', name: 'FinTrack alerts', description: 'Household, split and settlement updates', importance: 5, visibility: 1, lights: true, vibration: true });
+        }
+      } catch (chErr) { console.warn('channel', chErr); }
+      var st = (typeof LN.checkPermissions === 'function') ? await LN.checkPermissions() : null;
+      if (!st || st.display === 'prompt' || st.display === 'prompt-with-rationale') {
+        await LN.requestPermissions();
+      }
     } catch (e) { /* unsupported / denied — never block startup */ }
   };
+  (function () {
+    var boot = function () { try { if (typeof window.ftInitLocalNotifications === 'function') window.ftInitLocalNotifications(); } catch (e) {} };
+    if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(boot, 2000);
+    else document.addEventListener('DOMContentLoaded', function () { setTimeout(boot, 2000); });
+  })();
   window.scheduleLocalNotification = async function (title, body) {
     try {
       if (!isNative()) return false;
       var LN = plugin('LocalNotifications');
       if (!LN || typeof LN.schedule !== 'function') return false;
       var perm = (typeof LN.checkPermissions === 'function') ? await LN.checkPermissions() : { display: 'granted' };
-      if (perm && perm.display === 'denied') return false;
+      if (perm && (perm.display === 'prompt' || perm.display === 'prompt-with-rationale') && typeof LN.requestPermissions === 'function') {
+        perm = await LN.requestPermissions();
+      }
+      if (perm && perm.display === 'denied') { try { window.ftToast && window.ftToast('Notifications are blocked. Enable them for FinTrack in Android settings.'); } catch (e) {} return false; }
+      try { if (LN.createChannel) await LN.createChannel({ id: 'fintrack_alerts', name: 'FinTrack alerts', importance: 5, lights: true, vibration: true }); } catch (chErr) {}
       var id = Math.floor(Math.random() * 1000000) + 1;
-      await LN.schedule({ notifications: [{ id: id, title: String(title || 'FinTrack'), body: String(body || ''), schedule: { at: new Date(Date.now() + 50) } }] });
+      await LN.schedule({ notifications: [{ id: id, title: String(title || 'FinTrack'), body: String(body || ''), channelId: 'fintrack_alerts', smallIcon: 'ic_stat_icon_config_sample', schedule: { at: new Date(Date.now() + 30), allowWhileIdle: true } }] });
       return true;
     } catch (e) { return false; }
   };
