@@ -339,7 +339,7 @@ body #authContainer .bg-gradient-to-br,body #authContainer .bg-gradient-to-r{bac
 body #authContainer .bg-gradient-to-br h1,body #authContainer .bg-gradient-to-r h1{color:#FFFFFF!important;}
 body #authContainer .bg-gradient-to-br p,body #authContainer .bg-gradient-to-r p{color:#DBEAFE!important;}
 body #authContainer .bg-gradient-to-br span,body #authContainer .bg-gradient-to-br i{color:#EFF6FF!important;}
-body #authContainer img[alt="FinTrack logo"]{background:#FFFFFF!important;padding:2px;border-radius:14px!important;}
+body #authContainer img[alt="FinTrack logo"]{background:#FFFFFF!important;padding:6px!important;border-radius:16px!important;object-fit:contain!important;box-shadow:0 6px 18px #0f172a24!important;}
 /* ---------- home: greeting, quote, balance, three actions, quick links only ---------- */
 body main{padding-top:4px!important;}
 body #sec-overview{padding-top:0!important;}
@@ -453,6 +453,27 @@ body.ft-dark .ft-btn-light{background:#232833!important;color:#E8EAED!important;
 body.ft-dark input,body.ft-dark select,body.ft-dark textarea{background:#232833!important;color:#E8EAED!important;border-color:#2C313A!important;}
 body.ft-dark #sec-settings,body.ft-dark #sec-help,body.ft-dark #sec-ratings,body.ft-dark main{background:#0F1115!important;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
+/* ---------- business logo frame, hexagon blue surfaces, reference type ---------- */
+:root{--fthex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='1.4'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
+body #headerLogoBox{background:#FFFFFF!important;border-radius:14px!important;padding:3px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-shadow:inset 0 0 0 1px var(--ftline)!important;}
+body #headerLogoBox img{border-radius:10px!important;object-fit:contain!important;}
+#ftHeroAccount #overviewCardBank{background-image:var(--fthex),linear-gradient(135deg,#0047AB 0%,#2A74E8 100%)!important;background-size:56px 96px,100% 100%!important;background-position:0 0,center!important;}
+.ft-side-profile{background-image:var(--fthex),linear-gradient(135deg,#0047AB 0%,#2A74E8 100%)!important;background-size:56px 96px,100% 100%!important;background-position:0 0,center!important;}
+body #authContainer .bg-gradient-to-br,body #authContainer .bg-gradient-to-r{background-image:var(--fthex),linear-gradient(135deg,#003399 0%,#3B82F6 100%)!important;background-size:56px 96px,100% 100%!important;background-position:0 0,center!important;}
+#ftHeroAccount #overviewCardBank p:first-of-type{font-size:10px!important;font-weight:700!important;letter-spacing:.14em!important;text-transform:uppercase!important;color:#DBEAFE!important;}
+#ftHeroAccount #overviewCardBank h3,#ftHeroAccount #overviewCardBank #sumBankBalance{font-size:clamp(26px,7vw,34px)!important;font-weight:800!important;letter-spacing:-.01em!important;}
+#ftHeroAccount #overviewCardBank #sumBankBalanceSub{color:#BFDBFE!important;font-size:11px!important;}
+.ft-hero-name{text-transform:uppercase!important;letter-spacing:.05em!important;}
+.ft-greet-hi{color:var(--ftmuted)!important;}
+body #homeCaption{font-size:12px!important;line-height:1.55!important;}
+/* network, toast and notice surfaces stay white and blue, never off-white or green */
+body #ftNetworkNotice{background:#FFFFFF!important;border:1px solid #1E3A8A!important;border-radius:16px!important;box-shadow:0 16px 44px #0f172a2e!important;}
+body #ftNetworkNotice p{color:#1E3A8A!important;}
+body #ftToast{background:#FFFFFF!important;color:#1E3A8A!important;border:1px solid var(--ftline)!important;box-shadow:0 12px 30px #0f172a24!important;}
+body #ftToast i{color:#1E3A8A!important;}
+body #ftCenterNotice{border:1px solid var(--ftline)!important;border-radius:22px!important;}
+body.ft-dark #ftHeroAccount #overviewCardBank,body.ft-dark .ft-side-profile{background-image:var(--fthex),linear-gradient(135deg,#1F2937,#111827)!important;background-size:56px 96px,100% 100%!important;}
+body.ft-dark #headerLogoBox{background:#FFFFFF!important;}
 </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
@@ -462,7 +483,7 @@ body.ft-dark #sec-settings,body.ft-dark #sec-help,body.ft-dark #sec-ratings,body
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
       <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#003399] via-[#0B4BC0] to-[#003399] p-10 text-white flex-1">
         <div class="mb-6">
-          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="72" height="72" class="mb-4 rounded-xl ft-default-logo" alt="FinTrack logo">
+          <img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" width="72" height="72" class="mb-4 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-4xl font-black tracking-wider">FinTrack</h1>
           <p class="text-sm text-[#1E3A8A] font-semibold tracking-widest mt-2 uppercase" id="authTagline">Financial Planning & Portfolio</p>
         </div>
@@ -475,7 +496,7 @@ body.ft-dark #sec-settings,body.ft-dark #sec-help,body.ft-dark #sec-ratings,body
       </div>
       <div class="w-full md:w-[480px] flex-shrink-0">
         <div class="md:hidden bg-gradient-to-r from-[#003399] via-[#0B4BC0] to-[#003399] p-6 text-center text-white">
-          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="56" height="56" class="mx-auto mb-2 rounded-xl ft-default-logo" alt="FinTrack logo">
+          <img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" width="56" height="56" class="mx-auto mb-2 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-2xl font-black tracking-wider">FinTrack</h1>
           <p class="text-xs text-[#1E3A8A] font-semibold tracking-widest mt-1 uppercase">Financial Planning & Portfolio</p>
         </div>
@@ -596,7 +617,7 @@ body.ft-dark #sec-settings,body.ft-dark #sec-help,body.ft-dark #sec-ratings,body
         <div class="flex items-center space-x-2 flex-shrink-0 min-w-0">
           <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-bars text-lg"></i></button>
           <div id="headerLogoBox">
-            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="40" height="40" class="ft-default-logo rounded-lg" alt="FinTrack logo">
+            <img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" width="40" height="40" class="ft-default-logo rounded-lg" alt="FinTrack logo">
           </div>
           <div><h1 class="font-black text-lg leading-tight tracking-wider hidden sm:block">FinTrack</h1><p class="text-[10px] text-amber-400 font-semibold hidden sm:block" id="welcomeUser">Welcome</p></div>
           <nav class="hidden lg:flex items-center space-x-1 ml-4 bg-slate-800/50 p-1 rounded-lg flex-wrap">
@@ -1092,7 +1113,7 @@ window.ftShowWelcomeSplash = function () {
   splash.id = 'ftWelcomeSplash';
   splash.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;opacity:0;transition:opacity .35s ease;pointer-events:none;';
   splash.innerHTML = '<div style="text-align:center;padding:24px;">' +
-    '<img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
+    '<img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
     '<div style="font-size:22px;font-weight:800;letter-spacing:.3px;color:#1e293b;">Welcome to FinTrack</div>' +
     '<div style="margin:20px auto 0;width:120px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#1E3A8A;border-radius:2px;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
     '</div>';
@@ -7115,7 +7136,7 @@ window.ftToggleHhMenu = function (e) {
 })(window.FTReview);
 </script>
 <script data-ft-update="navigation">
-/* global currentMonthStr */
+/* global currentMonthStr, formatCurrency */
 // Drawer order, bottom bar and the sections each destination owns.
 (function (FT) {
   var nav = document.querySelector('#sidebar nav'), main = document.querySelector('main');
@@ -7314,7 +7335,7 @@ window.ftToggleHhMenu = function (e) {
 })(window.FTReview);
 </script>
 <script data-ft-update="transactions">
-/* global state, dateMonth, currentMonthStr, formatCurrency */
+/* global state, dateMonth, currentMonthStr, formatCurrency, ftOwnSplitShare, ftHhMyShare, ftReceiptApproved, ftSettlementPeople */
 // Every transaction for a chosen month, with a year overview.
 (function (FT) {
   function gather(month) {
@@ -7458,8 +7479,7 @@ window.ftToggleHhMenu = function (e) {
     FT.enqueue({key:'pin_setup_'+event.detail.uid+'_'+Date.now(), title:'Set up FIN PIN', message:'Set up your 4-digit FIN PIN for faster, easier access next time.', requiresLogin:true,
       actions:[{label:'Set up FIN PIN',value:true},{label:'Not now',secondary:true,value:false}], callback:function (setup) { if (setup) window.ftOpenFinpinSetup(); }});
   });
-  // A fresh visitor starts with the standard login; a returning PIN session still uses the existing lock flow.
-  if (!currentUser && !window.auth.currentUser) window.ftTogglePasswordLogin(true);
+  // The host login keeps its own order: the FIN PIN lock is offered first, exactly as before.
 })(window.FTReview);
 </script>
 </body>
