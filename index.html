@@ -474,6 +474,40 @@ body #ftToast i{color:#1E3A8A!important;}
 body #ftCenterNotice{border:1px solid var(--ftline)!important;border-radius:22px!important;}
 body.ft-dark #ftHeroAccount #overviewCardBank,body.ft-dark .ft-side-profile{background-image:var(--fthex),linear-gradient(135deg,#1F2937,#111827)!important;background-size:56px 96px,100% 100%!important;}
 body.ft-dark #headerLogoBox{background:#FFFFFF!important;}
+/* ---------- tighter home rhythm ---------- */
+#ftHero{gap:10px!important;}
+.ft-greet{padding:0!important;gap:0!important;}
+.ft-greet-hi{font-size:12px!important;line-height:1.35!important;letter-spacing:.01em!important;color:var(--ftmuted)!important;}
+.ft-hero-name{margin-top:0!important;line-height:1.15!important;}
+#ftHeroCaptionSlot #homeCaption,#ftHeroCaptionSlot #homeCaption:only-child{padding:2px 0 0!important;font-size:11.5px!important;line-height:1.45!important;}
+#ftHeroAccount{margin:2px 0 0!important;}
+#ftHeroAccount #overviewCardBank{padding:16px 18px 14px!important;}
+#ftHeroAccount #overviewCardBank h3{margin-top:4px!important;}
+#ftHeroAccount #overviewCardBank #sumBankBalanceSub{margin-top:2px!important;}
+#ftBalanceAdd{margin-top:8px!important;padding:7px 13px!important;font-size:10.5px!important;}
+#sumBankBalance{font-variant-numeric:tabular-nums;}
+/* ---------- fixed, stable bottom bar ---------- */
+html,body{overscroll-behavior:none;overflow-x:hidden;}
+body #mobileBottomNav{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;transform:none!important;z-index:40!important;background:var(--ftsurface)!important;border-top:1px solid var(--ftline)!important;}
+@media(max-width:1023px){body main{padding-bottom:96px!important;}}
+/* ---------- one calendar language ---------- */
+body .ft-monthnav{display:inline-flex!important;align-items:center!important;gap:2px!important;background:var(--ftsurface)!important;border:1px solid var(--ftline)!important;border-radius:12px!important;padding:3px 5px!important;box-shadow:0 1px 2px #0f172a0d!important;}
+body .ft-monthnav button{width:26px!important;height:26px!important;min-height:0!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border:0!important;border-radius:8px!important;background:transparent!important;color:var(--ftb)!important;padding:0!important;}
+body .ft-monthnav button:hover{background:var(--ftsoft)!important;}
+body .ft-monthnav span[id^="navLabel_"]{font-size:11.5px!important;font-weight:700!important;color:var(--ftink)!important;min-width:92px!important;text-align:center!important;background:transparent!important;}
+body input[type="month"],body input[type="date"]{border:1px solid var(--ftline)!important;border-radius:10px!important;padding:5px 8px!important;background:var(--ftsurface)!important;color:var(--ftink)!important;font-weight:600!important;font-size:11px!important;min-height:0!important;}
+body #ftMonthPickerPopover{border:1px solid var(--ftline)!important;border-radius:16px!important;box-shadow:0 18px 44px #0f172a26!important;background:var(--ftsurface)!important;}
+/* ---------- white surfaces instead of extra coloured panels ---------- */
+body main .pastel-indigo,body main .pastel-rose,body main .pastel-emerald,body main .pastel-amber,body main .pastel-sky,body main .pastel-violet,body main .pastel-teal,body main .pastel-red,body main .pastel-slate{background:var(--ftsurface)!important;border-color:var(--ftline)!important;}
+body main .pastel-teal .bg-white\/70,body main .pastel-violet .bg-white\/70,body main .pastel-amber .bg-white\/70,body main .pastel-sky .bg-white\/70,body main .pastel-rose .bg-white\/70,body main .pastel-emerald .bg-white\/70,body main .pastel-red .bg-white\/70,body main .pastel-indigo .bg-white\/70{background:var(--ftsoft)!important;border-color:var(--ftline)!important;}
+/* ---------- insight bars ---------- */
+.ft-bar-track{height:8px;border-radius:999px;overflow:hidden;background:#E8EEF9;}
+.ft-bar-fill{height:100%;border-radius:999px;box-shadow:0 1px 4px #1e3a8a33;transition:width .45s ease;}
+body.ft-dark .ft-bar-track{background:#232833;}
+/* ---------- dark theme: deep blue with pale white hexagons ---------- */
+body.ft-dark{--fthex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.32' stroke-width='1.4'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
+body.ft-dark #ftHeroAccount #overviewCardBank,body.ft-dark .ft-side-profile{background-image:var(--fthex),linear-gradient(135deg,#0B2E63 0%,#1E3A8A 100%)!important;background-size:56px 96px,100% 100%!important;border:1px solid #2C313A!important;}
+body.ft-dark #ftBalanceAdd{background:#F8FAFC!important;color:#0B2E63!important;}
 </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
@@ -5855,19 +5889,19 @@ window.ftToggleHhMenu = function (e) {
 // The standalone host provides these shared bindings before this classic script runs.
 (function(FT){
   var dialog=document.createElement('dialog');dialog.id='ftCenterNotice';dialog.setAttribute('aria-labelledby','ftCenterTitle');dialog.style.cssText='position:fixed;inset:0;margin:auto;border:0;border-radius:20px;padding:24px;width:min(440px,calc(100vw - 32px));max-height:85dvh;overflow:auto;color:#1e293b;background:#fff;box-shadow:0 24px 80px #0005;';
-  var css=document.createElement('style');css.textContent='#ftNetworkNotice{display:none!important}#ftCenterNotice::backdrop{background:rgba(15,23,42,.65)}#ftCenterNotice p{display:block!important;white-space:pre-wrap}#ftCenterNotice button{min-height:44px;border-radius:10px;padding:10px 16px;font-weight:700}#ftCenterNotice select,#ftCenterNotice input{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;margin:8px 0}.ft-scroll{overflow-x:auto!important;overscroll-behavior:contain}#hhBalanceCards:empty{display:none}[id$="ViewMoreContainer"],#recentIncomeViewMore{display:none!important}.ft-center-scroll{overflow:hidden!important}';document.head.appendChild(css);document.body.appendChild(dialog);dialog.addEventListener('cancel',function(e){e.preventDefault();});
+  var css=document.createElement('style');css.textContent='#ftNetworkNotice{display:none!important}#ftCenterNotice::backdrop{background:rgba(15,23,42,.65)}#ftCenterNotice p{display:block!important;white-space:pre-wrap}#ftCenterNotice button{min-height:44px;border-radius:10px;padding:10px 16px;font-weight:700}#ftCenterNotice select,#ftCenterNotice input{width:100%;padding:10px;border:1px solid #1E3A8A;border-radius:10px;margin:8px 0;background:#F8FAFF;color:#0F172A;font-weight:600}#ftCenterNotice h2{color:#1E3A8A}.ft-scroll{overflow-x:auto!important;overscroll-behavior:contain}#hhBalanceCards:empty{display:none}[id$="ViewMoreContainer"],#recentIncomeViewMore{display:none!important}.ft-center-scroll{overflow:hidden!important}';document.head.appendChild(css);document.body.appendChild(dialog);dialog.addEventListener('cancel',function(e){e.preventDefault();});
   FT.finish=function(value){var item=FT.active;dialog.close();FT.active=null;document.documentElement.classList.remove('ft-center-scroll');if(item&&item.callback)item.callback(value);FT.next();};
   FT.next=function(){
     if(FT.active||!FT.queue.length)return;var app=document.getElementById('appContainer');if(FT.queue[0].requiresLogin&&(!currentUser||!dataLoaded||app.classList.contains('hidden')))return;
     var item=FT.active=FT.queue.shift();dialog.innerHTML='<h2 id="ftCenterTitle" style="font-size:18px;font-weight:800;margin-bottom:12px"></h2><div id="ftCenterBody"></div><p id="ftCenterError" role="alert" style="color:#b91c1c;font-size:13px;margin-top:10px"></p><div id="ftCenterActions" style="display:flex;gap:10px;margin-top:18px"></div>';
     dialog.querySelector('h2').textContent=item.title||'FinTrack';var body=dialog.querySelector('#ftCenterBody');if(item.html)body.innerHTML=item.html;else{var text=document.createElement('p');text.textContent=item.message||'';body.appendChild(text);}
     if(item.prompt){var input=document.createElement('input');input.id='ftCenterInput';input.value=item.value||'';body.appendChild(input);}
-    if(item.request){var s=item.request.s,p=ftSettlementPeople(s);if(p.payee.uid===FT.me().uid&&s.status!=='rejected'&&!ftReceiptApproved(s)){var hint=document.createElement('p');hint.textContent='Accept only after you have actually received this payment. Reject leaves the outstanding amount unchanged.';hint.style.cssText='font-size:13px;margin-top:12px';body.appendChild(hint);if(s.ledgerVersion===2&&!s.legacySource){var select=document.createElement('select');select.id='ftReceiptAccount';select.add(new Option('Do not change a saved account',''));(state.banks||[]).filter(function(b){return b.currency===s.currency;}).forEach(function(b){select.add(new Option(b.name+' ('+b.currency+')',String(b.id)));});body.appendChild(select);}}}
+    if(item.request){var s=item.request.s,p=ftSettlementPeople(s);if(p.payee.uid===FT.me().uid&&s.status!=='rejected'&&!ftReceiptApproved(s)){var hint=document.createElement('p');hint.textContent='Accept only if the money has reached you. Reject leaves the balance unchanged.';hint.style.cssText='font-size:12.5px;color:#475569;margin-top:8px';body.appendChild(hint);if(s.ledgerVersion===2&&!s.legacySource){var select=document.createElement('select');select.id='ftReceiptAccount';select.add(new Option('Do not change a saved account',''));(state.banks||[]).filter(function(b){return b.currency===s.currency;}).forEach(function(b){select.add(new Option(b.name+' ('+b.currency+')',String(b.id)));});body.appendChild(select);}}}
     (item.actions||[{label:'OK',value:true}]).forEach(function(a){var b=document.createElement('button');b.textContent=a.label;b.style.cssText='flex:1;background:'+(a.secondary?'#f1f5f9':'#1E3A8A')+';color:'+(a.secondary?'#334155':'white');b.onclick=async function(){var buttons=dialog.querySelectorAll('button');buttons.forEach(function(x){x.disabled=true;});var error=dialog.querySelector('#ftCenterError');error.textContent='';try{if(a.run)await a.run();if(FT.active!==item)return;FT.finish(a.cancel?null:item.prompt?dialog.querySelector('input').value:a.value);}catch(e){error.textContent=e.message||'This action could not be saved. Please try again.';buttons.forEach(function(x){x.disabled=false;});}};dialog.querySelector('#ftCenterActions').appendChild(b);});
     document.documentElement.classList.add('ft-center-scroll');dialog.showModal();var first=dialog.querySelector('input,button');if(first)first.focus();
   };
   FT.enqueue=function(item){if(item.key&&FT.seen.has(item.key))return;if(item.key)FT.seen.add(item.key);if(item.urgent)FT.queue.unshift(item);else FT.queue.push(item);FT.next();};
-  FT.requestNotice=function(r){var p=ftSettlementPeople(r.s);return {id:'receipt_'+r.s.id,type:'settlement_request',fromUid:p.payer.uid,fromName:p.payer.name,toUid:p.payee.uid,settlementId:r.s.id,settlementScope:r.scope,householdId:r.hid||'',message:'Hi! Your friend '+p.payer.name+' has requested to settle an amount of '+formatCurrency(r.s.amount,r.s.currency)+'. Kindly confirm whether you would like to accept or reject this settlement.',createdAt:r.s.createdAt||r.s.date,read:false};};
+  FT.requestNotice=function(r){var p=ftSettlementPeople(r.s);return {id:'receipt_'+r.s.id,type:'settlement_request',fromUid:p.payer.uid,fromName:p.payer.name,toUid:p.payee.uid,settlementId:r.s.id,settlementScope:r.scope,householdId:r.hid||'',message:p.payer.name+' sent a settlement of '+formatCurrency(r.s.amount,r.s.currency)+'. Accept only after the money reaches your account.',createdAt:r.s.createdAt||r.s.date,read:false};};
   FT.markRead=async function(n){if(!n.id||!FT.me().uid)return;await update(ref(db,'users/'+FT.me().uid+'/notifications/'+n.id),{read:true,readAt:new Date().toISOString()});};
   window.ftEnqueueNotification=function(n,force){
     if(!n||!n.message||(!force&&n.read))return;var key=FT.me().uid+'|'+n.id+'|'+(n.createdAt||'')+(force?'|open|'+Date.now():'');
@@ -6554,7 +6588,8 @@ window.ftToggleHhMenu = function (e) {
 
   function bar(percent, color) {
     var width = Math.max(0, Math.min(100, percent));
-    return '<div class="h-1.5 rounded-full mt-1 overflow-hidden" style="background:#E2E8F0"><div class="h-full rounded-full" style="width:' + width.toFixed(1) + '%;background:' + color + '"></div></div>';
+    var fill = color === '#B91C1C' ? 'linear-gradient(90deg,#FB7185,#B91C1C)' : 'linear-gradient(90deg,#60A5FA,#1E3A8A)';
+    return '<div class="ft-bar-track mt-1.5"><div class="ft-bar-fill" style="width:' + width.toFixed(1) + '%;background:' + fill + '"></div></div>';
   }
 
   function expenseCard(cur, rows, total, totalCount) {
@@ -7314,7 +7349,12 @@ window.ftToggleHhMenu = function (e) {
   var host = document.getElementById('sec-settings');
   if (host) {
     var picker = document.getElementById('themePickerContainer');
-    if (picker) picker.closest('.bg-white')?.remove();
+    if (picker) {
+      var card = picker.closest('.pastel-violet') || picker.closest('.bg-white') || picker.parentElement;
+      if (card && card.parentNode) card.remove(); else picker.remove();
+    }
+    // Only light and dark exist; every legacy palette is retired.
+    window.ftThemes = [{ key: 'light', label: 'Light', premium: false, swatch: '#1E3A8A' }, { key: 'dark', label: 'Dark', premium: false, swatch: '#111827' }];
     var card = document.createElement('div');
     card.className = 'ft-card';
     card.innerHTML = '<div class="ft-card-head"><h3>App appearance</h3></div><div class="ft-theme-toggle">' + modes.map(function (mode) {
@@ -7469,6 +7509,114 @@ window.ftToggleHhMenu = function (e) {
     }
     show();
   };
+})(window.FTReview);
+</script>
+<script data-ft-update="home-polish">
+/* global state */
+// Presentation-only refinements: balance-only eye toggle, tidy household header,
+// consistent month pickers and a stable home bar. No financial logic lives here.
+(function (FT) {
+  /* ---------- eye button: hide the amount only, never the currency ---------- */
+  var node = null, real = '', busy = false;
+
+  function stored() { try { return localStorage.getItem('fintrack_balance_only_hidden') === '1'; } catch (e) { return false; } }
+  function save(value) { try { localStorage.setItem('fintrack_balance_only_hidden', value ? '1' : '0'); } catch (e) {} }
+  function mask(text) { return String(text == null ? '' : text).replace(/[0-9]/g, '\u2022'); }
+
+  function syncEye(hidden) {
+    document.querySelectorAll('#overviewCardBank .ft-balance-eye').forEach(function (icon) {
+      icon.className = 'fa-solid ' + (hidden ? 'fa-eye-slash' : 'fa-eye') + ' ft-balance-eye';
+    });
+    var button = document.querySelector('#overviewCardBank button[onclick*="ftToggleBalanceVisibility"]');
+    if (button) button.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+  }
+
+  function watch(target) {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function () {
+      if (busy || !stored()) return;
+      var text = target.innerText || '';
+      if (text.indexOf('\u2022') !== -1 || !text.trim()) return;
+      real = text;
+      apply();
+    }).observe(target, { childList: true, characterData: true, subtree: true });
+  }
+
+  function apply() {
+    var current = document.getElementById('sumBankBalance');
+    if (!current) return;
+    if (current !== node) { node = current; real = ''; watch(current); }
+    var hidden = stored();
+    busy = true;
+    var text = current.innerText || '';
+    if (hidden) {
+      if (text.indexOf('\u2022') === -1 && text.trim()) real = text;
+      if (!real) real = text;
+      current.innerText = mask(real);
+    } else if (real) {
+      current.innerText = real;
+    }
+    busy = false;
+    syncEye(hidden);
+    var overview = document.getElementById('sec-overview');
+    if (overview) overview.classList.remove('ft-values-hidden');
+  }
+
+  window.ftToggleBalanceVisibility = function () { save(!stored()); apply(); };
+  window.ftApplyBalanceVisibility = apply;
+  FT.applyBalanceVisibility = apply;
+
+  /* ---------- household: one visible action, everything else in the menu ---------- */
+  function tidyHousehold() {
+    var section = document.getElementById('sec-household');
+    if (!section) return;
+    var hidden = ['downloadHouseholdPDF()', 'openHouseholdMemberModal()', 'openHouseholdSettlementModal()'];
+    section.querySelectorAll('button').forEach(function (button) {
+      var call = button.getAttribute('onclick') || '';
+      if (hidden.indexOf(call) !== -1) button.style.display = 'none';
+    });
+  }
+
+  /* ---------- one calendar language everywhere ---------- */
+  function tidyMonthPickers() {
+    document.querySelectorAll('button[onclick^="navMonthPrev("]').forEach(function (button) {
+      var wrap = button.parentElement;
+      if (wrap && !wrap.classList.contains('ft-monthnav')) wrap.classList.add('ft-monthnav');
+    });
+  }
+
+  /* ---------- thicker, smoother trend lines ---------- */
+  if (window.Chart && window.Chart.defaults) {
+    window.Chart.defaults.elements.line.borderWidth = 4;
+    window.Chart.defaults.elements.line.tension = 0.4;
+    window.Chart.defaults.elements.point.radius = 4;
+    window.Chart.defaults.elements.point.hoverRadius = 6;
+  }
+
+  function run() {
+    try { tidyHousehold(); tidyMonthPickers(); apply(); } catch (error) { console.error('FinTrack polish error:', error); }
+  }
+
+  run();
+  document.addEventListener('DOMContentLoaded', run);
+
+  if (window.renderAll) {
+    var hostRender = window.renderAll;
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      setTimeout(run, 0);
+      return result;
+    };
+  }
+  if (window.switchTab) {
+    var hostSwitch = window.switchTab;
+    window.switchTab = function () {
+      var result = hostSwitch.apply(this, arguments);
+      setTimeout(run, 60);
+      return result;
+    };
+  }
+  setInterval(apply, 5000);
 })(window.FTReview);
 </script>
 <script data-ft-update="pin-prompt">
