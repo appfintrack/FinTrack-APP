@@ -307,7 +307,6 @@ body #authContainer>div{background:var(--ftsurface)!important;border:1px solid v
 body #authContainer .bg-gradient-to-br,body #authContainer .bg-gradient-to-r{background:linear-gradient(135deg,var(--ftb),var(--ftb2))!important;}
 body #authContainer .text-amber-400,body #authContainer .text-indigo-400,body #authContainer .text-emerald-400{color:#BFDBFE!important;}
 body #authContainer #authTagline{color:#DBEAFE!important;}
-body #authContainer [class*="text-[#EE5133]"],body #authContainer [class*="text-[#1E3A8A]"]{color:#DBEAFE!important;}
 body #authContainer button[type="submit"],body #finpinUnlockButton{background:var(--ftb)!important;color:var(--ftsurface)!important;border-color:var(--ftb)!important;box-shadow:none!important;}
 body #authContainer input,body #modalFinpinSetup input{background:var(--ftsurface)!important;color:var(--ftink)!important;border-color:var(--ftline)!important;}
 body .finpin-box{border-radius:14px!important;color:var(--ftb)!important;background:var(--ftsurface)!important;border-color:var(--ftline)!important;}
@@ -333,6 +332,126 @@ body[data-theme] .text-slate-500,body[data-theme] .text-slate-400{color:var(--ft
 body[data-theme] .border-slate-200{border-color:var(--ftline)!important;}
 body[data-theme] input,body[data-theme] select,body[data-theme] textarea{background:var(--ftsurface)!important;color:var(--ftink)!important;border-color:var(--ftline)!important;}
 body[data-theme] .ft-side-profile .text-slate-400{color:#DBEAFE!important;}
+/* ---------- login: brand area is blue and white, never dark brown ---------- */
+body #authContainer{background:var(--ftpage)!important;}
+body #authContainer>div{border-radius:24px!important;}
+body #authContainer .bg-gradient-to-br,body #authContainer .bg-gradient-to-r{background:linear-gradient(135deg,#1E3A8A 0%,#1E40AF 100%)!important;color:#FFFFFF!important;}
+body #authContainer .bg-gradient-to-br h1,body #authContainer .bg-gradient-to-r h1{color:#FFFFFF!important;}
+body #authContainer .bg-gradient-to-br p,body #authContainer .bg-gradient-to-r p{color:#DBEAFE!important;}
+body #authContainer .bg-gradient-to-br span,body #authContainer .bg-gradient-to-br i{color:#EFF6FF!important;}
+body #authContainer img[alt="FinTrack logo"]{background:#FFFFFF!important;padding:2px;border-radius:14px!important;}
+/* ---------- home: greeting, quote, balance, three actions, quick links only ---------- */
+body main{padding-top:4px!important;}
+body #sec-overview{padding-top:0!important;}
+#sec-overview:has(#ftHero)>:not(#ftHero){display:none!important;}
+.ft-greet{padding:8px 0 30px!important;background:transparent!important;display:flex;flex-direction:column;gap:2px;}
+.ft-greet-hi{font-size:12px;font-weight:600;color:var(--ftmuted)!important;}
+.ft-hero-name{font-size:22px;font-weight:800;color:var(--ftb)!important;text-transform:capitalize;margin-top:2px;}
+#ftHeroCaptionSlot #homeCaption,#ftHeroCaptionSlot #homeCaption:only-child{display:block!important;text-align:center!important;color:var(--ftmuted)!important;font-style:italic!important;font-size:12px;line-height:1.5;padding:8px 0 0!important;}
+#ftHeroAccount{margin:12px 0 0!important;}
+#ftHeroAccount #overviewCardBank{background:linear-gradient(135deg,#1E3A8A,#1E40AF)!important;border:0!important;color:#FFFFFF!important;padding:20px!important;border-radius:20px!important;box-shadow:0 10px 24px #1e3a8a2e!important;}
+#ftHeroAccount #overviewCardBank p{color:#DBEAFE!important;}
+#ftHeroAccount #overviewCardBank h3,#ftHeroAccount #overviewCardBank #sumBankBalance{color:#FFFFFF!important;}
+#ftHeroAccount #overviewCardBank button{color:#DBEAFE!important;}
+#ftBalanceAdd{background:#FFFFFF!important;color:var(--ftb)!important;}
+/* ---------- quick links keep one blue and white treatment, collapsed or expanded ---------- */
+#ftQuickActions .ft-qa,#ftQlMore .ft-qa{background:var(--ftsurface)!important;border:1px solid var(--ftline)!important;box-shadow:none!important;}
+#ftQuickActions .ft-qa>span:first-child,#ftQlMore .ft-qa>span:first-child{background:var(--ftsoft)!important;border-radius:50%!important;}
+#ftQuickActions .ft-qa i,#ftQlMore .ft-qa i{color:var(--ftb)!important;}
+#ftQuickActions .ft-qa>span:last-child,#ftQlMore .ft-qa>span:last-child{color:var(--ftink)!important;}
+.ft-quick,.ft-quick i{background:var(--ftsoft)!important;color:var(--ftb)!important;}
+.ft-quick span{color:var(--ftink)!important;}
+/* ---------- money values stay blue; only settlement direction uses red or green ---------- */
+body .money-income,body .money-expense,body .money-neutral,body .money-transfer,body #pendingPaymentsSection .text-emerald-400,body #pendingPaymentsSection .text-rose-400,body #individualSummarySection .text-emerald-400,body .profit-card .text-emerald-700{color:var(--ftb)!important;}
+/* ---------- drawer ---------- */
+#ftDrawerLinks{display:flex;flex-direction:column;gap:2px;}
+.ft-drawer-link{display:flex;align-items:center;gap:12px;padding:14px 12px;border-radius:12px;font-size:13px;font-weight:700;color:var(--ftink);background:transparent;text-align:left;width:100%;}
+.ft-drawer-link i{width:20px;text-align:center;color:var(--ftb);}
+.ft-drawer-chevron{margin-left:auto;color:var(--ftmuted);font-size:16px;}
+.ft-drawer-link.active,.ft-drawer-link:hover{background:var(--ftsoft);color:var(--ftb);}
+body aside#sidebar [data-ft-legacy-nav]{display:none!important;}
+/* ---------- bottom bar ---------- */
+body #mobileBottomNav{display:grid!important;grid-template-columns:repeat(3,1fr)!important;}
+body #mobileBottomNav .ftbn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:9px 4px 10px;font-size:10px;font-weight:700;background:transparent;}
+body #mobileBottomNav .ftbn i{font-size:16px;margin:0!important;}
+body #mobileBottomNav .ftbn.active{color:var(--ftb)!important;}
+body #mobileBottomNav .ftbn.active i{color:var(--ftb);}
+/* ---------- sections ---------- */
+.ft-section-head h2{font-size:17px;font-weight:800;color:var(--ftb);}
+.ft-monitor-currency+.ft-monitor-currency{margin-top:12px;border-top:1px solid var(--ftline);padding-top:10px;}
+.ft-monitor-currency>p{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--ftmuted);text-transform:uppercase;}
+.ft-monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.ft-monitor-grid span{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:600;color:var(--ftmuted);background:var(--ftsoft);border-radius:12px;padding:12px;}
+.ft-monitor-grid strong{font-size:15px;font-weight:800;color:var(--ftb);}
+.ft-tx-controls{display:flex;gap:10px;margin-bottom:10px;}
+.ft-tx-controls label{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--ftmuted);}
+.ft-tx-controls input{background:var(--ftsurface);border:1px solid var(--ftline);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--ftink);}
+.ft-tx-list{max-height:min(62vh,520px);overflow-y:auto;overscroll-behavior:contain;}
+.ft-tx{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ftline);}
+.ft-tx-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ftsoft);color:var(--ftb);flex-shrink:0;}
+.ft-tx-main{flex:1;min-width:0;}
+.ft-tx-main p{font-size:12px;font-weight:700;color:var(--ftink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ft-tx-main small{font-size:10px;color:var(--ftmuted);}
+.ft-tx strong{font-size:12px;font-weight:800;color:var(--ftb);}
+.ft-year-row{padding:12px 0;border-bottom:1px solid var(--ftline);}
+.ft-year-row>p{font-size:12px;font-weight:800;color:var(--ftb);}
+.ft-year-values{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--ftmuted);margin-top:4px;}
+.ft-year-values strong{color:var(--ftb);}
+#sec-settings>div,#sec-help>div,#sec-ratings>div{background:var(--ftsurface)!important;border:1px solid var(--ftline)!important;box-shadow:0 1px 3px #0f172a0a!important;}
+#sec-settings h3,#sec-help h3,#sec-ratings h3{color:var(--ftb)!important;}
+/* ---------- theme toggle ---------- */
+.ft-theme-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ft-theme-toggle button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:1px solid var(--ftline);border-radius:14px;background:var(--ftsurface);color:var(--ftink);}
+.ft-theme-toggle button i{color:var(--ftb);font-size:16px;}
+.ft-theme-toggle button strong{font-size:12px;}
+.ft-theme-toggle button span{font-size:10px;color:var(--ftmuted);}
+.ft-theme-toggle button.active{border-color:var(--ftb);background:var(--ftsoft);}
+/* ---------- overlays: centered windows that freeze the page ---------- */
+html.ft-frozen,html.ft-frozen body{overflow:hidden!important;overscroll-behavior:none;height:100%;}
+@media(max-width:1023px){body:has(#sidebar:not(.hidden)){overflow:hidden!important;}}
+body:has(div[id^="modal"]:not(.hidden)){overflow:hidden!important;}
+.ft-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:#0f172ab8;backdrop-filter:blur(3px);}
+.ft-overlay-card{width:100%;max-width:440px;max-height:86dvh;display:flex;flex-direction:column;background:var(--ftsurface);border-radius:20px;box-shadow:0 24px 70px #0f172a45;overflow:hidden;}
+.ft-overlay-wide .ft-overlay-card{max-width:560px;}
+.ft-overlay-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 18px 10px;}
+.ft-overlay-head h2{font-size:16px;font-weight:800;color:var(--ftb);}
+.ft-overlay-close{width:32px;height:32px;border-radius:50%;background:var(--ftsoft);color:var(--ftb);font-size:14px;line-height:1;}
+.ft-overlay-body{padding:4px 18px 8px;overflow-y:auto;overscroll-behavior:contain;font-size:13px;color:var(--ftink);}
+.ft-overlay-actions{display:flex;gap:10px;padding:14px 18px 18px;}
+.ft-btn{flex:1;min-height:44px;border-radius:12px;background:var(--ftb);color:#FFFFFF;font-size:13px;font-weight:700;}
+.ft-btn-light{background:var(--ftsoft);color:var(--ftb);}
+.ft-detail-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--ftline);}
+.ft-detail-row span{font-size:11px;font-weight:600;color:var(--ftmuted);}
+.ft-detail-row strong{font-size:13px;font-weight:700;color:var(--ftink);text-align:right;word-break:break-word;}
+.ft-notif-list{max-height:56dvh;overflow-y:auto;overscroll-behavior:contain;}
+.ft-notif{display:block;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--ftline);}
+.ft-notif p{font-size:12px;color:var(--ftink);margin-top:4px;line-height:1.45;}
+.ft-notif small{font-size:10px;color:var(--ftmuted);}
+.ft-notif-tag{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ftb);}
+.ft-notif.unread .ft-notif-tag{color:#FFFFFF;background:var(--ftb);padding:2px 6px;border-radius:5px;}
+.ft-tour-title{font-size:14px;font-weight:800;color:var(--ftb);margin-bottom:6px;}
+.ft-tour-text{font-size:13px;line-height:1.6;color:var(--ftink);}
+/* ---------- dark theme: black, ash and white ---------- */
+body.ft-dark{--ftpage:#0F1115;--ftsurface:#1A1D23;--ftline:#2C313A;--ftink:#E8EAED;--ftmuted:#9CA3AF;--ftsoft:#232833;--ftb:#93C5FD;--ftb2:#60A5FA;background:var(--ftpage)!important;color:var(--ftink)!important;}
+body.ft-dark header,body.ft-dark aside#sidebar,body.ft-dark #mobileBottomNav,body.ft-dark .ft-overlay-card,body.ft-dark .ft-sheet-inner,body.ft-dark .ft-search-box{background:#1A1D23!important;border-color:#2C313A!important;}
+body.ft-dark header h1,body.ft-dark header button,body.ft-dark header .text-slate-300,body.ft-dark header .text-slate-400,body.ft-dark #sidebar nav button{color:#E8EAED!important;}
+body.ft-dark .ft-drawer-link{color:#E8EAED!important;}
+body.ft-dark .ft-drawer-link i{color:#93C5FD!important;}
+body.ft-dark .ft-greet{background:transparent!important;}
+body.ft-dark .ft-greet-hi{color:#9CA3AF!important;}
+body.ft-dark .ft-hero-name{color:#F3F4F6!important;}
+body.ft-dark #ftHeroCaptionSlot #homeCaption{color:#9CA3AF!important;}
+body.ft-dark #ftHeroAccount #overviewCardBank{background:linear-gradient(135deg,#1F2937,#111827)!important;border:1px solid #2C313A!important;box-shadow:none!important;}
+body.ft-dark #ftHeroAccount #overviewCardBank h3,body.ft-dark #ftHeroAccount #overviewCardBank #sumBankBalance{color:#F9FAFB!important;}
+body.ft-dark #ftBalanceAdd{background:#E5E7EB!important;color:#111827!important;}
+body.ft-dark .ft-card,body.ft-dark .ft-action,body.ft-dark .ft-quick,body.ft-dark #ftQuickActions .ft-qa,body.ft-dark #ftQlMore .ft-qa{background:#1A1D23!important;border-color:#2C313A!important;}
+body.ft-dark .ft-card-head h3,body.ft-dark .ft-section-head h2,body.ft-dark .ft-tx strong,body.ft-dark .ft-monitor-grid strong,body.ft-dark .ft-detail-row strong,body.ft-dark .ft-overlay-head h2,body.ft-dark .ft-tour-title,body.ft-dark #sec-settings h3,body.ft-dark #sec-help h3{color:#E5E7EB!important;}
+body.ft-dark .ft-tx-main p,body.ft-dark .ft-action span,body.ft-dark .ft-quick span,body.ft-dark .ft-drawer-link span{color:#E8EAED!important;}
+body.ft-dark .ft-monitor-grid span,body.ft-dark .ft-theme-toggle button{background:#232833!important;border-color:#2C313A!important;color:#E8EAED!important;}
+body.ft-dark .ft-theme-toggle button.active{border-color:#93C5FD!important;}
+body.ft-dark .ft-btn-light{background:#232833!important;color:#E8EAED!important;}
+body.ft-dark input,body.ft-dark select,body.ft-dark textarea{background:#232833!important;color:#E8EAED!important;border-color:#2C313A!important;}
+body.ft-dark #sec-settings,body.ft-dark #sec-help,body.ft-dark #sec-ratings,body.ft-dark main{background:#0F1115!important;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;}}
 </style>
 </head>
@@ -343,7 +462,7 @@ body[data-theme] .ft-side-profile .text-slate-400{color:#DBEAFE!important;}
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
       <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#003399] via-[#0B4BC0] to-[#003399] p-10 text-white flex-1">
         <div class="mb-6">
-          <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="72" height="72" class="mb-4 rounded-xl ft-default-logo" alt="FinTrack logo">
+          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="72" height="72" class="mb-4 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-4xl font-black tracking-wider">FinTrack</h1>
           <p class="text-sm text-[#1E3A8A] font-semibold tracking-widest mt-2 uppercase" id="authTagline">Financial Planning & Portfolio</p>
         </div>
@@ -356,7 +475,7 @@ body[data-theme] .ft-side-profile .text-slate-400{color:#DBEAFE!important;}
       </div>
       <div class="w-full md:w-[480px] flex-shrink-0">
         <div class="md:hidden bg-gradient-to-r from-[#003399] via-[#0B4BC0] to-[#003399] p-6 text-center text-white">
-          <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="56" height="56" class="mx-auto mb-2 rounded-xl ft-default-logo" alt="FinTrack logo">
+          <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="56" height="56" class="mx-auto mb-2 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-2xl font-black tracking-wider">FinTrack</h1>
           <p class="text-xs text-[#1E3A8A] font-semibold tracking-widest mt-1 uppercase">Financial Planning & Portfolio</p>
         </div>
@@ -477,7 +596,7 @@ body[data-theme] .ft-side-profile .text-slate-400{color:#DBEAFE!important;}
         <div class="flex items-center space-x-2 flex-shrink-0 min-w-0">
           <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition"><i class="fa-solid fa-bars text-lg"></i></button>
           <div id="headerLogoBox">
-            <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="40" height="40" class="ft-default-logo rounded-lg" alt="FinTrack logo">
+            <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" width="40" height="40" class="ft-default-logo rounded-lg" alt="FinTrack logo">
           </div>
           <div><h1 class="font-black text-lg leading-tight tracking-wider hidden sm:block">FinTrack</h1><p class="text-[10px] text-amber-400 font-semibold hidden sm:block" id="welcomeUser">Welcome</p></div>
           <nav class="hidden lg:flex items-center space-x-1 ml-4 bg-slate-800/50 p-1 rounded-lg flex-wrap">
@@ -973,7 +1092,7 @@ window.ftShowWelcomeSplash = function () {
   splash.id = 'ftWelcomeSplash';
   splash.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f8fafc;opacity:0;transition:opacity .35s ease;pointer-events:none;';
   splash.innerHTML = '<div style="text-align:center;padding:24px;">' +
-    '<img src="https://media.base44.com/images/public/6ad26e00e3010881748b402e/5cb88cb1c_fdd21755-fec9-4bae-af68-9225de0483fa.jpg" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
+    '<img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%20width%3D%2296%22%20height%3D%2296%22%3E%3Crect%20width%3D%2296%22%20height%3D%2296%22%20rx%3D%2222%22%20fill%3D%22%231E3A8A%22%2F%3E%3Cpath%20d%3D%22M26%2070%20L44%2052%20L55%2061%20L70%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M70%2044%20L70%2055%20M70%2044%20L59%2044%22%20fill%3D%22none%22%20stroke%3D%22%23FFFFFF%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3Ctext%20x%3D%2248%22%20y%3D%2234%22%20text-anchor%3D%22middle%22%20font-family%3D%22Helvetica%2CArial%2Csans-serif%22%20font-size%3D%2224%22%20font-weight%3D%22800%22%20fill%3D%22%23FFFFFF%22%3EFi%3C%2Ftext%3E%3C%2Fsvg%3E" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
     '<div style="font-size:22px;font-weight:800;letter-spacing:.3px;color:#1e293b;">Welcome to FinTrack</div>' +
     '<div style="margin:20px auto 0;width:120px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;"><div style="height:100%;width:40%;background:#1E3A8A;border-radius:2px;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
     '</div>';
@@ -6635,7 +6754,7 @@ window.ftToggleHhMenu = function (e) {
     var hero = document.createElement('div');
     hero.id = 'ftHero';
     hero.innerHTML =
-      '<div class="ft-greet"><div class="ft-profile-row"><span class="ft-side-avatar" id="ftHeroInitials">' + esc(initials(currentUser && currentUser.name)) + '</span><div><p class="ft-greet-hi" id="ftHello">' + greeting() + ',</p><h2 class="ft-hero-name" id="ftHeroName">' + esc(currentUser && currentUser.name || 'Welcome') + '</h2><p class="ft-profile-meta" id="ftLastLogin"></p><button type="button" class="ft-profile-link" onclick="openProfilePanel();openProfileSection(\'personal\')">View Profile</button></div></div><div id="ftHeroCaptionSlot"></div></div>' +
+      '<div class="ft-greet"><p class="ft-greet-hi" id="ftHello">' + greeting() + ',</p><h2 class="ft-hero-name" id="ftHeroName">' + esc(currentUser && currentUser.name || 'Welcome') + '</h2><div id="ftHeroCaptionSlot"></div></div>' +
       '<div id="ftHeroAccount"></div>' +
       '<div class="ft-actions">' +
         '<button type="button" class="ft-action" onclick="switchTab(\'accounts-spending\')"><i class="fa-solid fa-building-columns"></i><span>Accounts</span></button>' +
@@ -6651,10 +6770,7 @@ window.ftToggleHhMenu = function (e) {
         '</div>' +
         '<div id="ftQlMore" class="hidden"></div>' +
       '</div>' +
-      '<div class="ft-card" id="ftTrackers">' +
-        '<div class="ft-card-head"><h3>FinTrackers</h3><button type="button" class="ft-link" onclick="switchTab(\'friends\')">View all</button></div>' +
-        '<div id="ftTrackerList" class="space-y-1"></div>' +
-      '</div>';
+      '';
 
     sec.insertBefore(hero, sec.firstChild);
 
@@ -6894,7 +7010,7 @@ window.ftToggleHhMenu = function (e) {
       var sideInitials = document.getElementById('ftSideInitials');
       if (sideInitials) sideInitials.textContent = initials(currentUser.name);
       var heroInitials = document.getElementById('ftHeroInitials');if (heroInitials) heroInitials.textContent = initials(currentUser.name);
-      var lastLogin = document.getElementById('ftLastLogin');if(lastLogin) lastLogin.textContent = currentUser.lastLogin ? 'Last login: ' + new Date(currentUser.lastLogin).toLocaleString() : '';
+
     }
     // Keep the home layout intact if the host re-renders a card back into its original grid.
     var acct = document.getElementById('ftHeroAccount');
@@ -6926,28 +7042,412 @@ window.ftToggleHhMenu = function (e) {
   setInterval(function () { try { refresh(); } catch (e) { /* noop */ } }, 4000);
 })(window.FTReview = window.FTReview || {});
 </script>
-<script data-ft-update="navigation">
-/* global currentUser, currentMonthStr */
+<script data-ft-update="overlay">
+// Centered overlays that freeze the page behind them.
 (function (FT) {
-  var nav=document.querySelector('#sidebar nav'), main=document.querySelector('main');
+  FT.lock = function () { document.documentElement.classList.add('ft-frozen'); };
+  FT.unlock = function () { if (!document.querySelector('.ft-overlay')) document.documentElement.classList.remove('ft-frozen'); };
+
+  FT.openOverlay = function (options) {
+    var wrap = document.createElement('div');
+    wrap.className = 'ft-overlay';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.innerHTML = '<div class="ft-overlay-card"><div class="ft-overlay-head"><h2></h2><button type="button" class="ft-overlay-close" aria-label="Close">✕</button></div><div class="ft-overlay-body"></div><div class="ft-overlay-actions"></div></div>';
+    wrap.querySelector('h2').textContent = options.title || 'FinTrack';
+    var body = wrap.querySelector('.ft-overlay-body');
+    if (options.html) body.innerHTML = options.html;
+    else if (options.text) { var p = document.createElement('p'); p.textContent = options.text; body.appendChild(p); }
+    if (options.wide) wrap.classList.add('ft-overlay-wide');
+    var actions = wrap.querySelector('.ft-overlay-actions');
+    var close = function () { wrap.remove(); FT.unlock(); if (options.onClose) options.onClose(); };
+    (options.actions || [{ label: 'Close' }]).forEach(function (action) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ft-btn' + (action.secondary ? ' ft-btn-light' : '');
+      button.textContent = action.label;
+      button.onclick = function () { if (action.run) action.run(close); if (!action.keepOpen) close(); };
+      actions.appendChild(button);
+    });
+    if (!actions.children.length) actions.remove();
+    wrap.querySelector('.ft-overlay-close').onclick = close;
+    wrap.addEventListener('click', function (event) { if (event.target === wrap) close(); });
+    document.body.appendChild(wrap);
+    FT.lock();
+    var first = wrap.querySelector('button, input, select, textarea');
+    if (first) first.focus();
+    return { el: wrap, body: body, close: close };
+  };
+})(window.FTReview);
+</script>
+<script data-ft-update="profile">
+/* global currentUser */
+// Profile and notifications open as centered windows, not embedded lists.
+(function (FT) {
+  function row(label, value) {
+    return '<div class="ft-detail-row"><span>' + FT.escape(label) + '</span><strong>' + FT.escape(value || '—') + '</strong></div>';
+  }
+  window.ftOpenProfileWindow = function () {
+    if (!currentUser) return;
+    var memberSince = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : '';
+    var html = '<div class="ft-detail">' + row('Name', currentUser.name) + row('Email ID', currentUser.email) + row('Mobile number', currentUser.mobile ? (currentUser.countryCode || '') + ' ' + currentUser.mobile : '') + row('Account role', currentUser.role) + row('Member since', memberSince) + '</div>';
+    FT.openOverlay({ title: 'My profile', html: html, actions: [{ label: 'Close', secondary: true }] });
+  };
+  window.ftOpenNotifications = function () {
+    var all = (window._ftNotifData || []).slice().sort(function (a, b) { return new Date(b.createdAt || 0) - new Date(a.createdAt || 0); });
+    var html = all.length ? '<div class="ft-notif-list">' + all.map(function (n, index) {
+      var label = n.type === 'settlement_request' || n.type === 'settlement_result' ? 'Settlement' : n.type === 'monthly_summary' ? 'Monthly summary' : 'Notification';
+      return '<button type="button" class="ft-notif' + (n.read ? '' : ' unread') + '" data-ft-notif="' + index + '"><span class="ft-notif-tag">' + FT.escape(label) + '</span><p>' + FT.escape(n.message || '') + '</p><small>' + (n.createdAt ? new Date(n.createdAt).toLocaleString() : '') + '</small></button>';
+    }).join('') + '</div>' : '<p class="ft-empty">No notifications yet.</p>';
+    var view = FT.openOverlay({ title: 'Notifications', html: html, actions: [{ label: 'Close', secondary: true }] });
+    view.body.querySelectorAll('[data-ft-notif]').forEach(function (button) {
+      button.onclick = function () {
+        var notice = all[Number(button.dataset.ftNotif)];
+        view.close();
+        if (notice && window.ftEnqueueNotification) window.ftEnqueueNotification(notice, true);
+      };
+    });
+  };
+  window.openProfilePanel = window.ftOpenProfileWindow;
+  window.openProfileSection = function (section) { if (section === 'notifications') window.ftOpenNotifications(); else window.ftOpenProfileWindow(); };
+  window.closeProfilePanel = function () { var open = document.querySelector('.ft-overlay'); if (open) open.remove(); FT.unlock(); };
+  window.ftOpenBell = window.ftOpenNotifications;
+})(window.FTReview);
+</script>
+<script data-ft-update="navigation">
+/* global currentMonthStr */
+// Drawer order, bottom bar and the sections each destination owns.
+(function (FT) {
+  var nav = document.querySelector('#sidebar nav'), main = document.querySelector('main');
   if (!nav || !main) return;
-  var legacy=document.createElement('div');legacy.dataset.ftLegacyNav='1';legacy.hidden=true;
-  Array.from(nav.children).forEach(function(el){if(el.id!=='ftSideProfile')legacy.appendChild(el);});nav.appendChild(legacy);
-  var links=document.createElement('div');links.id='ftDrawerLinks';
-  [['profile','Profile','fa-user'],['overview','Overview','fa-house'],['reports','Reports','fa-chart-column'],['settings','Settings','fa-gear'],['help','Help & Rate Us','fa-circle-question']].forEach(function(item){
-    var button=document.getElementById('side-tab-'+item[0])||document.createElement('button');button.type='button';button.id='side-tab-'+item[0];button.className='w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold flex items-center gap-3';
-    button.innerHTML='<i class="fa-solid '+item[2]+' w-5 text-center"></i><span>'+item[1]+'</span><span class="ml-auto" aria-hidden="true">›</span>';
-    button.onclick=function(){if(item[0]==='profile'||item[0]==='help'){document.getElementById('sidebar').classList.add('hidden');document.getElementById('sidebarBackdrop').classList.remove('active');window.openProfilePanel();window.openProfileSection(item[0]==='profile'?'personal':'help');if(item[0]==='help'){var help=document.getElementById('ppHelp');if(help&&!document.getElementById('ftHelpRateLink')){var rate=document.createElement('button');rate.id='ftHelpRateLink';rate.type='button';rate.className='ft-sheet-btn';rate.textContent='Rate FinTrack';rate.onclick=function(){window.openProfilePanel();window.openProfileSection('ratings');};help.appendChild(rate);}}}else window.switchTab(item[0]);};links.appendChild(button);
-  });nav.appendChild(links);
-  var reports=document.createElement('section');reports.id='sec-reports';reports.className='tab-content hidden space-y-4';
-  reports.innerHTML='<div class="ft-card"><div class="ft-card-head"><h3>Reports</h3><label class="text-xs">Month <input id="ftReportsMonth" type="month" class="border rounded-lg p-2 ml-2"></label></div><p class="ft-empty">Recorded income, expenses, savings and category breakdowns.</p></div>';
-  main.appendChild(reports);var analytics=document.getElementById('ftAnalyticsBlock');if(analytics)reports.appendChild(analytics);
-  var month=document.getElementById('ftReportsMonth');month.value=currentMonthStr();month.onchange=function(){if(!month.value)return;var expenseMonth=document.getElementById('expenseMonthSelect');if(expenseMonth)expenseMonth.value=month.value;window.renderExpenses();window.FTPlan.renderBody();};
-  var originalSwitch=window.switchTab;window.switchTab=function(tab){originalSwitch.apply(this,arguments);if(tab==='reports'){var selected=document.getElementById('expenseMonthSelect');month.value=selected&&selected.value||currentMonthStr();window.FTPlan.renderInsights();}if(tab==='overview'){var hero=document.getElementById('ftHero'),overview=document.getElementById('sec-overview');if(hero&&overview.firstElementChild!==hero)overview.prepend(hero);}};
-  var badge=window.ftUpdateNotifBadge;window.ftUpdateNotifBadge=function(){var result=badge.apply(this,arguments),source=document.getElementById('profileNotifBadge'),target=document.getElementById('ftBellBadge');if(source&&target){target.textContent=source.textContent;target.style.display=source.classList.contains('hidden')?'none':'flex';}return result;};
-  // Use the existing notification history, including actionable requests and read state.
-  window.ftOpenBell=function(){window.openProfilePanel();window.openProfileSection('notifications');};
-  document.getElementById('side-tab-overview').classList.add('bg-indigo-600','text-white');
+
+  var legacy = document.createElement('div');
+  legacy.dataset.ftLegacyNav = '1';
+  legacy.hidden = true;
+  Array.from(nav.children).forEach(function (el) {
+    if (el.id !== 'ftSideProfile' && el.id !== 'ftDrawerLinks') legacy.appendChild(el);
+  });
+  nav.appendChild(legacy);
+
+  function section(id, heading) {
+    var el = document.getElementById('sec-' + id);
+    if (!el) {
+      el = document.createElement('section');
+      el.id = 'sec-' + id;
+      el.className = 'tab-content hidden space-y-4';
+      main.appendChild(el);
+    }
+    if (heading && !el.querySelector('.ft-section-head')) {
+      var head = document.createElement('div');
+      head.className = 'ft-section-head';
+      head.innerHTML = '<h2>' + FT.escape(heading) + '</h2>';
+      el.insertBefore(head, el.firstChild);
+    }
+    return el;
+  }
+
+  var overviewCard = document.getElementById('monthlyFlowSummary');
+  var individual = document.getElementById('individualSummarySection');
+  var analytics = document.getElementById('ftAnalyticsBlock');
+  var financial = section('financial-overview', 'Financial overview');
+  if (overviewCard) financial.appendChild(overviewCard);
+  if (individual) financial.appendChild(individual);
+  var insights = section('insights', 'Insights');
+  if (analytics) insights.appendChild(analytics);
+  section('transactions', 'Transactions');
+
+  var help = section('help', 'Help & Support');
+  var helpSource = document.getElementById('sec-help');
+  if (helpSource && helpSource !== help) {
+    helpSource.querySelectorAll('.ft-section-head').forEach(function (node) { node.remove(); });
+    while (helpSource.firstChild) help.appendChild(helpSource.firstChild);
+    helpSource.remove();
+  }
+  help.id = 'sec-help';
+
+  var ratings = section('ratings', 'Rating & Feedback');
+  var rateCard = document.getElementById('ftRateCard');
+  if (rateCard) ratings.appendChild(rateCard);
+  else if (!ratings.querySelector('.ft-empty')) ratings.insertAdjacentHTML('beforeend', '<div class="ft-card"><p class="ft-empty">Ratings and feedback are available in the app store listing.</p></div>');
+
+  var links = document.createElement('div');
+  links.id = 'ftDrawerLinks';
+  [
+    ['financial-overview', 'Financial Overview', 'fa-chart-pie', function () { window.switchTab('financial-overview'); }],
+    ['settings', 'Settings', 'fa-gear', function () { window.switchTab('settings'); }],
+    ['help', 'Help & Support', 'fa-circle-question', function () { window.switchTab('help'); }],
+    ['ratings', 'Rating & Feedback', 'fa-star', function () { window.switchTab('ratings'); }]
+  ].forEach(function (item) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.id = 'ftDrawer-' + item[0];
+    button.className = 'ft-drawer-link';
+    button.innerHTML = '<i class="fa-solid ' + item[2] + '"></i><span>' + item[1] + '</span><span class="ft-drawer-chevron" aria-hidden="true">›</span>';
+    button.onclick = function () {
+      if (window.toggleSidebar) window.toggleSidebar();
+      item[3]();
+    };
+    links.appendChild(button);
+  });
+  nav.appendChild(links);
+
+  var bottom = document.getElementById('mobileBottomNav');
+  if (bottom) {
+    bottom.innerHTML = '';
+    [['overview', 'Overview', 'fa-house'], ['insights', 'Insights', 'fa-chart-column'], ['transactions', 'Transactions', 'fa-receipt']].forEach(function (item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ftbn';
+      button.dataset.tab = item[0];
+      button.innerHTML = '<i class="fa-solid ' + item[2] + '"></i><span>' + item[1] + '</span>';
+      button.onclick = function () { window.switchTab(item[0]); };
+      bottom.appendChild(button);
+    });
+  }
+
+  var hostSwitch = window.switchTab;
+  window.switchTab = function (tab) {
+    var result = hostSwitch.apply(this, arguments);
+    document.querySelectorAll('#ftDrawerLinks .ft-drawer-link').forEach(function (button) {
+      button.classList.toggle('active', button.id === 'ftDrawer-' + tab);
+    });
+    FT.unlock();
+    document.querySelectorAll('#mobileBottomNav .ftbn').forEach(function (button) {
+      button.classList.toggle('active', button.dataset.tab === tab);
+    });
+    if (tab === 'transactions' && window.ftRenderTransactions) window.ftRenderTransactions();
+    if (tab === 'insights') window.FTPlan.renderInsights();
+    if (tab === 'financial-overview' && window.ftRenderMonthMonitor) window.ftRenderMonthMonitor();
+    return result;
+  };
+
+  // Month totals are the monitoring figures for the financial overview.
+  function monitor() {
+    var host = document.getElementById('ftMonthMonitor');
+    if (!host) return;
+    if (!window.FTReview || !FT.monthReport) { host.textContent = 'Available once your data loads.'; return; }
+    var report = FT.monthReport(currentMonthStr()), html = '';
+    Object.keys(report.currencies).forEach(function (currency) {
+      var row = report.currencies[currency];
+      html += '<div class="ft-monitor-currency"><p>' + FT.escape(currency) + '</p><div class="ft-monitor-grid"><span>Income<strong>' + FT.escape(formatCurrency(row.income, currency)) + '</strong></span><span>Spent<strong>' + FT.escape(formatCurrency(row.expenses, currency)) + '</strong></span></div></div>';
+    });
+    host.innerHTML = html || '<p class="ft-empty">No income or expenses recorded this month.</p>';
+  }
+  window.ftRenderMonthMonitor = monitor;
+  var monitorCard = document.createElement('div');
+  monitorCard.className = 'ft-card';
+  monitorCard.innerHTML = '<div class="ft-card-head"><h3>This month at a glance</h3><span class="ft-link" id="ftMonitorMonth">' + currentMonthStr() + '</span></div><div id="ftMonthMonitor"></div>';
+  financial.insertBefore(monitorCard, financial.querySelector('.ft-section-head') ? financial.querySelector('.ft-section-head').nextSibling : financial.firstChild);
+  monitor();
+
+  var hostRender = window.renderAll;
+  if (hostRender) {
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      try { monitor(); } catch (e) { /* data still loading */ }
+      return result;
+    };
+  }
+
+  // The overview keeps its six required blocks even if the host reorders sections.
+  window.reorderOverviewSections = function () {};
+  // The drawer must not let the page scroll behind it.
+  var hostToggle = window.toggleSidebar;
+  window.toggleSidebar = function () {
+    var result = hostToggle.apply(this, arguments);
+    var drawer = document.getElementById('sidebar');
+    if (drawer && !drawer.classList.contains('hidden') && window.innerWidth < 1024) FT.lock(); else FT.unlock();
+    return result;
+  };
+})(window.FTReview);
+</script>
+<script data-ft-update="settings-theme">
+/* global state, saveData */
+// Light is the default; the choice is saved with the account and restored at login.
+(function (FT) {
+  var modes = [['light', 'Light', 'Blue and white'], ['dark', 'Dark', 'Black, ash and white']];
+  function apply(mode) {
+    var dark = mode === 'dark';
+    document.body.classList.toggle('ft-dark', dark);
+    document.body.dataset.ftTheme = dark ? 'dark' : 'light';
+    document.body.removeAttribute('data-theme');
+    var theme = document.querySelector('meta[name="theme-color"]');
+    if (theme) theme.setAttribute('content', dark ? '#111418' : '#1E3A8A');
+    update(mode);
+  }
+  function update(mode) {
+    document.querySelectorAll('[data-ft-theme-mode]').forEach(function (button) {
+      button.classList.toggle('active', button.dataset.ftThemeMode === mode);
+    });
+  }
+  function chosen() { return (state && state.settings && state.settings.theme === 'dark') ? 'dark' : 'light'; }
+  FT.applyTheme = apply;
+  window.ftApplyTheme = function () { apply(chosen()); };
+  window.ftSetThemeMode = function (mode) {
+    if (!state.settings) state.settings = {};
+    state.settings.theme = mode === 'dark' ? 'dark' : 'light';
+    apply(state.settings.theme);
+    if (typeof saveData === 'function') saveData();
+  };
+
+  var host = document.getElementById('sec-settings');
+  if (host) {
+    var picker = document.getElementById('themePickerContainer');
+    if (picker) picker.closest('.bg-white')?.remove();
+    var card = document.createElement('div');
+    card.className = 'ft-card';
+    card.innerHTML = '<div class="ft-card-head"><h3>App appearance</h3></div><div class="ft-theme-toggle">' + modes.map(function (mode) {
+      return '<button type="button" data-ft-theme-mode="' + mode[0] + '" onclick="ftSetThemeMode(\'' + mode[0] + '\')"><i class="fa-solid ' + (mode[0] === 'light' ? 'fa-sun' : 'fa-moon') + '"></i><strong>' + mode[1] + '</strong><span>' + mode[2] + '</span></button>';
+    }).join('') + '</div>';
+    host.insertBefore(card, host.firstChild);
+  }
+
+  var hostRender = window.renderAll;
+  if (hostRender) {
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      apply(chosen());
+      return result;
+    };
+  }
+  apply(chosen());
+})(window.FTReview);
+</script>
+<script data-ft-update="transactions">
+/* global state, dateMonth, currentMonthStr, formatCurrency */
+// Every transaction for a chosen month, with a year overview.
+(function (FT) {
+  function gather(month) {
+    var items = [];
+    var push = function (date, title, amount, currency, kind, tag) {
+      var value = Number(amount);
+      if (!isFinite(value) || value === 0) return;
+      items.push({ date: String(date || month), title: title, amount: value, currency: currency || (state.displayCurrency || 'INR'), kind: kind, tag: tag });
+    };
+    (state.expenses && state.expenses[month] || []).forEach(function (expense) {
+      if (expense.isSplitShare) return;
+      push(expense.date, expense.desc || expense.description || expense.category || 'Expense', expense.amount, expense.currency, 'out', expense.category || 'Expense');
+    });
+    if (FT.canonicalSplits) FT.canonicalSplits().forEach(function (split) {
+      if (dateMonth(split.date) !== month) return;
+      push(split.date, 'Split: ' + (split.description || split.category || 'Shared expense'), ftOwnSplitShare(split), split.currency, 'out', 'Friends split');
+    });
+    (state.householdExpenses || []).forEach(function (expense) {
+      if (dateMonth(expense.date) !== month) return;
+      push(expense.date, 'Household: ' + (expense.description || expense.category || 'Expense'), ftHhMyShare(expense), expense.currency || 'INR', 'out', 'Household');
+    });
+    (state.transfers || []).forEach(function (transfer) {
+      if (transfer.fromName !== 'External Deposit' || dateMonth(transfer.date) !== month) return;
+      push(transfer.date, 'Income added', transfer.amount, transfer.currency, 'in', 'Income');
+    });
+    if (FT.requests) FT.requests().forEach(function (request) {
+      if (!ftReceiptApproved(request.s) || dateMonth(request.s.date) !== month) return;
+      var people = ftSettlementPeople(request.s);
+      var sent = people.payer.uid === FT.me().uid;
+      push(request.s.date, 'Settlement with ' + (sent ? people.payee.name : people.payer.name), request.s.amount, request.s.currency, sent ? 'out' : 'in', 'Settlement Transaction');
+    });
+    return items.sort(function (a, b) { return b.date.localeCompare(a.date); });
+  }
+
+  function monthRows(items) {
+    if (!items.length) return '<p class="ft-empty">No transactions recorded in this month.</p>';
+    return '<div class="ft-tx-list">' + items.map(function (item) {
+      return '<div class="ft-tx"><span class="ft-tx-icon ' + (item.kind === 'in' ? 'in' : 'out') + '"><i class="fa-solid ' + (item.kind === 'in' ? 'fa-arrow-down' : 'fa-arrow-up') + '"></i></span><div class="ft-tx-main"><p>' + FT.escape(item.title) + '</p><small>' + FT.escape(item.date) + ' · ' + FT.escape(item.tag) + '</small></div><strong class="' + (item.kind === 'in' ? 'in' : 'out') + '">' + (item.kind === 'in' ? '+' : '−') + FT.escape(formatCurrency(item.amount, item.currency)) + '</strong></div>';
+    }).join('') + '</div>';
+  }
+
+  function yearRows(year) {
+    var html = '';
+    for (var index = 1; index <= 12; index++) {
+      var month = year + '-' + String(index).padStart(2, '0');
+      var report = FT.monthReport(month);
+      var currencies = Object.keys(report.currencies).filter(function (currency) {
+        return report.currencies[currency].income || report.currencies[currency].expenses;
+      });
+      if (!currencies.length) continue;
+      html += '<div class="ft-year-row"><p>' + new Date(year, index - 1, 1).toLocaleString(undefined, { month: 'long' }) + '</p>' + currencies.map(function (currency) {
+        var row = report.currencies[currency];
+        return '<div class="ft-year-values"><span>In ' + FT.escape(formatCurrency(row.income, currency)) + '</span><span>Out ' + FT.escape(formatCurrency(row.expenses, currency)) + '</span><strong>Net ' + FT.escape(formatCurrency(row.income - row.expenses, currency)) + '</strong></div>';
+      }).join('') + '</div>';
+    }
+    return html ? '<div class="ft-year-list">' + html + '</div>' : '<p class="ft-empty">No transactions recorded in ' + FT.escape(year) + '.</p>';
+  }
+
+  window.ftRenderTransactions = function () {
+    var host = document.getElementById('sec-transactions');
+    if (!host || !FT.monthReport) return;
+    var monthInput = document.getElementById('ftTxMonth');
+    var modeButton = document.getElementById('ftTxMode');
+    var month = monthInput && monthInput.value ? monthInput.value : currentMonthStr();
+    var yearly = modeButton && modeButton.dataset.mode === 'year';
+    var body = document.getElementById('ftTxBody');
+    if (body) body.innerHTML = yearly ? yearRows(month.slice(0, 4)) : monthRows(gather(month));
+    var label = document.getElementById('ftTxLabel');
+    if (label) label.textContent = yearly ? 'Year ' + month.slice(0, 4) : new Date(month + '-01').toLocaleString(undefined, { month: 'long', year: 'numeric' });
+  };
+
+  var host = document.getElementById('sec-transactions');
+  if (!host) return;
+  Array.from(host.children).forEach(function (child) {
+    if (!child.classList.contains('ft-section-head')) child.remove();
+  });
+  host.insertAdjacentHTML('beforeend',
+    '<div class="ft-card"><div class="ft-card-head"><h3 id="ftTxLabel">Transactions</h3><button type="button" class="ft-link" id="ftTxMode" data-mode="month">View year</button></div>' +
+    '<div class="ft-tx-controls"><label>Month<input type="month" id="ftTxMonth"></label></div><div id="ftTxBody"></div></div>');
+  var monthInput = document.getElementById('ftTxMonth');
+  monthInput.value = currentMonthStr();
+  monthInput.onchange = window.ftRenderTransactions;
+  document.getElementById('ftTxMode').onclick = function () {
+    var yearly = this.dataset.mode !== 'year';
+    this.dataset.mode = yearly ? 'year' : 'month';
+    this.textContent = yearly ? 'View month' : 'View year';
+    window.ftRenderTransactions();
+  };
+  window.ftRenderTransactions();
+  var hostRender = window.renderAll;
+  if (hostRender) {
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      try { window.ftRenderTransactions(); } catch (e) { /* data still loading */ }
+      return result;
+    };
+  }
+})(window.FTReview);
+</script>
+<script data-ft-update="tour">
+// Short guided tour of each area, opened from Help & Support.
+(function (FT) {
+  var steps = [
+    ['overview', 'Overview', 'Your greeting, total bank and cash balance, the three quick actions and Quick Links. Use the search and bell icons at the top for anything you need.'],
+    ['financial-overview', 'Financial Overview', 'Income and expenses for the month, plus each account balance, so you can see what came in and what was spent.'],
+    ['insights', 'Insights', 'Savings and category totals for a month, a year or a chosen range.'],
+    ['transactions', 'Transactions', 'Every transaction from the first to the last day of the selected month, and a year view with monthly totals.'],
+    ['settings', 'Settings', 'Appearance, security and the options that control what appears in your account.'],
+    ['help', 'Help & Support', 'Answers, the support email, and this tour whenever you want to repeat it.']
+  ];
+  var help = document.getElementById('sec-help');
+  if (help && !document.getElementById('ftTourCard')) {
+    var card = document.createElement('div');
+    card.id = 'ftTourCard';
+    card.className = 'ft-card';
+    card.innerHTML = '<div class="ft-card-head"><h3>Take a full tour</h3><button type="button" class="ft-link" onclick="ftStartTour()">Start tour</button></div><p class="ft-empty">Move through every area once and see what each one does.</p>';
+    help.appendChild(card);
+  }
+
+  window.ftStartTour = function () {
+    var index = 0;
+    function show() {
+      var step = steps[index];
+      window.switchTab(step[0]);
+      var view = FT.openOverlay({
+        title: 'App tour · ' + (index + 1) + ' of ' + steps.length,
+        html: '<h3 class="ft-tour-title">' + FT.escape(step[1]) + '</h3><p class="ft-tour-text">' + FT.escape(step[2]) + '</p>',
+        actions: index ? [{ label: 'Back', secondary: true, keepOpen: true, run: function (close) { index--; close(); setTimeout(show, 60); } }, { label: index === steps.length - 1 ? 'Finish tour' : 'Next', run: function () { if (index < steps.length - 1) { index++; setTimeout(show, 60); } } }] : [{ label: 'Next', run: function () { index++; setTimeout(show, 60); } }]
+      });
+      return view;
+    }
+    show();
+  };
 })(window.FTReview);
 </script>
 <script data-ft-update="pin-prompt">
@@ -6960,22 +7460,6 @@ window.ftToggleHhMenu = function (e) {
   });
   // A fresh visitor starts with the standard login; a returning PIN session still uses the existing lock flow.
   if (!currentUser && !window.auth.currentUser) window.ftTogglePasswordLogin(true);
-})(window.FTReview);
-</script>
-<script data-ft-update="transactions">
-/* global currentUser, dateMonth, currentMonthStr, formatCurrency, ftSettlementPeople, ftReceiptApproved */
-(function (FT) {
-  var original=window.ftRenderRecentActivity;
-  window.ftRenderRecentActivity=function(){
-    var result=original.apply(this,arguments),list=document.getElementById('ftRecentActivityList');if(!list||!currentUser)return result;
-    var selector=document.getElementById('ftRecentMonthSelect'),month=selector&&selector.value||currentMonthStr();
-    var payments=FT.requests().filter(function(r){return ftReceiptApproved(r.s)&&dateMonth(r.s.date)===month;});
-    list.querySelectorAll('[data-ft-settlement]').forEach(function(row){row.remove();});
-    if(payments.length&&list.children.length===1&&list.firstElementChild.tagName==='P')list.textContent='';
-    payments.forEach(function(r){var s=r.s,people=ftSettlementPeople(s),sent=people.payer.uid===FT.me().uid,row=document.createElement('div');row.className='ft-settlement-row';row.dataset.ftSettlement=s.id;row.dataset.ftDate=s.date;
-      row.innerHTML='<div><span class="ft-settlement-tag">Settlement Transaction</span><p class="font-semibold mt-1">'+FT.escape(sent?'Paid to '+people.payee.name:'Received from '+people.payer.name)+'</p><p class="text-[10px] text-slate-400">'+FT.escape(s.date)+' · Confirmed</p></div><strong class="'+(sent?'text-rose-600':'text-emerald-600')+'">'+(sent?'−':'+')+FT.escape(formatCurrency(s.amount,s.currency))+'</strong>';list.appendChild(row);});
-    Array.from(list.children).sort(function(a,b){function date(el){var text=el.querySelector('.text-slate-400');return el.dataset.ftDate||(text&&text.textContent||'').slice(0,10);}return date(b).localeCompare(date(a));}).forEach(function(row){list.appendChild(row);});FT.scroll();return result;
-  };
 })(window.FTReview);
 </script>
 </body>
