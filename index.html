@@ -229,7 +229,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
   <!-- AUTH SCREENS -->
   <div id="authContainer" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-slate-200 flex flex-col md:flex-row">
-      <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#182736] via-[#394758] to-[#182736] p-10 text-white flex-1">
+      <div class="hidden md:flex flex-col justify-center bg-gradient-to-br from-[#003399] via-[#0B4BC0] to-[#003399] p-10 text-white flex-1">
         <div class="mb-6">
           <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="72" height="72" class="mb-4 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-4xl font-black tracking-wider">FinTrack</h1>
@@ -243,7 +243,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
         </div>
       </div>
       <div class="w-full md:w-[480px] flex-shrink-0">
-        <div class="md:hidden bg-gradient-to-r from-[#182736] via-[#394758] to-[#182736] p-6 text-center text-white">
+        <div class="md:hidden bg-gradient-to-r from-[#003399] via-[#0B4BC0] to-[#003399] p-6 text-center text-white">
           <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="56" height="56" class="mx-auto mb-2 rounded-xl ft-default-logo" alt="FinTrack logo">
           <h1 class="text-2xl font-black tracking-wider">FinTrack</h1>
           <p class="text-xs text-[#EE5133] font-semibold tracking-widest mt-1 uppercase">Financial Planning & Portfolio</p>
@@ -367,7 +367,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
           <div id="headerLogoBox">
             <img src="https://base44.app/api/apps/6aca3c6a158d4b11f4442b18/files/mp/public/6aca3c6a158d4b11f4442b18/4737ebc71_fintrack-logo.jpg" width="40" height="40" class="ft-default-logo rounded-lg" alt="FinTrack logo">
           </div>
-          <div><h1 class="font-black text-lg leading-tight uppercase tracking-wider hidden sm:block">FinTrack</h1><p class="text-[10px] text-amber-400 font-semibold hidden sm:block" id="welcomeUser">Welcome</p></div>
+          <div><h1 class="font-black text-lg leading-tight tracking-wider hidden sm:block">FinTrack</h1><p class="text-[10px] text-amber-400 font-semibold hidden sm:block" id="welcomeUser">Welcome</p></div>
           <nav class="hidden lg:flex items-center space-x-1 ml-4 bg-slate-800/50 p-1 rounded-lg flex-wrap">
             <button onclick="switchTab('overview')" id="top-tab-overview" class="topnav-btn px-3 py-1.5 rounded text-xs font-bold bg-indigo-600 text-white transition"><i class="fa-solid fa-chart-pie mr-1"></i>Overview</button><button onclick="switchTab('accounts-spending')" id="top-tab-accounts-spending" class="topnav-btn px-3 py-1.5 rounded text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-wallet mr-1"></i>Accounts</button>
             <button onclick="switchTab('expenses')" id="top-tab-expenses" class="topnav-btn px-3 py-1.5 rounded text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition"><i class="fa-solid fa-receipt mr-1"></i>Expenses</button>
@@ -6300,21 +6300,21 @@ window.ftToggleHhMenu = function (e) {
 
   function bar(percent, color) {
     var width = Math.max(0, Math.min(100, percent));
-    return '<div class="h-1.5 rounded-full mt-1 overflow-hidden" style="background:#333"><div class="h-full rounded-full" style="width:' + width.toFixed(1) + '%;background:' + color + '"></div></div>';
+    return '<div class="h-1.5 rounded-full mt-1 overflow-hidden" style="background:#E2E8F0"><div class="h-full rounded-full" style="width:' + width.toFixed(1) + '%;background:' + color + '"></div></div>';
   }
 
   function expenseCard(cur, rows, total, totalCount) {
     if (!total && !totalCount) return '';
     var items = rows.map(function (row) {
       var percent = total > 0 ? (row.amount / total) * 100 : 0;
-      return '<div class="pt-2"><div class="flex items-baseline justify-between gap-2"><span class="text-[12px] text-white">' + row.name + '</span><span class="text-[11px] text-white tabular-nums">' + money(row.amount, cur) + ' · ' + percent.toFixed(1) + '%</span></div>' +
-        '<div class="text-[10px] text-[#999]">' + row.count + ' transaction' + (row.count === 1 ? '' : 's') + '</div>' + bar(percent, '#e74c3c') + '</div>';
+      return '<div class="pt-2"><div class="flex items-baseline justify-between gap-2"><span class="text-[12px] text-[#0F172A]">' + row.name + '</span><span class="text-[11px] text-[#003399] font-bold tabular-nums">' + money(row.amount, cur) + ' · ' + percent.toFixed(1) + '%</span></div>' +
+        '<div class="text-[10px] text-[#64748B]">' + row.count + ' transaction' + (row.count === 1 ? '' : 's') + '</div>' + bar(percent, '#003399') + '</div>';
     }).join('');
-    return '<div class="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4">' +
-      '<h4 class="text-[13px] font-bold text-white">Expense Overview</h4>' +
-      '<p class="text-[10px] text-[#999]">' + cur + ' · ' + totalCount + ' transaction' + (totalCount === 1 ? '' : 's') + '</p>' +
-      '<p class="text-2xl font-bold mt-1 tabular-nums" style="color:#e74c3c">' + money(total, cur) + '</p>' +
-      '<p class="text-[10px] text-[#999]">Total expenditure in the selected period</p>' +
+    return '<div class="rounded-2xl bg-white border border-[#E2E8F0] p-4 shadow-sm">' +
+      '<h4 class="text-[13px] font-bold text-[#003399]">Expense Overview</h4>' +
+      '<p class="text-[10px] text-[#64748B]">' + cur + ' · ' + totalCount + ' transaction' + (totalCount === 1 ? '' : 's') + '</p>' +
+      '<p class="text-2xl font-bold mt-1 tabular-nums" style="color:#B91C1C">' + money(total, cur) + '</p>' +
+      '<p class="text-[10px] text-[#64748B]">Total expenditure in the selected period</p>' +
       '<div class="mt-3">' + items + '</div></div>';
   }
 
@@ -6325,25 +6325,25 @@ window.ftToggleHhMenu = function (e) {
     var savingsRate = income > 0 ? (remaining / income) * 100 : 0;
     var utilisation = income > 0 ? (expenses / income) * 100 : 0;
     var breakdown = rows.slice(0, 4).map(function (row) {
-      return '<div class="flex justify-between text-[11px] py-1"><span class="text-[#a0a0a0]">' + row.name + '</span><span class="text-white tabular-nums">' + money(row.amount, cur) + '</span></div>';
+      return '<div class="flex justify-between text-[11px] py-1"><span class="text-[#475569]">' + row.name + '</span><span class="text-[#0F172A] font-bold tabular-nums">' + money(row.amount, cur) + '</span></div>';
     }).join('');
-    return '<div class="rounded-xl bg-[#111] border border-[#2a2a2a] p-4 space-y-3">' +
-      '<div class="flex items-center justify-between gap-2"><h4 class="text-[13px] font-bold text-white">Financial Summary</h4><span class="text-[10px] font-bold px-2 py-1 rounded-full" style="color:#22c55e;background:rgba(34,197,94,0.12)">' + label + '</span></div>' +
+    return '<div class="rounded-2xl bg-white border border-[#E2E8F0] p-4 space-y-3 shadow-sm">' +
+      '<div class="flex items-center justify-between gap-2"><h4 class="text-[13px] font-bold text-[#003399]">Financial Summary</h4><span class="text-[10px] font-bold px-2 py-1 rounded-full" style="color:#003399;background:#EEF3FF">' + label + '</span></div>' +
       '<div class="grid grid-cols-2 gap-2">' +
-        '<div class="rounded-lg bg-[#1a1a1a] p-3"><p class="text-[10px] text-[#a0a0a0]">Total Income</p><p class="text-base font-bold tabular-nums" style="color:#22c55e">' + money(income, cur) + '</p></div>' +
-        '<div class="rounded-lg bg-[#1a1a1a] p-3"><p class="text-[10px] text-[#a0a0a0]">Total Expenses</p><p class="text-base font-bold tabular-nums" style="color:#ef4444">' + money(expenses, cur) + '</p></div>' +
+        '<div class="rounded-xl bg-[#F5F8FF] p-3"><p class="text-[10px] text-[#64748B]">Total Income</p><p class="text-base font-bold tabular-nums" style="color:#15803D">' + money(income, cur) + '</p></div>' +
+        '<div class="rounded-xl bg-[#F5F8FF] p-3"><p class="text-[10px] text-[#64748B]">Total Expenses</p><p class="text-base font-bold tabular-nums" style="color:#B91C1C">' + money(expenses, cur) + '</p></div>' +
       '</div>' +
-      '<div class="rounded-lg p-3" style="border:1px solid #22c55e">' +
-        '<p class="text-[10px] font-bold uppercase tracking-wide" style="color:#22c55e">Monthly Remaining / Potential Savings</p>' +
-        '<p class="text-xl font-bold tabular-nums" style="color:#22c55e">' + money(remaining, cur) + '</p>' +
-        '<div class="flex justify-between text-[11px] text-white mt-1"><span>Savings rate</span><span class="font-bold">' + savingsRate.toFixed(1) + '%</span></div>' +
-        bar(savingsRate, '#22c55e') +
-        '<div class="flex justify-between text-[11px] mt-2" style="color:#a0a0a0"><span>Expense utilisation</span><span class="text-white font-bold">' + utilisation.toFixed(1) + '%</span></div>' +
-        bar(utilisation, '#ef4444') +
+      '<div class="rounded-xl p-3" style="border:1px solid #003399">' +
+        '<p class="text-[10px] font-bold uppercase tracking-wide" style="color:#003399">Monthly Remaining / Potential Savings</p>' +
+        '<p class="text-xl font-bold tabular-nums" style="color:#003399">' + money(remaining, cur) + '</p>' +
+        '<div class="flex justify-between text-[11px] text-[#0F172A] mt-1"><span>Savings rate</span><span class="font-bold">' + savingsRate.toFixed(1) + '%</span></div>' +
+        bar(savingsRate, '#003399') +
+        '<div class="flex justify-between text-[11px] mt-2" style="color:#64748B"><span>Expense utilisation</span><span class="text-[#0F172A] font-bold">' + utilisation.toFixed(1) + '%</span></div>' +
+        bar(utilisation, '#B91C1C') +
       '</div>' +
-      (breakdown ? '<div><p class="text-[12px] font-bold text-white mb-1">Expense Breakdown</p>' + breakdown + '</div>' : '') +
-      '<div class="flex justify-between text-[11px] border-t border-[#2a2a2a] pt-2"><span class="text-white">Income remaining after expenses</span><span class="font-bold tabular-nums" style="color:#22c55e">' + money(remaining, cur) + '</span></div>' +
-      '<p class="text-[10px] text-[#777]">Calculated from recorded income and expenses — not your actual bank or cash balance. Transfers and settlement movements are excluded.</p>' +
+      (breakdown ? '<div><p class="text-[12px] font-bold text-[#003399] mb-1">Expense Breakdown</p>' + breakdown + '</div>' : '') +
+      '<div class="flex justify-between text-[11px] border-t border-[#E2E8F0] pt-2"><span class="text-[#0F172A]">Income remaining after expenses</span><span class="font-bold tabular-nums" style="color:#15803D">' + money(remaining, cur) + '</span></div>' +
+      '<p class="text-[10px] text-[#94A3B8]">Calculated from recorded income and expenses — not your actual bank or cash balance. Transfers and settlement movements are excluded.</p>' +
       '</div>';
   }
 
@@ -6355,12 +6355,12 @@ window.ftToggleHhMenu = function (e) {
     if (p.mode === 'month') {
       var el = document.getElementById('expenseMonthSelect');
       var month = el && el.value ? el.value : currentMonthStr();
-      html = '<span class="text-[#999]">Month selected above: <b class="text-white">' + month + '</b> — use the month arrows to change it.</span>';
+      html = '<span class="text-[#64748B]">Month selected above: <b class="text-[#003399]">' + month + '</b> — use the month arrows to change it.</span>';
     } else if (p.mode === 'year') {
-      html = '<label class="text-[#999]">Year <input type="number" min="2000" max="2100" value="' + p.year + '" onchange="ftInsightYear(this.value)" class="ml-1 w-24 bg-[#1c1c1c] border border-[#333] rounded-lg px-2 py-1 text-white font-bold"></label>';
+      html = '<label class="text-[#64748B]">Year <input type="number" min="2000" max="2100" value="' + p.year + '" onchange="ftInsightYear(this.value)" class="ml-1 w-24 bg-white border border-[#E2E8F0] rounded-lg px-2 py-1 text-[#003399] font-bold"></label>';
     } else {
-      html = '<label class="text-[#999]">From <input type="month" value="' + (p.from || currentMonthStr()) + '" onchange="ftInsightRange(\'from\', this.value)" class="ml-1 bg-[#1c1c1c] border border-[#333] rounded-lg px-2 py-1 text-white font-bold"></label>' +
-        '<label class="text-[#999]">To <input type="month" value="' + (p.to || currentMonthStr()) + '" onchange="ftInsightRange(\'to\', this.value)" class="ml-1 bg-[#1c1c1c] border border-[#333] rounded-lg px-2 py-1 text-white font-bold"></label>';
+      html = '<label class="text-[#64748B]">From <input type="month" value="' + (p.from || currentMonthStr()) + '" onchange="ftInsightRange(\'from\', this.value)" class="ml-1 bg-white border border-[#E2E8F0] rounded-lg px-2 py-1 text-[#003399] font-bold"></label>' +
+        '<label class="text-[#64748B]">To <input type="month" value="' + (p.to || currentMonthStr()) + '" onchange="ftInsightRange(\'to\', this.value)" class="ml-1 bg-white border border-[#E2E8F0] rounded-lg px-2 py-1 text-[#003399] font-bold"></label>';
     }
     if (box.innerHTML !== html) box.innerHTML = html;
   };
@@ -6370,7 +6370,7 @@ window.ftToggleHhMenu = function (e) {
     var body = document.getElementById('ftInsightBody');
     if (!body) return;
     if (!window.FTReview || !window.FTReview.monthReport) {
-      body.innerHTML = '<p class="text-[11px] text-[#999]">Reports are available after your data finishes loading.</p>';
+      body.innerHTML = '<p class="text-[11px] text-[#64748B]">Reports are available after your data finishes loading.</p>';
       return;
     }
     var months = FT.periodMonths();
@@ -6380,7 +6380,7 @@ window.ftToggleHhMenu = function (e) {
       return (agg.currencies[cur].income || agg.currencies[cur].expenses) > 0.004;
     });
     if (!currencies.length) {
-      var empty = '<div class="rounded-xl bg-[#1a1a1a] border border-[#2a2a2a] p-4 text-[11px] text-[#999]">No income or expenses recorded for ' + label + ' yet.</div>';
+      var empty = '<div class="rounded-2xl bg-white border border-[#E2E8F0] p-4 text-[11px] text-[#64748B]">No income or expenses recorded for ' + label + ' yet.</div>';
       if (body.innerHTML !== empty) body.innerHTML = empty;
       return;
     }
@@ -6401,10 +6401,10 @@ window.ftToggleHhMenu = function (e) {
     var host = document.getElementById('ftAnalyticsBlock');
     if (!host) return;
     if (!document.getElementById('ftAnalyticsCard')) {
-      host.innerHTML = '<div id="ftAnalyticsCard" class="rounded-2xl bg-[#0f0f0f] text-white p-4 sm:p-5 space-y-4 shadow-sm">' +
+      host.innerHTML = '<div id="ftAnalyticsCard" class="rounded-2xl bg-white border border-[#E2E8F0] text-[#0F172A] p-4 sm:p-5 space-y-4 shadow-sm">' +
         '<div class="flex flex-wrap items-center justify-between gap-2">' +
-          '<div><h3 class="font-bold text-base">Financial Insights</h3><p class="text-[11px] text-[#999]">Savings and category overview for the selected period.</p></div>' +
-          '<select id="ftPeriodMode" onchange="ftPeriodModeChanged(this.value)" class="bg-[#1c1c1c] text-white text-[11px] font-bold rounded-lg px-3 py-2 border border-[#333]"><option value="month">Month</option><option value="year">Year</option><option value="custom">Custom months</option></select>' +
+          '<div><h3 class="font-bold text-base text-[#003399]">Financial Insights</h3><p class="text-[11px] text-[#64748B]">Savings and category overview for the selected period.</p></div>' +
+          '<select id="ftPeriodMode" onchange="ftPeriodModeChanged(this.value)" class="bg-white text-[#003399] text-[11px] font-bold rounded-lg px-3 py-2 border border-[#E2E8F0]"><option value="month">Month</option><option value="year">Year</option><option value="custom">Custom months</option></select>' +
         '</div>' +
         '<div id="ftPeriodInputs" class="flex flex-wrap items-end gap-2 text-[11px]"></div>' +
         '<div id="ftInsightBody" class="grid grid-cols-1 lg:grid-cols-2 gap-3"></div>' +
@@ -6450,6 +6450,494 @@ window.ftToggleHhMenu = function (e) {
     return result;
   };
 })((window.FTPlan = window.FTPlan || {}));
+</script>
+<script data-ft-update="9">
+/* global state, currentUser */
+// FedMobile visual layer: white surfaces, royal-blue accents, restructured home screen.
+// Presentation only — every button calls an existing FinTrack action.
+(function (FT) {
+  var BRAND = '#003399';
+
+  var css = `
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  :root{--ftb:${BRAND};--ftb2:#1E3A8A;--ftink:#0B2A6B;--ftpage:#F5F7FB;--ftline:#E2E8F0;--ftmuted:#64748B;}
+  html,body{background:var(--ftpage)!important;font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif!important;color:#0F172A;}
+  .ft-card{background:#fff;border:1px solid var(--ftline);border-radius:18px;padding:16px;box-shadow:0 1px 3px rgba(15,23,42,.06);}
+  .ft-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .ft-card-head h3{font-size:13px;font-weight:800;color:var(--ftb);letter-spacing:.2px;}
+  .ft-link{font-size:11px;font-weight:700;color:var(--ftb);}
+  /* ---- header ---- */
+  header{background:#fff!important;border-bottom:1px solid var(--ftline)!important;box-shadow:0 1px 2px rgba(15,23,42,.05)!important;}
+  header h1{color:var(--ftb)!important;letter-spacing:.3px!important;text-transform:none!important;}
+  header #welcomeUser{text-transform:none!important;}
+  header #welcomeUser{color:var(--ftmuted)!important;}
+  header .text-slate-300,header .text-slate-400{color:#94A3B8!important;}
+  header .bg-slate-800\\/50,header .bg-slate-800\\/90{background:#F1F5F9!important;border-color:var(--ftline)!important;}
+  header .text-amber-400,header .text-emerald-400,header select,header #liveRateInput{color:var(--ftb)!important;}
+  header button{color:var(--ftb);}
+  header .ft-head-icon{position:relative;width:36px;height:36px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;color:var(--ftb);background:#F1F5F9;transition:background .15s;}
+  header .ft-head-icon:hover{background:#E4ECFB;}
+  header nav{background:#F1F5F9!important;}
+  header .bg-indigo-600{background:var(--ftb)!important;color:#fff!important;}
+  header nav button{color:#64748B!important;}
+  header nav button.bg-indigo-600{color:#fff!important;}
+  @media (max-width:639px){
+    header .bg-slate-800\\/90,header #welcomeUser{display:none!important;}
+    header .ft-head-icon{width:34px;height:34px;}
+  }
+  #ftBellBadge{position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;border-radius:8px;background:#DC2626;color:#fff;font-size:9px;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;}
+  /* ---- sidebar ---- */
+  #sidebar{background:#fff!important;border-right:1px solid var(--ftline)!important;}
+  #sidebar .text-slate-400,#sidebar .text-slate-300,#sidebar nav button span{color:#334155!important;}
+  #sidebar nav button{border-radius:12px;transition:background .15s;}
+  #sidebar nav button.bg-indigo-600{background:var(--ftb)!important;color:#fff!important;}
+  #sidebar nav button.bg-indigo-600 span{color:#fff!important;}
+  #sidebar .hover\\:bg-slate-800:hover{background:#EEF3FF!important;}
+  #sidebar .hover\\:bg-slate-800:hover span{color:var(--ftb)!important;}
+  #sidebar .border-slate-800{border-color:var(--ftline)!important;}
+  #sidebar .text-slate-400.uppercase{color:#94A3B8!important;}
+  .ft-side-profile{display:flex;align-items:center;gap:10px;padding:12px;margin:10px;border-radius:16px;background:linear-gradient(135deg,#003399,#0B4BC0);color:#fff;}
+  .ft-side-avatar{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;}
+  /* ---- bottom nav ---- */
+  #mobileBottomNav{background:#fff!important;border-top:1px solid var(--ftline)!important;}
+  #mobileBottomNav .ftbn{color:#8A94A6!important;}
+  #mobileBottomNav .ftbn.active{color:var(--ftb)!important;}
+  /* ---- cards: kill pastels and dark blocks ---- */
+  .pastel-slate,.pastel-indigo,.pastel-rose,.pastel-emerald,.pastel-amber,.pastel-sky,.pastel-violet,.pastel-red,.gold-card,.profit-card{background:#fff!important;border-color:var(--ftline)!important;box-shadow:0 1px 3px rgba(15,23,42,.06)!important;}
+  main .bg-slate-900,main .bg-slate-800{background:#fff!important;border-color:var(--ftline)!important;color:var(--ftink)!important;}
+  main .bg-slate-900 .text-white,main .bg-slate-800 .text-white,main .bg-slate-900.text-white,main .bg-slate-800.text-white{color:var(--ftink)!important;}
+  main .bg-slate-800\\/80,main .bg-slate-800\\/90{background:#F5F8FF!important;border-color:#DCE7FF!important;}
+  main .bg-indigo-600{background:var(--ftb)!important;}
+  #pendingPaymentsSection{background:#fff!important;border-color:var(--ftline)!important;box-shadow:0 1px 3px rgba(15,23,42,.06)!important;}
+  #pendingPaymentsSection .text-white,#pendingPaymentsSection .text-slate-400{color:var(--ftink)!important;}
+  #pendingPaymentsSection .text-amber-400{color:var(--ftb)!important;}
+  #mobileDashboardChartCard{background:#fff!important;border-color:var(--ftline)!important;}
+  #homeCaption{color:#475569!important;font-style:normal!important;text-align:left!important;}
+  /* ---- hero ---- */
+  #ftHero{display:flex;flex-direction:column;gap:14px;}
+  .ft-greet{display:flex;flex-direction:column;gap:2px;}
+  .ft-greet-hi{font-size:12px;font-weight:600;color:var(--ftmuted);}
+  .ft-hero-name{font-size:20px;font-weight:800;color:var(--ftb);letter-spacing:.2px;text-transform:capitalize;}
+  #ftHeroCaptionSlot #homeCaption{font-size:11px;padding:2px 0 0;}
+  #ftHeroAccount #overviewCardBank{position:relative;overflow:hidden;background:linear-gradient(135deg,#003399 0%,#0B4BC0 100%)!important;border:none!important;border-radius:20px!important;padding:18px!important;box-shadow:0 10px 24px rgba(0,51,153,.22)!important;}
+  #ftHeroAccount #overviewCardBank:after{content:'';position:absolute;inset:0;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.2'%3E%3Cpath d='M28 0l24 14v28L28 56 4 42V14z'/%3E%3Cpath d='M28 48l24 14v28L28 104 4 90V62z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+  #ftHeroAccount #overviewCardBank>*{position:relative;z-index:1;}
+  #ftHeroAccount #overviewCardBank p{color:rgba(255,255,255,.78)!important;}
+  #ftHeroAccount #overviewCardBank h3{color:#fff!important;font-size:28px!important;}
+  #ftHeroAccount #overviewCardBank button{color:rgba(255,255,255,.85)!important;}
+  .ft-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .ft-action{background:#fff;border:1px solid var(--ftline);border-radius:16px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 1px 3px rgba(15,23,42,.06);transition:transform .12s,box-shadow .12s;}
+  .ft-action:active{transform:scale(.97);}
+  .ft-action i{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;background:#EEF3FF;color:var(--ftb);}
+  .ft-action span{font-size:11px;font-weight:700;color:var(--ftink);text-align:center;line-height:1.25;}
+  .ft-quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .ft-quick{background:#F8FAFF;border:1px solid #E4ECFB;border-radius:16px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .ft-quick i{font-size:18px;color:var(--ftb);}
+  .ft-quick span{font-size:11px;font-weight:700;color:var(--ftink);text-align:center;}
+  #ftQlToggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:var(--ftb);}
+  #ftQlMore{margin-top:12px;padding-top:12px;border-top:1px solid var(--ftline);}
+  #ftQlMore #ftQuickActions{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  .ft-tracker{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:14px;border:1px solid transparent;transition:background .15s;background:#fff;}
+  .ft-tracker:hover{background:#F8FAFF;border-color:#E4ECFB;}
+  .ft-tracker-avatar{width:38px;height:38px;border-radius:50%;background:#EEF3FF;color:var(--ftb);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
+  .ft-tracker-name{font-size:12px;font-weight:700;color:var(--ftink);}
+  .ft-tracker-sub{font-size:10px;font-weight:600;color:var(--ftmuted);}
+  .ft-tracker-amt{font-size:11px;font-weight:800;text-align:right;line-height:1.3;}
+  .ft-tracker-amt.to-receive{color:#15803D;}
+  .ft-tracker-amt.to-pay{color:#B91C1C;}
+  .ft-empty{font-size:11px;color:var(--ftmuted);padding:6px 0;}
+  /* ---- add sheet + search ---- */
+  .ft-sheet{position:fixed;inset:0;z-index:80;background:rgba(8,20,50,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;padding:16px;}
+  .ft-sheet-inner{background:#fff;border-radius:20px;width:100%;max-width:420px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 20px 60px rgba(2,20,60,.3);}
+  .ft-sheet-inner h3{font-size:13px;font-weight:800;color:var(--ftb);margin-bottom:2px;}
+  .ft-sheet-btn{display:flex;align-items:center;gap:10px;padding:14px;border:1px solid var(--ftline);border-radius:14px;font-size:13px;font-weight:700;color:var(--ftink);}
+  .ft-sheet-btn i{width:34px;height:34px;border-radius:11px;background:#EEF3FF;color:var(--ftb);display:flex;align-items:center;justify-content:center;}
+  .ft-search-panel{position:fixed;inset:0;z-index:85;background:rgba(8,20,50,.4);backdrop-filter:blur(3px);padding:56px 16px 16px;display:flex;justify-content:center;}
+  .ft-search-box{background:#fff;border-radius:18px;width:100%;max-width:520px;align-self:flex-start;padding:12px;box-shadow:0 20px 60px rgba(2,20,60,.3);}
+  .ft-search-row{display:flex;align-items:center;gap:8px;border:1px solid var(--ftline);border-radius:12px;padding:8px 10px;}
+  .ft-search-row input{width:100%;border:0;outline:0;font-size:13px;font-weight:600;color:var(--ftink);}
+  #ftSearchResults{margin-top:8px;max-height:52vh;overflow-y:auto;}
+  .ft-search-hit{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px;border-radius:12px;}
+  .ft-search-hit:hover{background:#F5F8FF;}
+  .ft-search-hit i{color:var(--ftb);width:18px;text-align:center;}
+  .ft-search-hit small{display:block;font-size:10px;color:var(--ftmuted);font-weight:600;}
+  /* ---- auth / login ---- */
+  #authContainer{background:linear-gradient(160deg,#003399 0%,#001C56 100%)!important;backdrop-filter:none!important;}
+  #authContainer>div{background:#fff!important;border:none!important;box-shadow:0 24px 60px rgba(2,20,60,.36)!important;border-radius:24px!important;}
+  #authContainer input:focus{border-color:${BRAND}!important;box-shadow:0 0 0 3px rgba(0,51,153,.15)!important;}
+  #authContainer .text-indigo-600,#authContainer .text-violet-700{color:${BRAND}!important;}
+  #authContainer .bg-violet-50{background:#EEF3FF!important;border-color:#D6E2FA!important;color:${BRAND}!important;}
+  .finpin-box{background:#fff!important;border-color:#CBD5E1!important;border-radius:16px!important;color:${BRAND}!important;}
+  .finpin-box:focus{border-color:${BRAND}!important;box-shadow:0 0 0 3px rgba(0,51,153,.15)!important;}
+  #ftNumpad{display:grid;grid-template-columns:repeat(3,1fr);background:#F1F5F9;border:1px solid var(--ftline);border-radius:18px;overflow:hidden;margin-top:4px;}
+  #ftNumpad button{padding:15px 0;font-size:19px;font-weight:700;color:${BRAND};background:#fff;border-right:1px solid var(--ftline);border-bottom:1px solid var(--ftline);transition:background .12s;}
+  #ftNumpad button:nth-child(3n){border-right:0;}
+  #ftNumpad button:active{background:#EEF3FF;}
+  #ftNumpad button.ft-np-action{font-size:12px;font-weight:800;letter-spacing:.4px;}
+  #authContainer button[type="submit"],#finpinUnlockButton{background:#003399!important;border-color:#003399!important;color:#fff!important;border-radius:12px!important;box-shadow:0 8px 18px rgba(0,51,153,.22)!important;}
+  #finpinBiometricButton{background:#EEF3FF!important;color:#003399!important;border-color:#D6E2FA!important;}
+  @media (min-width:1024px){
+    .ft-actions,.ft-quick-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+    #ftHero{max-width:100%;}
+  }
+  `;
+
+  function injectCss() {
+    if (document.getElementById('ftFedCss')) return;
+    var style = document.createElement('style');
+    style.id = 'ftFedCss';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  function esc(text) {
+    return String(text == null ? '' : text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function initials(name) {
+    return String(name || '?').trim().split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join('') || '?';
+  }
+
+  function greeting() {
+    var h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+
+  /* ---------- header: search, bell, logout ---------- */
+  function buildHeader() {
+    if (document.getElementById('ftHeadTools')) return;
+    var host = document.getElementById('profileAvatarBtn');
+    if (!host || !host.parentNode) return;
+    var tools = document.createElement('div');
+    tools.id = 'ftHeadTools';
+    tools.className = 'flex items-center gap-1.5';
+    tools.innerHTML =
+      '<button type="button" class="ft-head-icon" title="Search" onclick="ftOpenSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>' +
+      '<button type="button" class="ft-head-icon" title="Notifications" onclick="ftOpenBell()"><i class="fa-regular fa-bell"></i><span id="ftBellBadge"></span></button>' +
+      '<button type="button" class="ft-head-icon" title="Log out" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>';
+    host.parentNode.insertBefore(tools, host);
+    host.style.display = 'none';
+  }
+
+  window.ftOpenBell = function () {
+    if (window.openProfileSection) window.openProfileSection('notifications');
+    else if (window.openProfilePanel) window.openProfilePanel();
+  };
+
+  function syncBellBadge() {
+    var badge = document.getElementById('ftBellBadge');
+    if (!badge) return;
+    var source = document.getElementById('profileNotifBadge') || document.getElementById('ppNotifBadge');
+    var count = source && !source.classList.contains('hidden') ? String(source.textContent || '').trim() : '';
+    if (count && count !== '0') { badge.textContent = count; badge.style.display = 'flex'; }
+    else { badge.style.display = 'none'; }
+  }
+
+  /* ---------- sidebar profile card ---------- */
+  function buildSideProfile() {
+    var nav = document.querySelector('#sidebar nav');
+    if (!nav || document.getElementById('ftSideProfile')) return;
+    var card = document.createElement('div');
+    card.id = 'ftSideProfile';
+    card.className = 'ft-side-profile';
+    card.innerHTML = '<span class="ft-side-avatar" id="ftSideInitials">' + esc(initials(currentUser && currentUser.name)) + '</span>' +
+      '<div class="min-w-0 flex-1"><p class="text-xs font-extrabold truncate" id="ftSideName">' + esc(currentUser && currentUser.name ? String(currentUser.name) : 'Your profile') + '</p>' +
+      '<button type="button" onclick="openProfilePanel()" class="text-[10px] font-bold text-[#FFC24B]">View Profile</button></div>';
+    nav.insertBefore(card, nav.firstChild);
+  }
+
+  /* ---------- home restructure ---------- */
+  function buildHero() {
+    var sec = document.getElementById('sec-overview');
+    if (!sec || document.getElementById('ftHero')) return;
+
+    var hero = document.createElement('div');
+    hero.id = 'ftHero';
+    hero.innerHTML =
+      '<div class="ft-greet"><p class="ft-greet-hi" id="ftHello">' + greeting() + ',</p><h2 class="ft-hero-name" id="ftHeroName">' + (currentUser && currentUser.name ? String(currentUser.name) : 'Welcome') + '</h2><div id="ftHeroCaptionSlot"></div></div>' +
+      '<div id="ftHeroAccount"></div>' +
+      '<div class="ft-actions">' +
+        '<button type="button" class="ft-action" onclick="switchTab(\'accounts-spending\')"><i class="fa-solid fa-building-columns"></i><span>Accounts</span></button>' +
+        '<button type="button" class="ft-action" onclick="ftOpenAddMenu()"><i class="fa-solid fa-plus"></i><span>Income / Expense</span></button>' +
+        '<button type="button" class="ft-action" onclick="switchTab(\'friends\')"><i class="fa-solid fa-user-group"></i><span>FinTrackers</span></button>' +
+      '</div>' +
+      '<div class="ft-card" id="ftQuickLinks">' +
+        '<div class="ft-card-head"><h3>Quick Links</h3><button type="button" id="ftQlToggle" aria-expanded="false" onclick="ftToggleQuickLinks()">More <i class="fa-solid fa-chevron-right text-[9px]"></i></button></div>' +
+        '<div class="ft-quick-grid">' +
+          '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend / Trip Split</span></button>' +
+          '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span></button>' +
+          '<button type="button" class="ft-quick" onclick="switchTab(\'liabilities\')"><i class="fa-solid fa-hand-holding-dollar"></i><span>Loan</span></button>' +
+        '</div>' +
+        '<div id="ftQlMore" class="hidden"></div>' +
+      '</div>' +
+      '<div class="ft-card" id="ftTrackers">' +
+        '<div class="ft-card-head"><h3>FinTrackers</h3><button type="button" class="ft-link" onclick="switchTab(\'friends\')">View all</button></div>' +
+        '<div id="ftTrackerList" class="space-y-1"></div>' +
+      '</div>';
+
+    sec.insertBefore(hero, sec.firstChild);
+
+    var caption = document.getElementById('homeCaption');
+    if (caption) document.getElementById('ftHeroCaptionSlot').appendChild(caption);
+
+    var bankCard = document.getElementById('overviewCardBank');
+    if (bankCard) document.getElementById('ftHeroAccount').appendChild(bankCard);
+
+    var quick = document.getElementById('ftQuickActions');
+    if (quick) document.getElementById('ftQlMore').appendChild(quick);
+  }
+
+  window.ftToggleQuickLinks = function () {
+    var more = document.getElementById('ftQlMore');
+    var toggle = document.getElementById('ftQlToggle');
+    if (!more || !toggle) return;
+    var open = more.classList.toggle('hidden') === false;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.innerHTML = (open ? 'Less' : 'More') + ' <i class="fa-solid fa-chevron-' + (open ? 'left' : 'right') + ' text-[9px]"></i>';
+  };
+
+  window.ftOpenAddMenu = function () {
+    var existing = document.getElementById('ftAddSheet');
+    if (existing) existing.remove();
+    var sheet = document.createElement('div');
+    sheet.id = 'ftAddSheet';
+    sheet.className = 'ft-sheet';
+    sheet.onclick = function (e) { if (e.target === sheet) sheet.remove(); };
+    sheet.innerHTML = '<div class="ft-sheet-inner"><h3>Add a transaction</h3>' +
+      '<button type="button" class="ft-sheet-btn" onclick="document.getElementById(\'ftAddSheet\').remove();openAddMoneyModal()"><i class="fa-solid fa-arrow-down"></i>Add Income</button>' +
+      '<button type="button" class="ft-sheet-btn" onclick="document.getElementById(\'ftAddSheet\').remove();openNewExpenseModal()"><i class="fa-solid fa-receipt"></i>Add Expense</button>' +
+      '<button type="button" class="ft-sheet-btn justify-center" onclick="document.getElementById(\'ftAddSheet\').remove()"><i class="fa-solid fa-xmark"></i>Cancel</button></div>';
+    document.body.appendChild(sheet);
+  };
+
+  /* ---------- FinTrackers list ---------- */
+  function personList() {
+    var out = [], seen = {};
+    function add(p) {
+      if (!p) return;
+      var name = p.name || p.friendName || p.full_name || '';
+      if (!name) return;
+      var key = p.uid || p.mobile || name.toLowerCase();
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push({ uid: p.uid || p.friendUid || '', name: name, mobile: p.mobile || '' });
+    }
+    try {
+      (state.connectedFriends || []).forEach(add);
+      (state.friends || []).forEach(add);
+    } catch (e) { return []; }
+    return out.sort(function (a, b) { return a.name.localeCompare(b.name); });
+  }
+
+  function renderTrackers() {
+    var host = document.getElementById('ftTrackerList');
+    if (!host) return;
+    var people = personList();
+    host.textContent = '';
+    if (!people.length) {
+      host.innerHTML = '<p class="ft-empty">No friends added yet. Use View all to add a friend by mobile number.</p>';
+      return;
+    }
+    people.slice(0, 8).forEach(function (p) {
+      var balance = {}, label = '';
+      try {
+        if (window.FTReview && FT.balance) {
+          balance = FT.balance({ uid: p.uid, name: p.name });
+          label = FT.label(balance, { uid: p.uid, name: p.name });
+        }
+      } catch (e) { balance = {}; }
+      var keys = Object.keys(balance).filter(function (c) { return Math.abs(Number(balance[c]) || 0) > 0.0001; });
+      var amountText = 'Settled', cls = 'to-receive';
+      if (keys.length && FT && FT.money) {
+        amountText = keys.map(function (c) {
+          var single = {};
+          single[c] = balance[c];
+          return FT.money(single);
+        }).join(' ').replace(/<br>/g, ' ');
+        cls = keys.some(function (c) { return Number(balance[c]) < 0; }) ? 'to-pay' : 'to-receive';
+      } else if (label) {
+        amountText = label;
+        cls = label === 'To pay' ? 'to-pay' : 'to-receive';
+      }
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'ft-tracker';
+      row.innerHTML = '<span class="ft-tracker-avatar">' + esc(initials(p.name)) + '</span>' +
+        '<span class="min-w-0 flex-1"><span class="ft-tracker-name block truncate">' + esc(p.name) + '</span>' +
+        '<span class="ft-tracker-sub block truncate">' + esc(label || 'No outstanding balance') + '</span></span>' +
+        '<span class="ft-tracker-amt ' + cls + '">' + amountText + '</span>';
+      row.onclick = function () {
+        if (p.uid && window.ftOpenFriendProfile) window.ftOpenFriendProfile(p.uid, p.name);
+        else if (window.switchTab) window.switchTab('friends');
+      };
+      host.appendChild(row);
+    });
+  }
+
+  /* ---------- search ---------- */
+  function searchHits(query) {
+    var q = String(query || '').trim().toLowerCase(), hits = [], seen = {};
+    if (!q) return hits;
+    function push(hit) {
+      var key = hit.tab + '|' + hit.title;
+      if (seen[key] || hits.length >= 24) return;
+      seen[key] = true;
+      hits.push(hit);
+    }
+    try {
+      (state.banks || []).forEach(function (b) {
+        if (String(b.name || '').toLowerCase().indexOf(q) < 0 && String(b.currency || '').toLowerCase().indexOf(q) < 0) return;
+        push({ icon: 'fa-building-columns', title: b.name || 'Account', sub: 'Account · ' + (b.currency || ''), tab: 'accounts-spending' });
+      });
+      Object.keys(state.expenses || {}).forEach(function (month) {
+        (state.expenses[month] || []).forEach(function (e) {
+          var text = String((e.description || '') + ' ' + (e.category || '')).toLowerCase();
+          if (text.indexOf(q) < 0) return;
+          push({ icon: 'fa-receipt', title: e.description || e.category || 'Expense', sub: 'Expense · ' + month + (e.category ? ' · ' + e.category : ''), tab: 'expenses' });
+        });
+      });
+      personList().forEach(function (p) {
+        if (p.name.toLowerCase().indexOf(q) < 0) return;
+        push({ icon: 'fa-user-group', title: p.name, sub: 'FinTracker', tab: 'friends' });
+      });
+    } catch (e) { /* data not loaded yet */ }
+    return hits;
+  }
+
+  function renderSearchResults(query) {
+    var box = document.getElementById('ftSearchResults');
+    if (!box) return;
+    var hits = searchHits(query);
+    box.textContent = '';
+    if (!String(query || '').trim()) {
+      box.innerHTML = '<p class="ft-empty px-2 py-3">Search accounts, expenses and FinTrackers.</p>';
+      return;
+    }
+    if (!hits.length) {
+      box.innerHTML = '<p class="ft-empty px-2 py-3">No matches found.</p>';
+      return;
+    }
+    hits.forEach(function (hit) {
+      var row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'ft-search-hit';
+      row.innerHTML = '<i class="fa-solid ' + esc(hit.icon) + '"></i><span class="min-w-0 flex-1"><span class="ft-tracker-name block truncate">' + esc(hit.title) + '</span><small>' + esc(hit.sub) + '</small></span>';
+      row.onclick = function () {
+        var panel = document.getElementById('ftSearchPanel');
+        if (panel) panel.remove();
+        if (window.switchTab) window.switchTab(hit.tab);
+      };
+      box.appendChild(row);
+    });
+  }
+
+  window.ftOpenSearch = function () {
+    if (document.getElementById('ftSearchPanel')) return;
+    var panel = document.createElement('div');
+    panel.id = 'ftSearchPanel';
+    panel.className = 'ft-search-panel';
+    panel.onclick = function (e) { if (e.target === panel) panel.remove(); };
+    panel.innerHTML = '<div class="ft-search-box"><div class="ft-search-row"><i class="fa-solid fa-magnifying-glass text-[#003399]"></i>' +
+      '<input id="ftSearchInput" type="search" placeholder="Search accounts, expenses, friends" autocomplete="off" oninput="ftSearchInput(this.value)">' +
+      '<button type="button" onclick="document.getElementById(\'ftSearchPanel\').remove()" class="text-[#64748B]"><i class="fa-solid fa-xmark"></i></button></div>' +
+      '<div id="ftSearchResults"></div></div>';
+    document.body.appendChild(panel);
+    renderSearchResults('');
+    var input = document.getElementById('ftSearchInput');
+    if (input) input.focus();
+  };
+  window.ftSearchInput = renderSearchResults;
+
+  /* ---------- PIN numpad ---------- */
+  function buildNumpad() {
+    var area = document.getElementById('finpinQuickArea');
+    if (!area || document.getElementById('ftNumpad')) return;
+    var pad = document.createElement('div');
+    pad.id = 'ftNumpad';
+    ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'return'].forEach(function (key) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      if (key === 'del') { button.className = 'ft-np-action'; button.innerHTML = '<i class="fa-solid fa-delete-left"></i>'; }
+      else if (key === 'return') { button.className = 'ft-np-action'; button.textContent = 'RETURN'; }
+      else button.textContent = key;
+      button.onclick = function () { ftPinKey(key); };
+      pad.appendChild(button);
+    });
+    area.appendChild(pad);
+  }
+
+  function ftPinKey(key) {
+    var inputs = Array.prototype.slice.call(document.querySelectorAll('input[data-finpin-lock]'));
+    if (!inputs.length) return;
+    var target = inputs.filter(function (i) { return !i.dataset.finpinDigit; })[0];
+    if (key === 'del') {
+      var filled = inputs.filter(function (i) { return i.dataset.finpinDigit; });
+      var last = filled[filled.length - 1];
+      if (last) { last.dataset.finpinDigit = ''; last.value = ''; last.focus(); }
+      return;
+    }
+    if (key === 'return') {
+      if (window.ftUnlockWithFinpin) window.ftUnlockWithFinpin();
+      return;
+    }
+    if (!target) return;
+    target.value = key;
+    target.dataset.finpinDigit = key;
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  /* ---------- boot ---------- */
+  function build() {
+    injectCss();
+    buildHeader();
+    buildSideProfile();
+    buildHero();
+    buildNumpad();
+    var accountsTab = document.querySelector('#mobileBottomNav button[data-tab="accounts-spending"]');
+    if (accountsTab) accountsTab.remove();
+    renderTrackers();
+    syncBellBadge();
+  }
+
+  function refresh() {
+    build();
+    var hello = document.getElementById('ftHello');
+    if (hello) hello.textContent = greeting() + ',';
+    if (currentUser && currentUser.name) {
+      var nameEl = document.getElementById('ftHeroName');
+      if (nameEl) nameEl.textContent = String(currentUser.name);
+      var sideName = document.getElementById('ftSideName');
+      if (sideName) sideName.textContent = String(currentUser.name);
+      var sideInitials = document.getElementById('ftSideInitials');
+      if (sideInitials) sideInitials.textContent = initials(currentUser.name);
+    }
+    // Keep the home layout intact if the host re-renders a card back into its original grid.
+    var acct = document.getElementById('ftHeroAccount');
+    var bank = document.getElementById('overviewCardBank');
+    if (acct && bank && bank.parentNode !== acct) acct.appendChild(bank);
+    var more = document.getElementById('ftQlMore');
+    var quick = document.getElementById('ftQuickActions');
+    if (more && quick && quick.parentNode !== more) more.appendChild(quick);
+    var capSlot = document.getElementById('ftHeroCaptionSlot');
+    var caption = document.getElementById('homeCaption');
+    if (capSlot && caption && caption.parentNode !== capSlot) capSlot.appendChild(caption);
+    renderTrackers();
+    syncBellBadge();
+  }
+
+  build();
+  document.addEventListener('DOMContentLoaded', build);
+
+  if (window.renderAll) {
+    var hostRenderAll = window.renderAll;
+    window.renderAll = function () {
+      var result = hostRenderAll.apply(this, arguments);
+      setTimeout(function () { try { refresh(); } catch (e) { console.error('FinTrack home error:', e); } }, 0);
+      return result;
+    };
+  }
+  setInterval(function () { try { refresh(); } catch (e) { /* noop */ } }, 4000);
+})(window.FTReview = window.FTReview || {});
 </script>
 </body>
 </html>
