@@ -9134,6 +9134,18 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + 'body #ftQuickLinks .ft-card-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin-bottom:10px!important;}'
     + 'body #ftQuickLinks .ft-card-head h3{font-size:12.5px!important;font-weight:700!important;color:#1B326B!important;}'
     + 'body #ftQuickLinks .ft-quick-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;}'
+    + 'body #ftQuickLinks .ft-quick{min-height:84px!important;}'
+    + 'body #ftQuickLinks .ft-quick i{font-size:20px!important;}'
+    /* header navigation icons: even, breathing spacing that never crowds the title */
+    + 'body #ftHeadTools{gap:12px!important;align-items:center!important;flex:0 0 auto!important;margin-left:10px!important;}'
+    + 'body #ftHeadTools .ft-head-icon{flex:0 0 auto!important;}'
+    + 'body header .min-w-0,body header .flex-1{min-width:0!important;}'
+    + 'body header h1{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}'
+    + 'body #ftDrawerLinks{gap:8px!important;}'
+    + '@media(max-width:400px){body #ftHeadTools{gap:8px!important;margin-left:6px!important;}'
+    + 'body #ftHeadTools .ft-head-icon{width:34px!important;height:34px!important;}}'
+    /* the page itself always scrolls like a normal mobile app */
+    + 'html,body{overflow-y:auto!important;height:auto!important;-webkit-overflow-scrolling:touch!important;}'
     + 'body #ftQuickLinks .ft-quick{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;'
     + 'gap:7px!important;min-height:88px!important;padding:13px 6px!important;background:#EBF2F7!important;border:0!important;border-radius:12px!important;box-shadow:none!important;}'
     + 'body #ftQuickLinks .ft-quick i{width:auto!important;height:auto!important;border-radius:0!important;background:transparent!important;'
@@ -9607,8 +9619,27 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     window.switchTab = wrapped;
   }
 
+  /* Quick Links: all six actions in two rows of three, no "More" shortcut */
+  function upgradeQuickLinks() {
+    var card = document.getElementById('ftQuickLinks');
+    if (!card) return;
+    var more = card.querySelector('.ft-more-link');
+    if (more) more.remove();
+    var grid = card.querySelector('.ft-quick-grid');
+    if (!grid || grid.dataset.ftSix === '1') return;
+    grid.dataset.ftSix = '1';
+    grid.innerHTML =
+      '<button type="button" class="ft-quick" onclick="switchTab(\'household\')"><i class="fa-solid fa-house-chimney-user"></i><span>Household</span></button>' +
+      '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend Split</span></button>' +
+      '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span><small class="ft-quick-note">Gold &amp; SIP</small></button>' +
+      '<button type="button" class="ft-quick" onclick="switchTab(\'liabilities\')"><i class="fa-solid fa-hand-holding-dollar"></i><span>Loan</span></button>' +
+      '<button type="button" class="ft-quick" onclick="switchTab(\'trips\')"><i class="fa-solid fa-route"></i><span>Trip Split</span></button>' +
+      '<button type="button" class="ft-quick" onclick="switchTab(\'transfers\')"><i class="fa-solid fa-money-bill-transfer"></i><span>Bank Transfers</span></button>';
+  }
+
   function boot() {
     renameDrawerLink();
+    upgradeQuickLinks();
     hookSwitch();
     section();
   }
@@ -9618,7 +9649,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
   /* the drawer is rebuilt after login, so keep the label in sync */
   try {
-    new MutationObserver(function () { renameDrawerLink(); }).observe(document.body, { childList: true, subtree: true });
+    new MutationObserver(function () { renameDrawerLink(); upgradeQuickLinks(); }).observe(document.body, { childList: true, subtree: true });
   } catch (e) {}
 })();
 
@@ -9935,10 +9966,9 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
 </script>
 <script>
-/* FinTrack — offline notice and casual source-copy deterrents.
-   Client-side code can always be read by whoever holds the file; this only
-   keeps accidental readers and casual copy attempts out, and gives a clear
-   message instead of a blank screen when the connection drops. */
+/* FinTrack — device behaviour layer: offline notice, no native keyboard on the
+   FinPIN boxes, logo resilience, and uninterrupted page scrolling.
+   Everything here is additive and never blocks the user's touch. */
 (function () {
   'use strict';
 
@@ -9947,66 +9977,146 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
   } catch (e) { NATIVE = false; }
 
-  /* true once the app has finished its first load — offline after that is only a hint */
-  var booted = false;
-  function markBooted() { booted = true; }
+  var TOUCH = false;
+  try { TOUCH = window.matchMedia('(pointer: coarse)').matches || NATIVE; } catch (e) { TOUCH = NATIVE; }
 
-  /* ---------------- offline: full notice only before the app has loaded ---------------- */
-  function blockedNotice() {
+  /* ============================================================
+     1. SMOOTH, UNINTERRUPTED SCROLLING
+     Nothing may freeze the page: no scroll lock class, no inline
+     overflow:hidden, no cancelled touch gestures.
+     ============================================================ */
+  function freePageScroll() {
+    var html = document.documentElement;
+    var body = document.body;
+    if (html.classList.contains('ft-frozen')) html.classList.remove('ft-frozen');
+    if (html.style.overflow === 'hidden') html.style.overflow = '';
+    if (body && body.style.overflow === 'hidden') body.style.overflow = '';
+  }
+
+  /* the app's own touchmove guard sits on the document in the bubble phase;
+     stopping the event at the capture phase keeps every swipe native */
+  document.addEventListener('touchmove', function (event) { event.stopPropagation(); }, { capture: true, passive: true });
+
+  freePageScroll();
+  document.addEventListener('DOMContentLoaded', freePageScroll);
+  window.addEventListener('load', freePageScroll);
+  setInterval(freePageScroll, 250);
+
+  /* ============================================================
+     2. FinPIN boxes never open the device keyboard
+     ============================================================ */
+  function markPinBoxes() {
+    var boxes = document.querySelectorAll('.finpin-box');
+    for (var i = 0; i < boxes.length; i++) {
+      var box = boxes[i];
+      box.setAttribute('inputmode', 'none');
+      box.setAttribute('autocomplete', 'off');
+      box.setAttribute('autocorrect', 'off');
+      box.setAttribute('spellcheck', 'false');
+    }
+  }
+
+  /* a tap on a PIN box must not focus it on a touch device — that is what
+     summoned the system keyboard over the app's own keypad */
+  document.addEventListener('touchstart', function (event) {
+    var node = event.target;
+    var box = node && node.closest ? node.closest('.finpin-box') : null;
+    if (!box) return;
+    event.preventDefault();
+    try { box.blur(); } catch (e) {}
+  }, { passive: false });
+
+  /* any focus coming from elsewhere (autofocus, script) is released too */
+  document.addEventListener('focusin', function (event) {
+    var box = event.target;
+    if (!TOUCH || !box || !box.classList || !box.classList.contains('finpin-box')) return;
+    setTimeout(function () { try { box.blur(); } catch (e) {} }, 0);
+  }, true);
+
+  markPinBoxes();
+  document.addEventListener('DOMContentLoaded', markPinBoxes);
+  try {
+    new MutationObserver(markPinBoxes).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+
+  /* ============================================================
+     3. Logo survives a weak connection
+     A local, drawn FinTrack mark replaces any brand image that fails.
+     ============================================================ */
+  var FALLBACK_LOGO = (function () {
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">' +
+      '<rect width="96" height="96" rx="22" fill="#ffffff"/>' +
+      '<rect x="4" y="4" width="88" height="88" rx="19" fill="none" stroke="#E2E8F0" stroke-width="2"/>' +
+      '<text x="26" y="68" font-family="Inter,Arial,Helvetica,sans-serif" font-size="42" font-weight="800" fill="#14245A">F</text>' +
+      '<path d="M48 62 L62 40 L55 40 L66 26 L77 40 L70 40 L84 62 Z" fill="#16A34A"/>' +
+      '</svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  })();
+
+  function isBrandImage(img) {
+    if (!img || img.tagName !== 'IMG') return false;
+    if (img.classList.contains('ft-default-logo')) return true;
+    var src = img.getAttribute('src') || '';
+    return src.indexOf('fintrack-logo') > -1 || !!img.closest('#headerLogoBox, #ftLaunchSplash, #splashScreen, #authContainer');
+  }
+
+  function patchImage(img) {
+    if (!isBrandImage(img) || img.dataset.ftLogoGuard === '1') return;
+    img.dataset.ftLogoGuard = '1';
+    img.dataset.ftOriginalSrc = img.getAttribute('src') || '';
+    img.addEventListener('error', function () { img.src = FALLBACK_LOGO; });
+    if (img.complete && img.naturalWidth === 0) img.src = FALLBACK_LOGO;
+  }
+
+  function patchLogos() {
+    var imgs = document.querySelectorAll('img');
+    for (var i = 0; i < imgs.length; i++) patchImage(imgs[i]);
+  }
+  patchLogos();
+  document.addEventListener('DOMContentLoaded', patchLogos);
+  var logoScan = 0;
+  function scheduleLogoScan() {
+    if (logoScan) return;
+    logoScan = setTimeout(function () { logoScan = 0; patchLogos(); }, 400);
+  }
+  try {
+    new MutationObserver(scheduleLogoScan).observe(document.documentElement, { childList: true, subtree: true });
+  } catch (e) {}
+
+  /* ============================================================
+     4. "No network" pop-up, at start-up and during a session
+     ============================================================ */
+  function offlineDialog() {
     var el = document.getElementById('ftOfflineNotice');
     if (el) return el;
     el = document.createElement('div');
     el.id = 'ftOfflineNotice';
-    el.setAttribute('role', 'status');
+    el.setAttribute('role', 'alertdialog');
     el.style.cssText = 'position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;' +
-      'padding:24px;background:#F6F8FC;font-family:inherit;';
+      'padding:24px;background:rgba(15,23,42,.55);font-family:inherit;';
     el.innerHTML =
       '<div style="max-width:340px;width:100%;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:20px;padding:26px;text-align:center;' +
-        'box-shadow:0 20px 50px -30px rgba(15,23,42,.45);">' +
+        'box-shadow:0 24px 60px -30px rgba(15,23,42,.55);">' +
         '<div style="width:52px;height:52px;border-radius:16px;background:#EEF3FF;color:#1E3A8A;display:flex;align-items:center;' +
-          'justify-content:center;margin:0 auto 16px;"><i class="fa-solid fa-wifi" style="font-size:20px;"></i></div>' +
-        '<h2 style="font-size:16px;font-weight:800;color:#1E293B;margin:0 0 8px;">You are offline</h2>' +
-        '<p style="font-size:12.5px;line-height:1.55;color:#64748B;margin:0 0 18px;">FinTrack needs an internet connection to open your data. ' +
+          'justify-content:center;margin:0 auto 16px;font-size:22px;font-weight:800;">!</div>' +
+        '<h2 style="font-size:16px;font-weight:800;color:#1E293B;margin:0 0 8px;">No network available</h2>' +
+        '<p style="font-size:12.5px;line-height:1.55;color:#64748B;margin:0 0 18px;">FinTrack needs an internet connection to open and sync your data. ' +
           'Reconnect to Wi-Fi or mobile data and try again.</p>' +
         '<button type="button" id="ftOfflineRetry" style="width:100%;padding:12px;border:0;border-radius:12px;background:#1E3A8A;' +
           'color:#FFFFFF;font-size:12.5px;font-weight:800;cursor:pointer;">Try again</button>' +
+        '<button type="button" id="ftOfflineStay" style="width:100%;margin-top:8px;padding:11px;border:1px solid #E2E8F0;border-radius:12px;' +
+          'background:#FFFFFF;color:#475569;font-size:12px;font-weight:700;cursor:pointer;">Continue without syncing</button>' +
       '</div>';
     document.body.appendChild(el);
-    var retry = el.querySelector('#ftOfflineRetry');
-    if (retry) retry.onclick = function () { window.location.reload(); };
+    el.querySelector('#ftOfflineRetry').onclick = function () { window.location.reload(); };
+    el.querySelector('#ftOfflineStay').onclick = function () { el.style.display = 'none'; };
     return el;
   }
 
-  function banner(text) {
-    var el = document.getElementById('ftOfflineBanner');
-    if (el) return el;
-    el = document.createElement('div');
-    el.id = 'ftOfflineBanner';
-    el.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99999;display:none;padding:9px 14px;' +
-      'background:#1E3A8A;color:#FFFFFF;font-size:11.5px;font-weight:700;text-align:center;letter-spacing:.1px;';
-    el.textContent = text;
-    document.body.appendChild(el);
-    return el;
-  }
-
-  function showOffline() {
-    if (!document.body) return;
-    var block = document.getElementById('ftOfflineNotice');
-    var strip = document.getElementById('ftOfflineBanner');
-    if (booted) {
-      if (block) block.style.display = 'none';
-      banner('You are offline — FinTrack will sync when the connection returns.').style.display = 'block';
-    } else {
-      blockedNotice().style.display = 'flex';
-    }
-    if (strip && booted) strip.style.display = 'block';
-  }
-
+  function showOffline() { if (document.body) offlineDialog().style.display = 'flex'; }
   function hideOffline() {
-    var block = document.getElementById('ftOfflineNotice');
-    var strip = document.getElementById('ftOfflineBanner');
-    if (block) block.style.display = 'none';
-    if (strip) strip.style.display = 'none';
+    var el = document.getElementById('ftOfflineNotice');
+    if (el) el.style.display = 'none';
   }
 
   window.addEventListener('offline', showOffline);
@@ -10017,43 +10127,20 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     else showOffline();
   }
 
-  /* the app counts as loaded once the splash is gone or after a few seconds */
-  function checkBooted() {
-    if (booted) return;
-    var splash = document.getElementById('splashScreen') || document.querySelector('.splash-screen');
-    var visible = splash && splash.offsetParent !== null && splash.style.display !== 'none';
-    if (!visible) markBooted();
-  }
-  window.addEventListener('load', function () { setTimeout(markBooted, 3000); });
-  setInterval(checkBooted, 800);
-
-  /* ---------------- casual copy deterrents (web only) ---------------- */
-  if (NATIVE) return;
-
-  function block(event) { event.preventDefault(); return false; }
-
-  document.addEventListener('contextmenu', function (event) {
-    var el = event.target;
-    if (el && el.tagName === 'INPUT') return;
-    block(event);
-  }, true);
-
-  document.addEventListener('dragstart', block, true);
-  document.addEventListener('copy', function (event) {
-    var tag = (event.target && event.target.tagName) || '';
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-    block(event);
-  }, true);
-
-  document.addEventListener('keydown', function (event) {
-    var key = String(event.key || '').toLowerCase();
-    var mod = event.ctrlKey || event.metaKey;
-    if (key === 'f12' || (mod && event.shiftKey && (key === 'i' || key === 'j' || key === 'c')) ||
-        (mod && (key === 'u' || key === 's' || key === 'p'))) {
-      event.preventDefault();
-      return false;
+  /* once online again, a logo that failed earlier is repainted */
+  window.addEventListener('online', function () {
+    var imgs = document.querySelectorAll('img[data-ft-logo-guard="1"]');
+    for (var i = 0; i < imgs.length; i++) {
+      var img = imgs[i];
+      var original = img.dataset.ftOriginalSrc;
+      if (original && img.getAttribute('src') === FALLBACK_LOGO) {
+        img.dataset.ftLogoGuard = '';
+        delete img.dataset.ftLogoGuard;
+        img.src = original;
+        patchImage(img);
+      }
     }
-  }, true);
+  });
 })();
 
 </script></body>
