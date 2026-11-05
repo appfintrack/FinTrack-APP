@@ -580,6 +580,35 @@ body.ft-dark .ft-tracker-amt.to-receive,body.ft-dark #pendingPaymentsSection .te
 body.ft-dark .ft-tracker-amt.to-pay,body.ft-dark #pendingPaymentsSection .text-rose-400{color:#F87171!important;}
 body.ft-dark #monthlyFlowSummary>div:first-child h3,body.ft-dark #monthlyFlowSummary>div:first-child .fin-card-val{color:#4ADE80!important;}
 body.ft-dark #monthlyFlowSummary>div:nth-child(2) h3,body.ft-dark #monthlyFlowSummary>div:nth-child(2) .fin-card-val{color:#F87171!important;}
+/* ---------- header: hamburger and power sit on the margins, icons evenly spaced ---------- */
+body header>div{max-width:none!important;margin:0!important;padding-left:16px!important;padding-right:16px!important;gap:14px!important;}
+body header>div>div:last-child{gap:14px!important;}
+body header>div>div:last-child>*{margin-left:0!important;margin-right:0!important;}
+#ftHeadTools{gap:12px!important;}
+#ftHeadTools .ft-head-icon{width:38px!important;height:38px!important;border-radius:12px!important;}
+@media(min-width:1024px){body header>div{padding-left:28px!important;padding-right:28px!important;gap:22px!important;}body header>div>div:last-child{gap:18px!important;}}
+/* ---------- bottom bar: barely-there pale blue with faint white hexagons ---------- */
+:root{--fthexpale:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-opacity='.95' stroke-width='1.6'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
+body #mobileBottomNav .ftbn{background-image:none!important;border-radius:14px!important;color:var(--ftmuted)!important;}
+body #mobileBottomNav .ftbn.active{background-image:var(--fthexpale),linear-gradient(180deg,#EEF4FF 0%,#F8FBFF 100%)!important;background-size:24px 42px,100% 100%!important;background-position:0 0,center!important;color:var(--ftb)!important;box-shadow:none!important;}
+body #mobileBottomNav .ftbn.active i{color:var(--ftb)!important;}
+body.ft-dark #mobileBottomNav .ftbn.active{background-image:var(--fthexpale),linear-gradient(180deg,#1B2740 0%,#22314F 100%)!important;color:#DBEAFE!important;}
+body.ft-dark #mobileBottomNav .ftbn.active i{color:#DBEAFE!important;}
+/* ---------- insights: a single card fills the width ---------- */
+#ftInsightBody>:only-child{grid-column:1/-1!important;}
+/* ---------- accounts: grouped headings ---------- */
+.ft-account-group>p{font-size:10px!important;font-weight:800!important;letter-spacing:.1em!important;text-transform:uppercase!important;color:var(--ftmuted)!important;margin:0 0 2px;}
+.ft-account-group+.ft-account-group{margin-top:12px;border-top:1px solid var(--ftline);padding-top:12px;}
+.ft-account-group .ft-account-row:last-child{border-bottom:0;}
+/* ---------- dark theme: light surfaces turn dark so white text stays readable ---------- */
+body.ft-dark main [class*="bg-white"],body.ft-dark main [class*="bg-slate-50"],body.ft-dark main [class*="bg-slate-100"],body.ft-dark main [class*="bg-gray-50"],body.ft-dark main [class*="bg-gray-100"],body.ft-dark main [class*="bg-rose-50"],body.ft-dark main [class*="bg-indigo-50"],body.ft-dark main [class*="bg-amber-50"],body.ft-dark main [class*="bg-emerald-50"],body.ft-dark main [class*="bg-sky-50"],body.ft-dark main [class*="bg-violet-50"],body.ft-dark main [class*="bg-[#F"],body.ft-dark main [class*="bg-[#f"]{background:#1A1D23!important;border-color:#2C313A!important;}
+body.ft-dark main [class*="bg-[#F"]] *,body.ft-dark main [class*="bg-[#f"]] *{color:#E8EAED;}
+body.ft-dark main [style*="background:#EEF3FF"],body.ft-dark main [style*="background: #EEF3FF"],body.ft-dark main [style*="background:#F5F8FF"],body.ft-dark main [style*="background: #F5F8FF"],body.ft-dark main [style*="background:#E8EEF9"]{background:#232833!important;color:#E8EAED!important;}
+body.ft-dark .ft-bar-track{background:#2C313A!important;}
+body.ft-dark main table thead tr,body.ft-dark main table tbody tr,body.ft-dark main table td,body.ft-dark main table th{background:transparent!important;color:#E8EAED!important;border-color:#2C313A!important;}
+body.ft-dark main .ft-card,body.ft-dark main #ftAnalyticsCard,body.ft-dark main #ftAnalyticsCard>div,body.ft-dark main .ft-account-group{background:transparent!important;border-color:#2C313A!important;}
+body.ft-dark main #ftAnalyticsCard{background:#1A1D23!important;}
+body.ft-dark main .ft-account-group+.ft-account-group{border-top-color:#2C313A;}
 </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
@@ -6895,8 +6924,7 @@ window.ftToggleHhMenu = function (e) {
           '<button type="button" class="ft-quick" onclick="switchTab(\'household\')"><i class="fa-solid fa-house-chimney-user"></i><span>Household</span></button>' +
           '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend Split</span></button>' +
           '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span><small class="ft-quick-note">Gold &amp; SIP</small></button>' +
-          '<button type="button" class="ft-quick" onclick="switchTab(\'liabilities\')"><i class="fa-solid fa-hand-holding-dollar"></i><span>Loan</span></button>' +
-          '<button type="button" class="ft-quick" onclick="switchTab(\'trips\')"><i class="fa-solid fa-route"></i><span>Trip Split</span></button>' +
+          '<button type="button" class="ft-quick" onclick="ftOpenMoreLinks()"><i class="fa-solid fa-ellipsis"></i><span>More</span></button>' +
         '</div>' +
         '<div id="ftLegacyQuick" class="hidden"></div>' +
       '</div>' +
@@ -6917,6 +6945,21 @@ window.ftToggleHhMenu = function (e) {
     var legacyQuick = document.getElementById('ftLegacyQuick');
     if (quick && legacyQuick) legacyQuick.appendChild(quick);
   }
+
+  window.ftOpenMoreLinks = function () {
+    var existing = document.getElementById('ftMoreSheet');
+    if (existing) existing.remove();
+    var sheet = document.createElement('div');
+    sheet.id = 'ftMoreSheet';
+    sheet.className = 'ft-sheet';
+    sheet.onclick = function (e) { if (e.target === sheet) sheet.remove(); };
+    sheet.innerHTML = '<div class="ft-sheet-inner"><h3>More</h3>' +
+      '<button type="button" class="ft-sheet-btn" onclick="document.getElementById(\'ftMoreSheet\').remove();switchTab(\'liabilities\')"><i class="fa-solid fa-hand-holding-dollar"></i>Loan</button>' +
+      '<button type="button" class="ft-sheet-btn" onclick="document.getElementById(\'ftMoreSheet\').remove();switchTab(\'trips\')"><i class="fa-solid fa-route"></i>Trip Split</button>' +
+      '<button type="button" class="ft-sheet-btn" onclick="document.getElementById(\'ftMoreSheet\').remove();switchTab(\'transfers\')"><i class="fa-solid fa-money-bill-transfer"></i>Bank Transfers</button>' +
+      '<button type="button" class="ft-sheet-btn justify-center" onclick="document.getElementById(\'ftMoreSheet\').remove()"><i class="fa-solid fa-xmark"></i>Cancel</button></div>';
+    document.body.appendChild(sheet);
+  };
 
   window.ftOpenAddMenu = function () {
     var existing = document.getElementById('ftAddSheet');
@@ -7488,7 +7531,7 @@ window.ftToggleHhMenu = function (e) {
 </script>
 <script data-ft-update="accounts">
 /* global state, formatCurrency */
-// Accounts area: every bank account, cash-in-hand and credit card in one list.
+// Accounts area: every bank account, cash-in-hand and credit card, grouped and titled.
 (function (FT) {
   var main = document.querySelector('main');
   if (!main) return;
@@ -7502,11 +7545,9 @@ window.ftToggleHhMenu = function (e) {
   }
   section.innerHTML =
     '<div class="ft-section-head"><h2>Accounts</h2></div>' +
-    '<div class="ft-card"><div class="ft-card-head"><h3>Your accounts</h3><div class="ft-account-actions">' +
-      '<button type="button" class="ft-link" onclick="openForm(\'modalBank\', \'bankForm\', {bankType: 1})">+ Bank</button>' +
-      '<button type="button" class="ft-link" onclick="openCashEntry()">+ Cash</button>' +
-      '<button type="button" class="ft-link" onclick="openCreditCardEntry()">+ Card</button>' +
-    '</div></div><div id="ftAccountList"></div></div>' +
+    '<div class="ft-card"><div class="ft-card-head"><h3>Your accounts</h3>' +
+      '<button type="button" class="ft-link" onclick="openForm(\'modalBank\', \'bankForm\', {bankType: 1})">+ Add account</button>' +
+    '</div><div id="ftAccountList"></div></div>' +
     '<div class="ft-card"><div class="ft-card-head"><h3>Transfers</h3><button type="button" class="ft-link" onclick="switchTab(\'transfers\')">Open transfers</button></div>' +
     '<p class="ft-empty">Move money between your accounts and review the transfer log.</p></div>';
 
@@ -7514,6 +7555,22 @@ window.ftToggleHhMenu = function (e) {
     if (account.name === 'Cash in Hand') return 'Cash in hand';
     if (account.bankType === 3) return 'Credit card';
     try { return account.bankType === 2 ? window.getBankType2() : window.getBankType1(); } catch (e) { return 'Bank account'; }
+  }
+
+  function row(account) {
+    var value = account.bankType === 3 ? (Number(account.cardOutstanding) || 0) : (Number(account.balance) || 0);
+    var icon = account.name === 'Cash in Hand' ? 'fa-wallet' : account.bankType === 3 ? 'fa-credit-card' : 'fa-building-columns';
+    var sub = typeLabel(account) + ' · ' + (account.currency || '');
+    if (account.owner) sub += ' · ' + account.owner;
+    return '<button type="button" class="ft-account-row" onclick="editEntry(\'banks\', \'' + FT.escape(account.id) + '\')">' +
+      '<span class="ft-account-icon"><i class="fa-solid ' + icon + '"></i></span>' +
+      '<span class="ft-account-main"><span class="ft-account-name">' + FT.escape(account.name || 'Account') + '</span><small>' + FT.escape(sub) + '</small></span>' +
+      '<span class="ft-account-value">' + FT.escape(formatCurrency(value, account.currency)) + '</span></button>';
+  }
+
+  function groupOf(account) {
+    if (account.name === 'Cash in Hand') return 'cash';
+    return String(account.bankType) === '2' || String(account.bankType) === '3' ? 'secondary' : 'primary';
   }
 
   function render() {
@@ -7524,15 +7581,12 @@ window.ftToggleHhMenu = function (e) {
       host.innerHTML = '<p class="ft-empty">No accounts yet. Add a bank account, cash in hand or a credit card.</p>';
       return;
     }
-    host.innerHTML = accounts.map(function (account) {
-      var value = account.bankType === 3 ? (Number(account.cardOutstanding) || 0) : (Number(account.balance) || 0);
-      var icon = account.name === 'Cash in Hand' ? 'fa-wallet' : account.bankType === 3 ? 'fa-credit-card' : 'fa-building-columns';
-      var sub = typeLabel(account) + ' · ' + (account.currency || '');
-      if (account.owner) sub += ' · ' + account.owner;
-      return '<button type="button" class="ft-account-row" onclick="editEntry(\'banks\', \'' + FT.escape(account.id) + '\')">' +
-        '<span class="ft-account-icon"><i class="fa-solid ' + icon + '"></i></span>' +
-        '<span class="ft-account-main"><span class="ft-account-name">' + FT.escape(account.name || 'Account') + '</span><small>' + FT.escape(sub) + '</small></span>' +
-        '<span class="ft-account-value">' + FT.escape(formatCurrency(value, account.currency)) + '</span></button>';
+    var groups = { primary: [], secondary: [], cash: [] };
+    accounts.forEach(function (account) { groups[groupOf(account)].push(account); });
+    host.innerHTML = [['primary', 'Primary accounts'], ['secondary', 'Secondary accounts'], ['cash', 'Cash in hand']].filter(function (group) {
+      return groups[group[0]].length;
+    }).map(function (group) {
+      return '<div class="ft-account-group"><p>' + group[1] + '</p>' + groups[group[0]].map(row).join('') + '</div>';
     }).join('');
   }
 
