@@ -9056,134 +9056,34 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return false;
   }
 
-  /* ---------- splash ---------- */
+  /* ---------- launch splash: identical to the post-login welcome splash ---------- */
   function launchSplashShow() {
     if (document.getElementById('ftLaunchSplash')) return;
     var el = document.createElement('div');
     el.id = 'ftLaunchSplash';
-    el.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-      'background:linear-gradient(165deg,#1E3A8A 0%,#172554 55%,#0f172a 100%);opacity:0;transition:opacity .3s ease;' +
-      'font-family:inherit;-webkit-tap-highlight-color:transparent;';
+    el.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'background:#f8fafc;opacity:0;transition:opacity .35s ease;pointer-events:none;font-family:inherit;';
     el.innerHTML =
-      '<div style="width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);' +
-        'display:flex;align-items:center;justify-content:center;box-shadow:0 18px 40px rgba(2,6,23,.45);">' +
-        '<span style="font-size:26px;font-weight:800;letter-spacing:-.5px;color:#fff;">FT</span></div>' +
-      '<div style="margin-top:18px;font-size:21px;font-weight:800;color:#fff;letter-spacing:-.4px;">FinTrack</div>' +
-      '<div style="margin-top:6px;font-size:12px;font-weight:600;color:#BFDBFE;">Household finances, clearly.</div>' +
-      '<div style="margin-top:26px;width:132px;height:3px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;">' +
-        '<div style="height:100%;width:38%;border-radius:3px;background:#fff;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
-      '<div id="ftSplashStatus" style="margin-top:14px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(191,219,254,.85);">Checking for updates</div>' +
-      '<div style="position:absolute;bottom:26px;font-size:10px;font-weight:600;color:rgba(191,219,254,.6);">v' + FT_APP.version + '</div>';
+      '<div style="text-align:center;padding:24px;">' +
+        '<img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">' +
+        '<div style="font-size:22px;font-weight:800;letter-spacing:.3px;color:#1e293b;">Welcome to FinTrack</div>' +
+        '<div style="margin:20px auto 0;width:120px;height:3px;background:#e2e8f0;border-radius:2px;overflow:hidden;">' +
+          '<div style="height:100%;width:40%;background:#1E3A8A;border-radius:2px;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
+      '</div>';
     document.body.appendChild(el);
     requestAnimationFrame(function () { el.style.opacity = '1'; });
-  }
-  function launchSplashStatus(text) {
-    var s = document.getElementById('ftSplashStatus');
-    if (s) s.textContent = text;
   }
   function launchSplashHide() {
     var el = document.getElementById('ftLaunchSplash');
     if (!el) return;
     el.style.opacity = '0';
-    setTimeout(function () { if (el.parentNode) el.remove(); }, 320);
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 400);
   }
 
-  /* ---------- published version ---------- */
-  async function readLatestConfig() {
-    var out = { latest: '', minimum: '', playStoreUrl: '', packageId: '', message: '' };
-    try {
-      var ctrl = window.AbortController ? new AbortController() : null;
-      var t = setTimeout(function () { try { if (ctrl) ctrl.abort(); } catch (e) {} }, 4000);
-      var res = await fetch('version.json?_=' + Date.now(), { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined });
-      clearTimeout(t);
-      if (res && res.ok) {
-        var data = await res.json();
-        Object.keys(out).forEach(function (k) {
-          if (data && data[k] !== undefined && data[k] !== null && data[k] !== '') out[k] = String(data[k]);
-        });
-      }
-    } catch (e) { /* offline or standalone copy: nothing to compare */ }
-    return out;
-  }
-
-  function storeUrl(cfg) {
-    if (cfg && cfg.playStoreUrl) return cfg.playStoreUrl;
-    if (FT_APP.playStoreUrl) return FT_APP.playStoreUrl;
-    var id = (cfg && cfg.packageId) || FT_APP.packageId;
-    if (id) return 'https://play.google.com/store/apps/details?id=' + encodeURIComponent(id);
-    return 'https://play.google.com/store/search?q=FinTrack&c=apps';
-  }
-  window.ftStoreUrl = storeUrl;
-
-  window.ftOpenStore = function (cfg) {
-    var url = storeUrl(cfg || {});
-    try {
-      var plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
-      if (plugins.Browser && plugins.Browser.open) { plugins.Browser.open({ url: url }); return url; }
-    } catch (e) {}
-    var win = window.open(url, '_blank');
-    if (!win) { window.location.href = url; }
-    return url;
-  };
-
-  window.ftShowUpdateGate = function (info) {
-    if (document.getElementById('ftUpdateGate')) return;
-    var cfg = info || {};
-    var gate = document.createElement('div');
-    gate.id = 'ftUpdateGate';
-    gate.innerHTML =
-      '<div class="ft-up-card">' +
-        '<div style="width:56px;height:56px;margin:0 auto 14px;border-radius:18px;background:#E8EEFC;display:flex;align-items:center;justify-content:center;">' +
-          '<span style="font-size:18px;font-weight:800;color:#1E3A8A;">FT</span></div>' +
-        '<h2>Update FinTrack</h2>' +
-        '<p class="ft-up-msg"></p>' +
-        '<p class="ft-up-ver" style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:16px;letter-spacing:.04em;"></p>' +
-        '<button type="button" class="ft-up-primary">Update now</button>' +
-        '<button type="button" class="ft-up-secondary" style="width:100%;margin-top:8px;padding:11px;border-radius:12px;background:transparent;color:#64748b;font-weight:700;font-size:12px;border:0;">Continue</button>' +
-      '</div>';
-    gate.querySelector('.ft-up-msg').textContent = cfg.message ||
-      'A newer version of FinTrack is available with the latest fixes. Update the app to keep everything working smoothly.';
-    var parts = [];
-    if (cfg.current) parts.push('Installed ' + cfg.current);
-    if (cfg.latest) parts.push('Latest ' + cfg.latest);
-    gate.querySelector('.ft-up-ver').textContent = parts.join('  ·  ');
-    gate.querySelector('.ft-up-primary').onclick = function () { window.ftOpenStore(cfg); };
-    gate.querySelector('.ft-up-secondary').onclick = function () { gate.remove(); };
-    document.body.appendChild(gate);
-    return gate;
-  };
-
-  window.ftRunUpdateCheck = async function () {
-    var cfg = await readLatestConfig();
-    var current = FT_APP.version;
-    var latest = cfg.latest || current;
-    var minimum = cfg.minimum || '';
-    var required = !!minimum && versionLower(current, minimum);
-    var outdated = required || (!!cfg.latest && versionLower(current, latest));
-    return {
-      checked: true, outdated: outdated, required: required, forced: required,
-      current: current, latest: latest,
-      config: {
-        latest: latest, minimum: minimum, message: cfg.message,
-        playStoreUrl: cfg.playStoreUrl, packageId: cfg.packageId,
-        current: current
-      },
-      platform: isMobileRuntime() ? 'mobile' : 'web'
-    };
-  };
-
+  /* ---------- boot: splash only, no update check ---------- */
   function ftBootFlow() {
     launchSplashShow();
-    launchSplashStatus('Checking for updates');
-    var started = Date.now();
-    var finish = function (res) {
-      var wait = Math.max(0, 900 - (Date.now() - started));
-      setTimeout(function () {
-        launchSplashHide();
-        if (res && res.outdated && isMobileRuntime()) window.ftShowUpdateGate(res.config);
-      }, wait);
-    };
-    window.ftRunUpdateCheck().then(finish).catch(function () { finish(null); });
+    setTimeout(launchSplashHide, 1100);
   }
   window.ftBootFlow = ftBootFlow;
   if (document.readyState === 'loading') {
