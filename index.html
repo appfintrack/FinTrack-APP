@@ -6691,9 +6691,9 @@ window.ftToggleHhMenu = function (e) {
   function money(value, cur) { return formatCurrency(Number(value) || 0, cur); }
 
   function bar(percent, color) {
-    var width = Math.max(0, Math.min(100, percent));
-    var fill = color === '#B91C1C' ? 'linear-gradient(90deg,#FB7185,#B91C1C)' : 'linear-gradient(90deg,#60A5FA,#1E3A8A)';
-    return '<div class="ft-bar-track mt-1.5"><div class="ft-bar-fill" style="width:' + width.toFixed(1) + '%;background:' + fill + '"></div></div>';
+    var width = Math.max(0, Math.min(100, percent)), scale = ['#B91C1C','#DC2626','#EA580C','#D97706','#CA8A04','#65A30D','#16A34A','#0D9488','#0891B2','#2563EB','#7C3AED','#BE185D'], shade = color !== 'auto' ? (color === '#B91C1C' ? '#FB7185' : '#60A5FA') : scale[Math.min(scale.length - 1, Math.floor((100 - width) / (100 / scale.length)))];
+    var fill = color === 'auto' ? 'linear-gradient(90deg,' + shade + 'B3,' + shade + ')' : color === '#B91C1C' ? 'linear-gradient(90deg,#FB7185,#B91C1C)' : 'linear-gradient(90deg,#60A5FA,#1E3A8A)';
+    return '<div class="ft-bar-track mt-1.5"><div class="ft-bar-fill" style="width:' + (color === 'auto' ? Math.max(2, width) : width).toFixed(1) + '%;background:' + fill + '"></div></div>';
   }
 
   function expenseBreakdown(cur, rows, total, totalCount) {
@@ -6701,7 +6701,7 @@ window.ftToggleHhMenu = function (e) {
     var items = rows.map(function (row) {
       var percent = total > 0 ? (row.amount / total) * 100 : 0;
       return '<div class="pt-2"><div class="flex items-baseline justify-between gap-2"><span class="text-[12px] text-[#0F172A]">' + row.name + '</span><span class="text-[11px] text-[#1E3A8A] font-bold tabular-nums">' + money(row.amount, cur) + ' · ' + percent.toFixed(1) + '%</span></div>' +
-        '<div class="text-[10px] text-[#64748B]">' + row.count + ' transaction' + (row.count === 1 ? '' : 's') + '</div>' + bar(percent, '#1E3A8A') + '</div>';
+        '<div class="text-[10px] text-[#64748B]">' + row.count + ' transaction' + (row.count === 1 ? '' : 's') + '</div>' + bar(percent, 'auto') + '</div>';
     }).join('');
     return '<div class="mt-3" data-ft-list="categories">' +
       '<div class="flex items-baseline justify-between gap-2"><p class="text-[12px] font-bold text-[#1E3A8A]">Expense Overview</p><span class="text-[11px] font-bold tabular-nums" style="color:#B91C1C">' + money(total, cur) + '</span></div>' +
@@ -9171,6 +9171,26 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + '.ftai-msg.ai{align-self:flex-start;background:#F1F5F9;color:#1e293b;border:1px solid #E2E8F0;border-bottom-left-radius:5px;}'
     + '.ftai-msg.user{align-self:flex-end;background:#1E3A8A;color:#fff;border-bottom-right-radius:5px;}'
     + '.ftai-msg.err{background:#FEF2F2;border-color:#FECACA;color:#B91C1C;}'
+    /* markdown inside answers */
+    + '.ftai-msg p{margin:0 0 8px;}'
+    + '.ftai-msg p:last-child{margin-bottom:0;}'
+    + '.ftai-msg strong{font-weight:800;color:#0F172A;}'
+    + '.ftai-msg em{font-style:italic;}'
+    + '.ftai-msg ul,.ftai-msg ol{margin:6px 0 8px;padding-left:18px;}'
+    + '.ftai-msg li{margin:3px 0;}'
+    + '.ftai-msg h3,.ftai-msg h4,.ftai-msg h5{margin:12px 0 6px;font-size:13px;font-weight:800;color:#1E3A8A;}'
+    + '.ftai-msg code{background:#E2E8F0;border-radius:4px;padding:1px 4px;font-size:11.5px;}'
+    + '.ftai-msg pre{background:#0F172A;color:#F1F5F9;border-radius:10px;padding:10px;overflow-x:auto;margin:8px 0;}'
+    + '.ftai-msg pre code{background:transparent;color:inherit;padding:0;}'
+    + '.ftai-msg hr{border:0;border-top:1px solid #CBD5E1;margin:10px 0;}'
+    + '.ftai-table-wrap{overflow-x:auto;margin:8px 0;}'
+    + '.ftai-msg table{width:100%;border-collapse:collapse;font-size:11.5px;}'
+    + '.ftai-msg th,.ftai-msg td{border:1px solid #CBD5E1;padding:5px 7px;text-align:left;}'
+    + '.ftai-msg th{background:#E8EEF9;font-weight:800;color:#1E3A8A;}'
+    /* thinking: a light sweep travels through the letters */
+    + '.ftai-thinking{font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,#1E3A8A 0%,#1E3A8A 35%,#C6D8FB 50%,#1E3A8A 65%,#1E3A8A 100%);'
+    + 'background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:ftaiSweep 1.5s linear infinite;}'
+    + '@keyframes ftaiSweep{0%{background-position:180% 0}100%{background-position:-80% 0}}'
     + '.ftai-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px;background:#FFFFFF;}'
     + '.ftai-chip{padding:8px 11px;border-radius:999px;border:1px solid #C7D7F5;background:#F5F8FF;color:#1E3A8A;'
     + 'font-size:11px;font-weight:700;cursor:pointer;}'
@@ -9404,12 +9424,85 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
   function logEl() { return document.getElementById('ftAiLog'); }
 
+  /* ---------- markdown: bold, italics, lists, tables, code, headings ---------- */
+  function escapeHtml(text) {
+    return String(text == null ? '' : text)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function inline(text) {
+    var out = escapeHtml(text);
+    out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    out = out.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    out = out.replace(/(^|[\s(«"])[*]([^*\n]+)[*](?=[\s).,!?:;»"]|$)/g, '$1<em>$2</em>');
+    out = out.replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>');
+    out = out.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+    return out;
+  }
+
+  function splitRow(row) {
+    return row.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (cell) { return cell.trim(); });
+  }
+
+  function renderMarkdown(text) {
+    var lines = String(text == null ? '' : text).replace(/\r\n?/g, '\n').split('\n');
+    var html = '', list = null, i = 0;
+    function closeList() { if (list) { html += '</' + list + '>'; list = null; } }
+    while (i < lines.length) {
+      var trimmed = lines[i].trim();
+      if (!trimmed) { closeList(); i++; continue; }
+      if (/^```/.test(trimmed)) {
+        closeList();
+        var code = [];
+        i++;
+        while (i < lines.length && !/^```/.test(lines[i].trim())) { code.push(lines[i]); i++; }
+        i++;
+        html += '<pre><code>' + escapeHtml(code.join('\n')) + '</code></pre>';
+        continue;
+      }
+      if (trimmed.indexOf('|') > -1 && i + 1 < lines.length && /^[\s|:-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') > -1) {
+        closeList();
+        var head = splitRow(trimmed);
+        i += 2;
+        var rows = [];
+        while (i < lines.length && lines[i].trim().indexOf('|') > -1) { rows.push(splitRow(lines[i].trim())); i++; }
+        html += '<div class="ftai-table-wrap"><table><thead><tr>' + head.map(function (cell) { return '<th>' + inline(cell) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          rows.map(function (row) { return '<tr>' + row.map(function (cell) { return '<td>' + inline(cell) + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '</tbody></table></div>';
+        continue;
+      }
+      var heading = trimmed.match(/^(#{1,4})\s+(.*)$/);
+      if (heading) { closeList(); var level = Math.min(heading[1].length + 2, 5); html += '<h' + level + '>' + inline(heading[2]) + '</h' + level + '>'; i++; continue; }
+      if (/^([-*_])\1{2,}$/.test(trimmed)) { closeList(); html += '<hr>'; i++; continue; }
+      var bullet = trimmed.match(/^[-*•]\s+(.*)$/);
+      var numbered = trimmed.match(/^\d+[.)]\s+(.*)$/);
+      if (bullet || numbered) {
+        var want = bullet ? 'ul' : 'ol';
+        if (list !== want) { closeList(); html += '<' + want + '>'; list = want; }
+        html += '<li>' + inline(bullet ? bullet[1] : numbered[1]) + '</li>';
+        i++;
+        continue;
+      }
+      closeList();
+      var para = [trimmed];
+      i++;
+      while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|[-*•]\s|\d+[.)]\s|```|\|)/.test(lines[i].trim())) { para.push(lines[i].trim()); i++; }
+      html += '<p>' + inline(para.join(' ')) + '</p>';
+    }
+    closeList();
+    return html;
+  }
+
   function addMessage(role, text, extraClass) {
     var log = logEl();
     if (!log) return null;
     var bubble = document.createElement('div');
     bubble.className = 'ftai-msg ' + role + (extraClass ? ' ' + extraClass : '');
-    bubble.textContent = text;
+    if (role === 'ai' && extraClass !== 'ftai-thinking') bubble.innerHTML = renderMarkdown(text);
+    else bubble.textContent = text;
     log.appendChild(bubble);
     log.scrollTop = log.scrollHeight;
     return bubble;
@@ -9422,11 +9515,13 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     var send = form && form.querySelector('button');
     if (send) send.disabled = true;
     addMessage('user', question);
-    var reply = addMessage('ai', 'Thinking…');
+    var reply = addMessage('ai', 'Thinking…', 'ftai-thinking');
     askServer(question).then(function (answer) {
-      reply.textContent = answer;
+      reply.classList.remove('ftai-thinking');
+      reply.innerHTML = renderMarkdown(answer);
       history.push({ role: 'user', text: question }, { role: 'assistant', text: answer });
     }).catch(function (error) {
+      reply.classList.remove('ftai-thinking');
       reply.textContent = error && error.message
         ? error.message
         : 'FinTrack AI could not answer just now. Please try again.';
@@ -9439,12 +9534,20 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     });
   }
 
+  function personName() {
+    try {
+      if (window.currentUser && window.currentUser.name) return String(window.currentUser.name).trim();
+      if (window.FTReview && window.FTReview.me) return String(window.FTReview.me().name || '').trim();
+    } catch (e) { /* stays unnamed */ }
+    return '';
+  }
+
   function openAi() {
     var el = section();
     if (!el) return;
     var log = logEl();
     if (log && !log.children.length) {
-      addMessage('ai', 'Hi! I am FinTrack AI. Ask me about your balances, spending, a budget you want to build or a goal you are saving for.');
+      addMessage('ai', 'Hello ' + (personName() || 'there') + ', I am FinTrack AI. Ask me about your balances, spending, a budget you want to build or a goal you are saving for.');
     }
     if (log) log.scrollTop = log.scrollHeight;
   }
@@ -9806,6 +9909,129 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch);
   else patch();
+})();
+
+</script>
+<script>
+/* FinTrack — offline notice and casual source-copy deterrents.
+   Client-side code can always be read by whoever holds the file; this only
+   keeps accidental readers and casual copy attempts out, and gives a clear
+   message instead of a blank screen when the connection drops. */
+(function () {
+  'use strict';
+
+  var NATIVE = false;
+  try {
+    NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  } catch (e) { NATIVE = false; }
+
+  /* true once the app has finished its first load — offline after that is only a hint */
+  var booted = false;
+  function markBooted() { booted = true; }
+
+  /* ---------------- offline: full notice only before the app has loaded ---------------- */
+  function blockedNotice() {
+    var el = document.getElementById('ftOfflineNotice');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'ftOfflineNotice';
+    el.setAttribute('role', 'status');
+    el.style.cssText = 'position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;' +
+      'padding:24px;background:#F6F8FC;font-family:inherit;';
+    el.innerHTML =
+      '<div style="max-width:340px;width:100%;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:20px;padding:26px;text-align:center;' +
+        'box-shadow:0 20px 50px -30px rgba(15,23,42,.45);">' +
+        '<div style="width:52px;height:52px;border-radius:16px;background:#EEF3FF;color:#1E3A8A;display:flex;align-items:center;' +
+          'justify-content:center;margin:0 auto 16px;"><i class="fa-solid fa-wifi" style="font-size:20px;"></i></div>' +
+        '<h2 style="font-size:16px;font-weight:800;color:#1E293B;margin:0 0 8px;">You are offline</h2>' +
+        '<p style="font-size:12.5px;line-height:1.55;color:#64748B;margin:0 0 18px;">FinTrack needs an internet connection to open your data. ' +
+          'Reconnect to Wi-Fi or mobile data and try again.</p>' +
+        '<button type="button" id="ftOfflineRetry" style="width:100%;padding:12px;border:0;border-radius:12px;background:#1E3A8A;' +
+          'color:#FFFFFF;font-size:12.5px;font-weight:800;cursor:pointer;">Try again</button>' +
+      '</div>';
+    document.body.appendChild(el);
+    var retry = el.querySelector('#ftOfflineRetry');
+    if (retry) retry.onclick = function () { window.location.reload(); };
+    return el;
+  }
+
+  function banner(text) {
+    var el = document.getElementById('ftOfflineBanner');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'ftOfflineBanner';
+    el.style.cssText = 'position:fixed;left:0;right:0;top:0;z-index:99999;display:none;padding:9px 14px;' +
+      'background:#1E3A8A;color:#FFFFFF;font-size:11.5px;font-weight:700;text-align:center;letter-spacing:.1px;';
+    el.textContent = text;
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function showOffline() {
+    if (!document.body) return;
+    var block = document.getElementById('ftOfflineNotice');
+    var strip = document.getElementById('ftOfflineBanner');
+    if (booted) {
+      if (block) block.style.display = 'none';
+      banner('You are offline — FinTrack will sync when the connection returns.').style.display = 'block';
+    } else {
+      blockedNotice().style.display = 'flex';
+    }
+    if (strip && booted) strip.style.display = 'block';
+  }
+
+  function hideOffline() {
+    var block = document.getElementById('ftOfflineNotice');
+    var strip = document.getElementById('ftOfflineBanner');
+    if (block) block.style.display = 'none';
+    if (strip) strip.style.display = 'none';
+  }
+
+  window.addEventListener('offline', showOffline);
+  window.addEventListener('online', hideOffline);
+
+  if (navigator.onLine === false) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showOffline);
+    else showOffline();
+  }
+
+  /* the app counts as loaded once the splash is gone or after a few seconds */
+  function checkBooted() {
+    if (booted) return;
+    var splash = document.getElementById('splashScreen') || document.querySelector('.splash-screen');
+    var visible = splash && splash.offsetParent !== null && splash.style.display !== 'none';
+    if (!visible) markBooted();
+  }
+  window.addEventListener('load', function () { setTimeout(markBooted, 3000); });
+  setInterval(checkBooted, 800);
+
+  /* ---------------- casual copy deterrents (web only) ---------------- */
+  if (NATIVE) return;
+
+  function block(event) { event.preventDefault(); return false; }
+
+  document.addEventListener('contextmenu', function (event) {
+    var el = event.target;
+    if (el && el.tagName === 'INPUT') return;
+    block(event);
+  }, true);
+
+  document.addEventListener('dragstart', block, true);
+  document.addEventListener('copy', function (event) {
+    var tag = (event.target && event.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    block(event);
+  }, true);
+
+  document.addEventListener('keydown', function (event) {
+    var key = String(event.key || '').toLowerCase();
+    var mod = event.ctrlKey || event.metaKey;
+    if (key === 'f12' || (mod && event.shiftKey && (key === 'i' || key === 'j' || key === 'c')) ||
+        (mod && (key === 'u' || key === 's' || key === 'p'))) {
+      event.preventDefault();
+      return false;
+    }
+  }, true);
 })();
 
 </script></body>
