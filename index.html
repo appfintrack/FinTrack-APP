@@ -9168,6 +9168,8 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + '.ftai-log{display:flex;flex-direction:column;gap:10px;padding:16px;min-height:220px;max-height:52vh;overflow-y:auto;'
     + 'overscroll-behavior:contain;background:#FFFFFF;}'
     + '.ftai-msg{max-width:88%;padding:11px 13px;border-radius:14px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;}'
+    + '.ftai-msg.ai{white-space:normal;overflow-wrap:anywhere;}'
+    + '.ftai-emoji{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:1.1em;line-height:1;vertical-align:-.08em;}'
     + '.ftai-msg.ai{align-self:flex-start;background:#F1F5F9;color:#1e293b;border:1px solid #E2E8F0;border-bottom-left-radius:5px;}'
     + '.ftai-msg.user{align-self:flex-end;background:#1E3A8A;color:#fff;border-bottom-right-radius:5px;}'
     + '.ftai-msg.err{background:#FEF2F2;border-color:#FECACA;color:#B91C1C;}'
@@ -9183,14 +9185,19 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + '.ftai-msg pre{background:#0F172A;color:#F1F5F9;border-radius:10px;padding:10px;overflow-x:auto;margin:8px 0;}'
     + '.ftai-msg pre code{background:transparent;color:inherit;padding:0;}'
     + '.ftai-msg hr{border:0;border-top:1px solid #CBD5E1;margin:10px 0;}'
-    + '.ftai-table-wrap{overflow-x:auto;margin:8px 0;}'
-    + '.ftai-msg table{width:100%;border-collapse:collapse;font-size:11.5px;}'
-    + '.ftai-msg th,.ftai-msg td{border:1px solid #CBD5E1;padding:5px 7px;text-align:left;}'
-    + '.ftai-msg th{background:#E8EEF9;font-weight:800;color:#1E3A8A;}'
+    + '.ftai-table-wrap{margin:10px 0;border:1px solid #DFE7F3;border-radius:12px;overflow:auto;background:#FFFFFF;}'
+    + '.ftai-msg table{width:100%;min-width:100%;border-collapse:collapse;font-size:12px;background:#FFFFFF;}'
+    + '.ftai-msg thead th{background:#EEF3FF;color:#1B326B;font-weight:800;font-size:10.5px;text-transform:uppercase;'
+    + 'letter-spacing:.04em;padding:8px 10px;text-align:left;white-space:nowrap;}'
+    + '.ftai-msg td{padding:9px 10px;border-top:1px solid #EFF3F9;color:#0F172A;vertical-align:top;}'
+    + '.ftai-msg td:not(:first-child),.ftai-msg thead th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;}'
+    + '.ftai-msg tbody tr:nth-child(even) td{background:#FAFBFE;}'
     /* thinking: a light sweep travels through the letters */
-    + '.ftai-thinking{font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,#1E3A8A 0%,#1E3A8A 35%,#C6D8FB 50%,#1E3A8A 65%,#1E3A8A 100%);'
-    + 'background-size:220% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;animation:ftaiSweep 1.5s linear infinite;}'
-    + '@keyframes ftaiSweep{0%{background-position:180% 0}100%{background-position:-80% 0}}'
+    + '.ftai-thinking{display:inline-block;font-weight:800;letter-spacing:.2px;'
+    + 'background-image:linear-gradient(100deg,#1E3A8A 0%,#1E3A8A 24%,#FFFFFF 38%,#8FB2F6 46%,#1E3A8A 60%,#1E3A8A 100%);'
+    + 'background-size:250% 100%;background-repeat:no-repeat;-webkit-background-clip:text;background-clip:text;'
+    + '-webkit-text-fill-color:transparent;color:#1E3A8A;animation:ftaiSweep 1.4s linear infinite;}'
+    + '@keyframes ftaiSweep{0%{background-position:175% 0}100%{background-position:-75% 0}}'
     + '.ftai-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px;background:#FFFFFF;}'
     + '.ftai-chip{padding:8px 11px;border-radius:999px;border:1px solid #C7D7F5;background:#F5F8FF;color:#1E3A8A;'
     + 'font-size:11px;font-weight:700;cursor:pointer;}'
@@ -9431,6 +9438,11 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  var EMOJI_RE = null;
+  try {
+    EMOJI_RE = new RegExp('(\\p{Extended_Pictographic}(?:\\uFE0F|\\u200D\\p{Extended_Pictographic})*)', 'gu');
+  } catch (e) { EMOJI_RE = null; }
+
   function inline(text) {
     var out = escapeHtml(text);
     out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
@@ -9440,6 +9452,10 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     out = out.replace(/(^|[\s(«"])[*]([^*\n]+)[*](?=[\s).,!?:;»"]|$)/g, '$1<em>$2</em>');
     out = out.replace(/(^|[\s(])_([^_\n]+)_(?=[\s).,!?:;]|$)/g, '$1<em>$2</em>');
     out = out.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+    // stray hashes that were not a real heading
+    out = out.replace(/(^|\s)#{1,6}\s+/g, '$1');
+    // every emoji in its own span, so it keeps its colour and size everywhere
+    if (EMOJI_RE) out = out.replace(EMOJI_RE, '<span class="ftai-emoji">$1</span>');
     return out;
   }
 
@@ -9460,7 +9476,13 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         i++;
         while (i < lines.length && !/^```/.test(lines[i].trim())) { code.push(lines[i]); i++; }
         i++;
-        html += '<pre><code>' + escapeHtml(code.join('\n')) + '</code></pre>';
+        var fenced = code.join('\n');
+        /* the model sometimes wraps the whole answer in a fence — keep rendering it as markdown */
+        if (/\|/.test(fenced) || /\*\*/.test(fenced) || /^#{1,6}\s/m.test(fenced) || /^[-*•]\s/m.test(fenced) || /^\d+[.)]\s/m.test(fenced)) {
+          html += renderMarkdown(fenced);
+        } else {
+          html += '<pre><code>' + escapeHtml(fenced) + '</code></pre>';
+        }
         continue;
       }
       if (trimmed.indexOf('|') > -1 && i + 1 < lines.length && /^[\s|:-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') > -1) {
