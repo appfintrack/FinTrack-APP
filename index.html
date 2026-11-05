@@ -8482,7 +8482,6 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         strokeHex(doc, cx + (r % 2 ? 13 : 0), 10 + r * 30, 10.5, C_BLUE_MID, 0.7);
       }
     }
-    for (var x = 4; x < pw + 14; x += 17) { fillHex(doc, x, H, 6.4, [255, 255, 255]); }
     var badgeX = pw - 56, badgeY = H - 36;
     fillHex(doc, badgeX, badgeY, 25, [255, 255, 255]);
     doc.setTextColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
@@ -8491,9 +8490,9 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     doc.text(String(meta.currency || ''), badgeX, badgeY + 3.6, { align: 'center' });
 
     doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
+    if (window.FT_PDF_LOGO) { try { doc.addImage(window.FT_PDF_LOGO, 'JPEG', 31, 24, 21, 21); } catch (e) {} } doc.setFont('helvetica', 'bold');
     doc.setFontSize(22);
-    doc.text('FinTrack', 32, 42);
+    doc.text('FinTrack', window.FT_PDF_LOGO ? 58 : 32, 42);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8.4);
     doc.text(meta.docType || 'Monthly Cashbook', 32, 55);
@@ -8530,7 +8529,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       },
       alternateRowStyles: { fillColor: C_ZEBRA },
       columnStyles: columnStyles || {},
-      didDrawPage: function () { drawHeader(doc, meta); }
+      didDrawPage: function () { drawHeader(doc, meta); if (window.ftPdfWatermark) window.ftPdfWatermark(doc, meta); }
     });
     return doc.lastAutoTable ? doc.lastAutoTable.finalY : meta.headerH + 40;
   }
@@ -9118,5 +9117,536 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 })();
 </script>
 
-</body>
+<script>
+/* FinTrack — FinTrack AI, notification actions, PDF branding and layout polish.
+   Loaded after the standalone app; everything here is additive. */
+(function () {
+  'use strict';
+
+  var APP_ID = '6aec6c61f12d3ca5f640607c';
+  var LOGO_URL = 'https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg';
+
+  /* ---------------- styles ---------------- */
+  var css = ''
+    + '/* notification rows with a blue delete action */'
+    + '.ft-notif-row{display:flex;align-items:flex-start;gap:6px;border-bottom:1px solid var(--ftline,rgba(148,163,184,.25));}'
+    + '.ft-notif-row .ft-notif{flex:1;min-width:0;border-bottom:0;}'
+    + '.ft-notif-del{flex:0 0 auto;width:36px;height:36px;margin-top:8px;display:flex;align-items:center;justify-content:center;'
+    + 'border:0;background:transparent;color:#1E3A8A;font-size:14px;border-radius:10px;cursor:pointer;}'
+    + '.ft-notif-del:active,.ft-notif-del:hover{background:rgba(30,58,138,.09);}'
+    + '.ft-notif-clear{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:12px;'
+    + 'border-radius:12px;border:1px solid #C7D7F5;background:#EEF4FF;color:#1E3A8A;font-size:12.5px;font-weight:800;cursor:pointer;}'
+    + '.ft-notif-clear:active{background:#E0EAFF;}'
+    /* home: quick links without the container box */
+    + 'body #ftQuickLinks{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;}'
+    + 'body #ftQuickLinks>.ft-card-head{display:none!important;}'
+    + 'body #ftHero .ft-actions{margin-top:12px!important;gap:10px!important;}'
+    /* taller, steady bottom bar */
+    + 'body #mobileBottomNav{min-height:64px!important;border-top:1px solid var(--ftline,rgba(148,163,184,.3))!important;'
+    + 'box-shadow:0 -6px 18px rgba(15,23,42,.06)!important;}'
+    + 'body #mobileBottomNav .ftbn{min-height:56px!important;gap:6px!important;padding:8px 4px 9px!important;font-size:10.5px!important;}'
+    + 'body #mobileBottomNav .ftbn i{font-size:18px!important;}'
+    + '@media(max-width:1023px){body main{padding-bottom:120px!important;}}'
+    /* FinTrack AI */
+    + '.ftai{display:flex;flex-direction:column;gap:14px;background:#FFFFFF;border:1px solid #E2E8F0;border-radius:20px;'
+    + 'box-shadow:0 12px 30px -22px rgba(15,23,42,.45);overflow:hidden;}'
+    + '.ftai-head{padding:18px 18px 16px;background:linear-gradient(135deg,#1E3A8A 0%,#2563EB 100%);color:#fff;}'
+    + '.ftai-head h2{font-size:17px;font-weight:800;letter-spacing:-.2px;margin:0;display:flex;align-items:center;gap:8px;}'
+    + '.ftai-head p{margin:6px 0 0;font-size:11.5px;line-height:1.5;color:rgba(255,255,255,.86);}'
+    + '.ftai-log{display:flex;flex-direction:column;gap:10px;padding:16px;min-height:220px;max-height:52vh;overflow-y:auto;'
+    + 'overscroll-behavior:contain;background:#FFFFFF;}'
+    + '.ftai-msg{max-width:88%;padding:11px 13px;border-radius:14px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;}'
+    + '.ftai-msg.ai{align-self:flex-start;background:#F1F5F9;color:#1e293b;border:1px solid #E2E8F0;border-bottom-left-radius:5px;}'
+    + '.ftai-msg.user{align-self:flex-end;background:#1E3A8A;color:#fff;border-bottom-right-radius:5px;}'
+    + '.ftai-msg.err{background:#FEF2F2;border-color:#FECACA;color:#B91C1C;}'
+    + '.ftai-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 12px;background:#FFFFFF;}'
+    + '.ftai-chip{padding:8px 11px;border-radius:999px;border:1px solid #C7D7F5;background:#F5F8FF;color:#1E3A8A;'
+    + 'font-size:11px;font-weight:700;cursor:pointer;}'
+    + '.ftai-chip:active{background:#E4EDFF;}'
+    + '.ftai-form{display:flex;gap:8px;padding:12px;border-top:1px solid #E2E8F0;background:#FFFFFF;}'
+    + '.ftai-form input{flex:1;min-width:0;border:1px solid #CBD5E1;border-radius:12px;padding:11px 13px;font-size:13px;color:#0f172a;background:#F8FAFC;}'
+    + '.ftai-form input:focus{outline:2px solid rgba(37,99,235,.35);border-color:#2563EB;}'
+    + '.ftai-form button{flex:0 0 auto;width:46px;border:0;border-radius:12px;background:#1E3A8A;color:#fff;font-size:15px;cursor:pointer;}'
+    + '.ftai-form button:disabled{opacity:.55;}'
+    + '.ftai-note{padding:0 16px 14px;font-size:10px;color:#94A3B8;background:#FFFFFF;}'
+    + '/* recipient-initiated settlement */'
+    + '.ft-settle-btn{margin-left:6px;padding:4px 8px;border-radius:6px;border:1px solid #BFDBFE;background:#EFF6FF;'
+    + 'color:#1E3A8A;font-weight:700;font-size:11px;line-height:1.2;cursor:pointer;white-space:nowrap;}'
+    + '.ft-settle-btn:active,.ft-settle-btn:hover{background:#DBEAFE;}';
+
+  function injectStyles() {
+    if (document.getElementById('ftAiStyles')) return;
+    var style = document.createElement('style');
+    style.id = 'ftAiStyles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+  injectStyles();
+
+  /* ---------------- PDF branding: logo every report carries ---------------- */
+  window.FT_PDF_LOGO = null;
+  try {
+    fetch(LOGO_URL)
+      .then(function (res) { return res.blob(); })
+      .then(function (blob) {
+        var reader = new FileReader();
+        reader.onload = function () { window.FT_PDF_LOGO = reader.result; };
+        reader.readAsDataURL(blob);
+      })
+      .catch(function () {});
+  } catch (e) { /* logo simply stays off */ }
+
+  /* Faded, full-colour watermark spanning the entry rows of every PDF page. */
+  window.ftPdfWatermark = function (doc, meta) {
+    if (!window.FT_PDF_LOGO || !doc || !doc.internal) return;
+    try {
+      var pw = doc.internal.pageSize.getWidth();
+      var ph = doc.internal.pageSize.getHeight();
+      var top = (meta && meta.headerH ? meta.headerH : 130) + 26;
+      var bottom = ph - 52;
+      var size = Math.min(bottom - top, pw - 140);
+      if (!(size > 60)) return;
+      var x = (pw - size) / 2;
+      var y = top + ((bottom - top) - size) / 2;
+      if (doc.saveGraphicsState) doc.saveGraphicsState();
+      if (doc.GState) doc.setGState(new doc.GState({ opacity: 0.1 }));
+      doc.addImage(window.FT_PDF_LOGO, 'JPEG', x, y, size, size);
+      if (doc.restoreGraphicsState) doc.restoreGraphicsState();
+      else if (doc.GState) doc.setGState(new doc.GState({ opacity: 1 }));
+    } catch (e) {
+      try { doc.setGState(new doc.GState({ opacity: 1 })); } catch (err) {}
+    }
+  };
+
+  /* ---------------- notifications: per-item delete + clear all ---------------- */
+  function notificationLabel(n) {
+    if (n.type === 'settlement_request' || n.type === 'settlement_result') return 'Settlement';
+    if (n.type === 'monthly_summary') return 'Monthly summary';
+    return 'Notification';
+  }
+
+  function removeRecord(id) {
+    var uid = window.currentUser && window.currentUser.uid;
+    if (!uid || !id) return Promise.reject(new Error('unavailable'));
+    try {
+      return remove(ref(db, 'users/' + uid + '/notifications/' + id));
+    } catch (e) {
+      if (window.deleteNotification) { window.deleteNotification(id); return Promise.resolve(); }
+      return Promise.reject(e);
+    }
+  }
+
+  function openNotifications() {
+    var all = (window._ftNotifData || []).slice().sort(function (a, b) {
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
+    var escape = window.FTReview && window.FTReview.escape ? window.FTReview.escape : function (v) { return String(v == null ? '' : v); };
+    var html = all.length
+      ? '<div class="ft-notif-list">' + all.map(function (n, index) {
+          return '<div class="ft-notif-row">'
+            + '<button type="button" class="ft-notif' + (n.read ? '' : ' unread') + '" data-ft-notif="' + index + '">'
+            + '<span class="ft-notif-tag">' + escape(notificationLabel(n)) + '</span>'
+            + '<p>' + escape(n.message || '') + '</p>'
+            + '<small>' + (n.createdAt ? new Date(n.createdAt).toLocaleString() : '') + '</small>'
+            + '</button>'
+            + '<button type="button" class="ft-notif-del" data-ft-del="' + index + '" aria-label="Delete notification" title="Delete notification">'
+            + '<i class="fa-solid fa-trash"></i></button>'
+            + '</div>';
+        }).join('') + '</div>'
+        + '<button type="button" class="ft-notif-clear" id="ftNotifClearAll"><i class="fa-solid fa-broom"></i> Clear all notifications</button>'
+      : '<p class="ft-empty">No notifications yet.</p>';
+
+    var view = window.FTReview.openOverlay({ title: 'Notifications', html: html, actions: [{ label: 'Close', secondary: true }] });
+
+    view.body.querySelectorAll('[data-ft-notif]').forEach(function (button) {
+      button.onclick = function () {
+        var notice = all[Number(button.dataset.ftNotif)];
+        view.close();
+        if (notice && window.ftEnqueueNotification) window.ftEnqueueNotification(notice, true);
+      };
+    });
+
+    view.body.querySelectorAll('[data-ft-del]').forEach(function (button) {
+      button.onclick = function (event) {
+        event.stopPropagation();
+        var notice = all[Number(button.dataset.ftDel)];
+        if (!notice || !notice.id) return;
+        button.disabled = true;
+        removeRecord(notice.id).then(function () {
+          window._ftNotifData = (window._ftNotifData || []).filter(function (x) { return String(x.id) !== String(notice.id); });
+          var row = button.closest('.ft-notif-row');
+          if (row) row.remove();
+          if (window.ftUpdateNotifBadge) window.ftUpdateNotifBadge();
+          if (!view.body.querySelector('.ft-notif-row')) view.close();
+        }).catch(function () {
+          button.disabled = false;
+          if (window.ftToast) window.ftToast('This notification could not be deleted.');
+        });
+      };
+    });
+
+    var clear = view.body.querySelector('#ftNotifClearAll');
+    if (clear) clear.onclick = function () {
+      view.close();
+      if (window.clearAllNotifications) window.clearAllNotifications();
+    };
+  }
+
+  window.ftOpenNotifications = openNotifications;
+  window.ftOpenBell = openNotifications;
+  window.openProfileSection = function (section) {
+    if (section === 'notifications') openNotifications();
+    else if (window.ftOpenProfileWindow) window.ftOpenProfileWindow();
+  };
+
+  /* ---------------- FinTrack AI ---------------- */
+  var history = [];
+  var busy = false;
+
+  function firstCurrency() {
+    try { return window.getFirstCurrency ? window.getFirstCurrency() : 'SAR'; } catch (e) { return 'SAR'; }
+  }
+
+  function snapshot() {
+    var out = { currency: firstCurrency(), accounts: [], month: null };
+    try {
+      var state = window.state || {};
+      (state.banks || []).slice(0, 15).forEach(function (b) {
+        out.accounts.push({ name: b.name || 'Account', currency: b.currency || out.currency, balance: Number(b.balance || 0) });
+      });
+      if (window.FTReview && window.FTReview.monthReport && window.currentMonthStr) {
+        var report = window.FTReview.monthReport(window.currentMonthStr());
+        var month = {};
+        Object.keys(report.currencies || {}).forEach(function (code) {
+          var row = report.currencies[code];
+          month[code] = { income: row.income, expenses: row.expenses };
+        });
+        if (Object.keys(month).length) out.month = month;
+      }
+    } catch (e) { /* keep whatever was collected */ }
+    return JSON.stringify(out);
+  }
+
+  function accessToken() {
+    try {
+      return window.localStorage.getItem('base44_access_token') || window.localStorage.getItem('token') || '';
+    } catch (e) { return ''; }
+  }
+
+  function askServer(question) {
+    return fetch('/api/apps/' + APP_ID + '/functions/fintrackAI', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken() },
+      body: JSON.stringify({ question: question, snapshot: snapshot(), history: history.slice(-6) })
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (res.ok && data && data.answer) return data.answer;
+        throw new Error(data && data.error ? data.error : 'FinTrack AI is unavailable right now.');
+      });
+    });
+  }
+
+  function section() {
+    var existing = document.getElementById('sec-fintrack-ai');
+    if (existing) return existing;
+    var main = document.querySelector('main');
+    if (!main) return null;
+    var el = document.createElement('section');
+    el.id = 'sec-fintrack-ai';
+    el.className = 'tab-content hidden';
+    el.innerHTML =
+      '<div class="ft-section-head"><h2>FinTrack AI</h2></div>' +
+      '<div class="ftai">' +
+        '<div class="ftai-head">' +
+          '<h2><i class="fa-solid fa-wand-magic-sparkles"></i> FinTrack AI</h2>' +
+          '<p>Ask about your money, build a budget, plan a purchase or clear any financial doubt.</p>' +
+        '</div>' +
+        '<div class="ftai-log" id="ftAiLog"></div>' +
+        '<div class="ftai-chips" id="ftAiChips">' +
+          '<button type="button" class="ftai-chip" data-ask="How healthy is my budget this month?">How is my month going?</button>' +
+          '<button type="button" class="ftai-chip" data-ask="Where can I cut spending without hurting my savings?">Where can I save?</button>' +
+          '<button type="button" class="ftai-chip" data-ask="Help me plan a big purchase in the next year.">Plan a purchase</button>' +
+          '<button type="button" class="ftai-chip" data-ask="Give me a simple savings plan for the next 12 months.">Savings plan</button>' +
+        '</div>' +
+        '<form class="ftai-form" id="ftAiForm">' +
+          '<input id="ftAiInput" type="text" placeholder="Ask FinTrack AI anything about your money" autocomplete="off" maxlength="800">' +
+          '<button type="submit" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>' +
+        '</form>' +
+      '</div>';
+    main.appendChild(el);
+
+    el.querySelector('#ftAiForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+      var input = el.querySelector('#ftAiInput');
+      var question = (input.value || '').trim();
+      if (!question) return;
+      input.value = '';
+      ask(question);
+    });
+    el.querySelectorAll('[data-ask]').forEach(function (chip) {
+      chip.onclick = function () { ask(chip.dataset.ask); };
+    });
+    return el;
+  }
+
+  function logEl() { return document.getElementById('ftAiLog'); }
+
+  function addMessage(role, text, extraClass) {
+    var log = logEl();
+    if (!log) return null;
+    var bubble = document.createElement('div');
+    bubble.className = 'ftai-msg ' + role + (extraClass ? ' ' + extraClass : '');
+    bubble.textContent = text;
+    log.appendChild(bubble);
+    log.scrollTop = log.scrollHeight;
+    return bubble;
+  }
+
+  function ask(question) {
+    if (busy || !question) return;
+    busy = true;
+    var form = document.getElementById('ftAiForm');
+    var send = form && form.querySelector('button');
+    if (send) send.disabled = true;
+    addMessage('user', question);
+    var reply = addMessage('ai', 'Thinking…');
+    askServer(question).then(function (answer) {
+      reply.textContent = answer;
+      history.push({ role: 'user', text: question }, { role: 'assistant', text: answer });
+    }).catch(function (error) {
+      reply.textContent = error && error.message
+        ? error.message
+        : 'FinTrack AI could not answer just now. Please try again.';
+      reply.classList.add('err');
+    }).then(function () {
+      busy = false;
+      if (send) send.disabled = false;
+      var log = logEl();
+      if (log) log.scrollTop = log.scrollHeight;
+    });
+  }
+
+  function openAi() {
+    var el = section();
+    if (!el) return;
+    var log = logEl();
+    if (log && !log.children.length) {
+      addMessage('ai', 'Hi! I am FinTrack AI. Ask me about your balances, spending, a budget you want to build or a goal you are saving for.');
+    }
+    if (log) log.scrollTop = log.scrollHeight;
+  }
+
+  function leaveAi() {
+    var log = logEl();
+    if (log) log.innerHTML = '';
+    history = [];
+    busy = false;
+  }
+
+  /* the Financial Overview destination becomes FinTrack AI */
+  function renameDrawerLink() {
+    var link = document.getElementById('ftDrawer-financial-overview');
+    if (!link || link.dataset.ftAi === '1') return;
+    link.dataset.ftAi = '1';
+    link.id = 'ftDrawer-fintrack-ai';
+    link.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>FinTrack AI</span><span class="ft-drawer-chevron" aria-hidden="true">›</span>';
+    link.onclick = function () {
+      if (window.toggleSidebar) window.toggleSidebar();
+      if (window.switchTab) window.switchTab('fintrack-ai');
+    };
+  }
+
+  function hookSwitch() {
+    if (!window.switchTab || window.switchTab.__ftAi) return;
+    var previous = window.switchTab;
+    var wrapped = function (tab) {
+      var result = previous.apply(this, arguments);
+      if (tab === 'fintrack-ai') openAi();
+      else if (tab) leaveAi();
+      return result;
+    };
+    wrapped.__ftAi = true;
+    window.switchTab = wrapped;
+  }
+
+  function boot() {
+    renameDrawerLink();
+    hookSwitch();
+    section();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+
+  /* the drawer is rebuilt after login, so keep the label in sync */
+  try {
+    new MutationObserver(function () { renameDrawerLink(); }).observe(document.body, { childList: true, subtree: true });
+  } catch (e) {}
+})();
+
+/* ---------------- recipient-initiated settlement ----------------
+   The person who is OWED the money records the receipt and the payer is
+   notified. No counter-party confirmation is needed. */
+(function () {
+  'use strict';
+  if (typeof window.FTReview !== 'object' || !window.FTReview) return;
+  var FT = window.FTReview;
+  var patched = false;
+
+  function money(amount, currency) {
+    try { return window.formatCurrency(amount, currency); } catch (e) { return String(amount) + ' ' + currency; }
+  }
+  function units(amount, currency) {
+    try { return window.ftMoneyUnits(amount, currency); } catch (e) { return Number(amount) || 0; }
+  }
+  function scale(currency) {
+    try { return window.ftMoneyScale(currency) || 100; } catch (e) { return 100; }
+  }
+  function personOf(key) {
+    if (FT.targets && FT.targets.get(key)) return FT.targets.get(key);
+    return FT.person({ uid: key.indexOf('uid:') === 0 ? key.slice(4) : '', name: window.ftDisplayName ? window.ftDisplayName(key) : '' });
+  }
+
+  function settle(key, currency, amount) {
+    FT.assertSession();
+    var me = FT.person(FT.me());
+    var payer = personOf(key);
+    if (!payer.uid) throw new Error('Connect this person\u2019s FinTrack account first — the payer has to be notified.');
+    if (payer.uid === me.uid) throw new Error('Choose a different person.');
+    return window.ftRefreshFinancialBalances().then(function () {
+      var balance = FT.balance(payer);
+      var code = currency || Object.keys(balance).filter(function (c) { return units(balance[c], c) > 0; })
+        .sort(function (a, b) { return units(balance[b], b) - units(balance[a], a); })[0];
+      if (!code) throw new Error('There is nothing to receive from ' + payer.name + '.');
+      var outstanding = units(balance[code] || 0, code);
+      if (outstanding <= 0) throw new Error('There is nothing to receive from ' + payer.name + ' in ' + code + '.');
+      var due = amount ? units(amount, code) : outstanding;
+      if (!isFinite(due) || due <= 0) throw new Error('Enter a valid amount.');
+      if (due > outstanding) throw new Error('That is more than the ' + money(outstanding / scale(code), code) + ' outstanding.');
+      var now = new Date().toISOString();
+      var revision = FT.requests().filter(function (r) {
+        var p = window.ftSettlementPeople(r.s);
+        return p.payer.uid === payer.uid && p.payee.uid === me.uid && r.s.currency === code;
+      }).map(function (r) { return r.s.id + ':' + r.s.status; }).sort().join('|');
+      var id = 'receipt_' + me.uid + '_' + FT.hash(payer.uid + '|' + code + '|' + outstanding + '|' + revision);
+      var record = {
+        id: id, paymentId: id, ledgerVersion: 2, kind: 'friend_settlement', origin: 'friend', householdId: '',
+        status: 'approved', ownerUid: me.uid, payerUid: payer.uid, payerName: payer.name,
+        payeeUid: me.uid, payeeName: me.name, fromMember: payer.name, toMember: me.name,
+        participants: [payer, me], amount: due / scale(code), currency: code,
+        date: now.slice(0, 10), createdAt: now, notes: 'Settled by recipient',
+        payerAccountId: '', payerAccountName: '', legacySource: '', direction: 'they_paid',
+        approvedByUid: me.uid, approvedAt: now, respondedAt: now, settledByRecipient: true
+      };
+      return window.ref(window.db, 'sharedSettlements/' + id)
+        .transaction(function (existing) { return existing || record; }, undefined, false)
+        .then(function (result) {
+          if (!result.committed) throw new Error('This settlement was already recorded.');
+          var home = window.state;
+          home.sharedSettlements = home.sharedSettlements || [];
+          if (!home.sharedSettlements.some(function (x) { return String(x.id) === String(id); })) home.sharedSettlements.push(record);
+          var noticeId = 'result_' + id;
+          var notice = {
+            id: noticeId, type: 'settlement_result', fromUid: me.uid, fromName: me.name,
+            toUid: payer.uid, settlementId: id, createdAt: now, read: false,
+            message: 'Hi! ' + me.name + ' has marked your payment of ' + money(record.amount, code) + ' as settled. No confirmation is needed from you.'
+          };
+          return window.set(window.ref(window.db, 'users/' + payer.uid + '/notifications/' + noticeId), notice)
+            .catch(function (error) {
+              FT.enqueue({ title: 'Settlement saved', message: 'The settlement was saved, but ' + payer.name + ' could not be notified: ' + error.message });
+            })
+            .then(function () {
+              if (FT.render) FT.render();
+              FT.enqueue({ title: 'Settlement recorded', message: money(record.amount, code) + ' from ' + payer.name + ' is marked as settled, and they have been notified.' });
+            });
+        });
+    });
+  }
+
+  function settleButton(key, currency, amount) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ft-settle-btn';
+    button.setAttribute('data-ft-settle', key);
+    button.setAttribute('data-ft-settle-currency', currency);
+    button.setAttribute('data-ft-settle-amount', amount);
+    button.textContent = 'Settle & notify';
+    return button;
+  }
+
+  /* friend settlement table: add the action for whoever is owed money */
+  function decorateFriends() {
+    var table = document.getElementById('friendLedgerSummaryTable');
+    if (!table || !FT.targets) return;
+    var byName = {};
+    FT.targets.forEach(function (person, key) { if (person && person.name) byName[person.name] = key; });
+    Array.prototype.forEach.call(table.querySelectorAll('tr'), function (row) {
+      if (row.querySelector('[data-ft-settle]') || row.children.length < 4) return;
+      var key = byName[(row.children[0].textContent || '').trim()];
+      if (!key) return;
+      var balance = FT.balance(FT.targets.get(key)) || {};
+      var owed = Object.keys(balance).filter(function (c) { return units(balance[c], c) > 0; })
+        .sort(function (a, b) { return units(balance[b], b) - units(balance[a], a); });
+      if (!owed.length) return;
+      row.children[row.children.length - 1].appendChild(settleButton(key, owed[0], Math.abs(balance[owed[0]])));
+    });
+  }
+
+  /* household plan: same action on the "payments to receive" rows */
+  function decorateHousehold() {
+    var plan = document.getElementById('hhPaymentPlan');
+    if (!plan) return;
+    var boxes = plan.querySelectorAll('[data-ft-list="payments"]');
+    if (boxes.length < 2) return;
+    var receives = FT.householdPositions(FT.me()).filter(function (p) { return p.units > 0; });
+    var rows = Array.prototype.filter.call(boxes[1].children, function (node) { return node.nodeType === 1; });
+    rows.forEach(function (row, index) {
+      var position = receives[index];
+      if (!position || row.querySelector('[data-ft-settle]')) return;
+      if (String(position.other).indexOf('uid:') !== 0) return;
+      row.appendChild(settleButton(position.other, position.currency, Math.abs(position.units) / scale(position.currency)));
+    });
+  }
+
+  function patch() {
+    if (patched || !FT.renderFriends || !FT.renderHousehold) return;
+    patched = true;
+    var friends = FT.renderFriends, household = FT.renderHousehold;
+    FT.renderFriends = function () {
+      var result = friends.apply(this, arguments);
+      try { decorateFriends(); } catch (e) {}
+      return result;
+    };
+    FT.renderHousehold = function () {
+      var result = household.apply(this, arguments);
+      try { decorateHousehold(); } catch (e) {}
+      return result;
+    };
+    try { decorateFriends(); decorateHousehold(); } catch (e) {}
+  }
+
+  document.addEventListener('click', function (event) {
+    var button = event.target.closest ? event.target.closest('[data-ft-settle]') : null;
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    var key = button.getAttribute('data-ft-settle');
+    var currency = button.getAttribute('data-ft-settle-currency');
+    var amount = button.getAttribute('data-ft-settle-amount');
+    var payer = personOf(key);
+    window.ftConfirm(
+      'Mark ' + payer.name + ' as settled for ' + money(Number(amount), currency) + '? ' + payer.name + ' is notified and no confirmation is needed from them.',
+      function () {
+        settle(key, currency, amount).catch(function (error) {
+          FT.enqueue({ title: 'Settlement not recorded', message: error.message });
+        });
+      }
+    );
+  }, true);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch);
+  else patch();
+})();
+
+</script></body>
 </html>
