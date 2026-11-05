@@ -361,8 +361,16 @@ body #sec-overview{padding-top:0!important;}
 #ftQuickActions .ft-qa>span:last-child,#ftQlMore .ft-qa>span:last-child{color:var(--ftink)!important;}
 .ft-quick,.ft-quick i{background:var(--ftsoft)!important;color:var(--ftb)!important;}
 .ft-quick span{color:var(--ftink)!important;}
-/* ---------- money values stay blue; only settlement direction uses red or green ---------- */
-body .money-income,body .money-expense,body .money-neutral,body .money-transfer,body #pendingPaymentsSection .text-emerald-400,body #pendingPaymentsSection .text-rose-400,body #individualSummarySection .text-emerald-400,body .profit-card .text-emerald-700{color:var(--ftb)!important;}
+/* ---------- only amounts carry green or red; every label stays blue or white ---------- */
+body #monthlyFlowSummary p,body #monthlyFlowSummary span{color:var(--ftb)!important;}
+body #monthlyFlowSummary #cashCollectionMonth,body #monthlyFlowSummary [id*="Month"]{color:var(--ftmuted)!important;}
+body #overviewSummaryGrid p:not([class*="text-"]),body #overviewCardGold p,body #overviewCardGold h3,body #overviewCardLiabilities p,body #overviewCardLiabilities h3,body #overviewCardNet p,body #overviewCardNet h3{color:var(--ftb)!important;}
+body #individualSummarySection h3,body #individualSummarySection h3 i,body #pendingPaymentsSection h3,body #pendingPaymentsSection h3 i{color:var(--ftb)!important;font-family:inherit;}
+body main h3:has(> i.fa-building-columns),body main h3:has(> i.fa-vault),body main h3:has(> i.fa-wallet),body main h3:has(> i.fa-credit-card){color:var(--ftb)!important;}
+body main h3:has(> i.fa-building-columns) i,body main h3:has(> i.fa-vault) i,body main h3:has(> i.fa-wallet) i,body main h3:has(> i.fa-credit-card) i{color:var(--ftb)!important;}
+body main button[onclick*="modalBank"],body main button[onclick*="openCashEntry"],body main button[onclick*="openCreditCardEntry"]{background:var(--ftb)!important;color:#fff!important;border-color:var(--ftb)!important;}
+body .ft-tx strong.in{color:var(--ftsuccess)!important;}
+body .ft-tx strong.out{color:var(--ftdanger)!important;}
 /* ---------- drawer ---------- */
 #ftDrawerLinks{display:flex;flex-direction:column;gap:2px;}
 .ft-drawer-link{display:flex;align-items:center;gap:12px;padding:14px 12px;border-radius:12px;font-size:13px;font-weight:700;color:var(--ftink);background:transparent;text-align:left;width:100%;}
@@ -508,6 +516,70 @@ body.ft-dark .ft-bar-track{background:#232833;}
 body.ft-dark{--fthex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.32' stroke-width='1.4'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
 body.ft-dark #ftHeroAccount #overviewCardBank,body.ft-dark .ft-side-profile{background-image:var(--fthex),linear-gradient(135deg,#0B2E63 0%,#1E3A8A 100%)!important;background-size:56px 96px,100% 100%!important;border:1px solid #2C313A!important;}
 body.ft-dark #ftBalanceAdd{background:#F8FAFC!important;color:#0B2E63!important;}
+/* ---------- one typeface and one accent for every title, label and icon ---------- */
+body main h1,body main h2,body main h3,body main h4,body main h5,body main h6{font-family:var(--font-body)!important;letter-spacing:0!important;color:var(--ftb)!important;}
+body main h1,body main h2,body main h3,body main h4{font-weight:800!important;}
+body main summary,body main label,body main .font-bold,body main .font-semibold{font-family:var(--font-body)!important;}
+/* secondary accent colours are retired; money meaning stays green and red */
+body main [class*="text-amber-"],body main [class*="text-yellow-"],body main [class*="text-orange-"],body main [class*="text-violet-"],body main [class*="text-purple-"],body main [class*="text-fuchsia-"],body main [class*="text-pink-"],body main [class*="text-teal-"],body main [class*="text-cyan-"],body main [class*="text-sky-"],body main [class*="text-lime-"]{color:var(--ftb)!important;}
+body main button[class*="bg-amber-"],body main button[class*="bg-yellow-"],body main button[class*="bg-orange-"],body main button[class*="bg-violet-"],body main button[class*="bg-purple-"],body main button[class*="bg-fuchsia-"],body main button[class*="bg-pink-"],body main button[class*="bg-teal-"],body main button[class*="bg-cyan-"],body main button[class*="bg-sky-"],body main button[class*="bg-lime-"]{background:var(--ftb)!important;color:#FFFFFF!important;border-color:var(--ftb)!important;}
+body main button[class*="bg-amber-"] i,body main button[class*="bg-violet-"] i,body main button[class*="bg-purple-"] i,body main button[class*="bg-sky-"] i,body main button[class*="bg-teal-"] i,body main button[class*="bg-cyan-"] i,body main button[class*="bg-amber-"] span,body main button[class*="bg-violet-"] span,body main button[class*="bg-purple-"] span,body main button[class*="bg-sky-"] span{color:#FFFFFF!important;}
+/* settings: exchange rates, currency selection and FinPIN controls all in blue */
+body #sec-settings [class*="text-emerald-"],body #sec-settings [class*="text-green-"],body #sec-settings [class*="text-teal-"],body #sec-settings button i,body #sec-settings h3 i,body #sec-settings h4 i,body #modalDailyRates [class*="text-emerald-"],body #modalDailyRates button i{color:var(--ftb)!important;}
+body #sec-settings button[class*="bg-emerald-"],body #sec-settings button[class*="bg-green-"],body #sec-settings button[class*="bg-teal-"],body #sec-settings button[class*="bg-indigo-"]{background:var(--ftb)!important;color:#FFFFFF!important;border-color:var(--ftb)!important;}
+body #sec-settings button[class*="bg-emerald-"] i,body #sec-settings button[class*="bg-green-"] i,body #sec-settings button[class*="bg-teal-"] i,body #sec-settings button[class*="bg-indigo-"] i{color:#FFFFFF!important;}
+/* amounts keep their meaning after the accent clean-up */
+body #monthlyFlowSummary>div:first-child h3,body #monthlyFlowSummary>div:first-child .fin-card-val{color:var(--ftsuccess)!important;}
+body #monthlyFlowSummary>div:nth-child(2) h3,body #monthlyFlowSummary>div:nth-child(2) .fin-card-val{color:var(--ftdanger)!important;}
+body #pendingPaymentsSection .text-emerald-400,body #individualSummarySection .text-emerald-400{color:#22C55E!important;}
+body #pendingPaymentsSection .text-rose-400,body #individualSummarySection .text-rose-400{color:#F87171!important;}
+body #overviewCardLiabilities h3,body #overviewCardLiabilities p,body #overviewCardGold h3,body #overviewCardGold p,body #overviewCardNet h3,body #overviewCardNet p{color:var(--ftb)!important;}
+/* ---------- hexagon weave on every blue surface ---------- */
+.ft-btn:not(.ft-btn-light),body main button[class*="bg-indigo-6"],body main button[class*="bg-emerald-6"],body main button[class*="bg-amber-6"],body main button[class*="bg-violet-6"],body main button[class*="bg-sky-6"],body #sec-settings button[class*="bg-"],body #mobileBottomNav .ftbn.active{background-image:var(--fthex),linear-gradient(135deg,#0047AB 0%,#2A74E8 100%)!important;background-size:56px 96px,100% 100%!important;background-position:0 0,center!important;}
+.ft-btn:not(.ft-btn-light),body main button[class*="bg-indigo-6"],body main button[class*="bg-emerald-6"],body main button[class*="bg-amber-6"]{color:#FFFFFF!important;}
+/* ---------- back arrow on every area ---------- */
+#ftBackBar{display:none;align-items:center;margin:0 0 12px;}
+#ftBackBar button{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:5px 14px 5px 10px;border-radius:999px;background:var(--ftsurface);border:1px solid var(--ftline);color:var(--ftb);font-size:12px;font-weight:700;box-shadow:0 1px 3px #0f172a0d;}
+#ftBackBar button i{font-size:13px;color:var(--ftb);}
+body.ft-dark #ftBackBar button{background:#1A1D23;border-color:#2C313A;color:#E8EAED;}
+body.ft-dark #ftBackBar button i{color:#93C5FD;}
+/* ---------- accounts ---------- */
+.ft-account-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.ft-account-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--ftline);background:transparent;}
+.ft-account-icon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--ftsoft);color:var(--ftb);flex-shrink:0;}
+.ft-account-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.ft-account-name{font-size:12.5px;font-weight:700;color:var(--ftink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ft-account-main small{font-size:10.5px;color:var(--ftmuted);}
+.ft-account-value{font-size:12.5px;font-weight:800;color:var(--ftb);font-variant-numeric:tabular-nums;}
+.ft-quick-note{font-size:9px;font-weight:700;color:var(--ftmuted);display:block;}
+/* ---------- trips: settled share removal ---------- */
+.ft-remove-list{margin-top:14px;padding-top:12px;border-top:1px solid var(--ftline);}
+.ft-remove-list>p{font-size:11px;color:var(--ftmuted);margin-bottom:8px;}
+.ft-remove-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--ftline);font-size:12px;font-weight:700;color:var(--ftink);}
+/* ---------- ratings ---------- */
+.ft-rating-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;}
+.ft-rating-option{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border:1px solid var(--ftline);border-radius:14px;background:var(--ftsurface);text-align:left;}
+.ft-rating-option.active{border-color:var(--ftb);background:var(--ftsoft);}
+.ft-rating-face{font-size:18px;}
+.ft-rating-label{font-size:11.5px;font-weight:700;color:var(--ftink);}
+.ft-rating-stars{font-size:10px;color:var(--ftb);letter-spacing:1px;}
+.ft-rating-comment{width:100%;border:1px solid var(--ftline);border-radius:12px;padding:10px;font-size:12px;color:var(--ftink);background:var(--ftsurface);margin-bottom:10px;resize:vertical;}
+.ft-play-link{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;min-height:42px;border-radius:12px;border:1px solid var(--ftb);color:var(--ftb);font-size:12px;font-weight:800;text-decoration:none;}
+.ft-play-link i{color:var(--ftb);}
+/* ---------- laptop: use the full width ---------- */
+@media(min-width:1024px){body main{max-width:none!important;padding:18px 28px 48px!important;}body main>section,body main>.tab-content{max-width:1180px;margin-left:auto;margin-right:auto;width:100%;}body main .ft-card,body main .ft-action{border-radius:18px;}}
+/* ---------- dark theme: every word white, amounts keep their meaning ---------- */
+body.ft-dark{color:#FFFFFF!important;}
+body.ft-dark main p,body.ft-dark main span,body.ft-dark main td,body.ft-dark main th,body.ft-dark main li,body.ft-dark main small,body.ft-dark main summary,body.ft-dark main label,body.ft-dark main div{color:#FFFFFF!important;}
+body.ft-dark [class*="text-slate-"],body.ft-dark [class*="text-gray-"],body.ft-dark [class*="text-stone-"],body.ft-dark [class*="text-zinc-"],body.ft-dark [class*="text-neutral-"]{color:#FFFFFF!important;}
+body.ft-dark main h1,body.ft-dark main h2,body.ft-dark main h3,body.ft-dark main h4{color:#FFFFFF!important;}
+body.ft-dark .ft-empty,body.ft-dark .ft-tracker-sub,body.ft-dark .ft-tx-main small,body.ft-dark .ft-account-main small,body.ft-dark .ft-quick-note,body.ft-dark .ft-monitor-grid span,body.ft-dark .ft-year-values{color:#F1F5F9!important;}
+body.ft-dark .ft-tx strong.in{color:#4ADE80!important;}
+body.ft-dark .ft-tx strong.out{color:#F87171!important;}
+body.ft-dark .ft-tracker-amt.to-receive,body.ft-dark #pendingPaymentsSection .text-emerald-400{color:#4ADE80!important;}
+body.ft-dark .ft-tracker-amt.to-pay,body.ft-dark #pendingPaymentsSection .text-rose-400{color:#F87171!important;}
+body.ft-dark #monthlyFlowSummary>div:first-child h3,body.ft-dark #monthlyFlowSummary>div:first-child .fin-card-val{color:#4ADE80!important;}
+body.ft-dark #monthlyFlowSummary>div:nth-child(2) h3,body.ft-dark #monthlyFlowSummary>div:nth-child(2) .fin-card-val{color:#F87171!important;}
 </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
@@ -6037,7 +6109,7 @@ window.ftToggleHhMenu = function (e) {
 /* global ftMoneyUnits, formatCurrency, ftSettlementPeople, ftReceiptApproved, state, ftFinancialIdentity, formatMultiCurrency, currentMonthStr, dateMonth, ftBuildObligationPairs, ftHhMemberList, ftDisplayName, ftMoneyScale, ftHhExpensePeople, updateFsPreview, ftEnqueueNotification, currentUser, dataLoaded */
 // The standalone host provides these shared bindings before this classic script runs.
 (function(FT){
-  FT.button=function(action,label,id,extra){return '<button type="button" data-ft-action="'+action+'" data-ft-id="'+FT.escape(id||'')+'" '+(extra||'')+' class="px-2 py-1 rounded bg-violet-100 text-violet-800 font-bold text-xs">'+FT.escape(label)+'</button>';};
+  FT.button=function(action,label,id,extra){return '<button type="button" data-ft-action="'+action+'" data-ft-id="'+FT.escape(id||'')+'" '+(extra||'')+' class="px-2 py-1 rounded border border-[#BFDBFE] bg-[#EFF6FF] text-[#1E3A8A] font-bold text-xs">'+FT.escape(label)+'</button>';};
   FT.money=function(balance){var keys=Object.keys(balance).filter(function(c){return ftMoneyUnits(balance[c],c)!==0;});return keys.length?keys.map(function(c){return FT.escape(formatCurrency(Math.abs(balance[c]),c))+' '+(balance[c]>0?'to receive':'to pay');}).join('<br>'):'—';};
   FT.historyStatus=function(r){var s=r.s,p=ftSettlementPeople(s);if(s.ledgerVersion!==2)return 'Unverified legacy claim — excluded from balance'+(p.payer.uid===FT.me().uid?'<br>'+FT.button('upgrade','Request recipient confirmation',r.scope+'|'+s.id):'<br>The payer must resend this claim.');if(ftReceiptApproved(s))return 'Confirmed by recipient';if(s.status==='rejected')return 'Rejected — balance unchanged';var legacy=s.status!=='pending'||s.ledgerVersion!==2,status=legacy?'Unverified legacy claim':'Pending recipient confirmation';if(p.payee.uid===FT.me().uid)return status+'<br>'+FT.button('review','Accept / Reject',r.scope+'|'+s.id);if(p.payer.uid===FT.me().uid&&s.status==='pending')return status+'<br>'+FT.button('notify','Send notification',s.id);return status;};
   FT.paymentRows=function(requests,household){return requests.sort(function(a,b){return String(b.s.date||'').localeCompare(String(a.s.date||''));}).map(function(r){var s=r.s,p=ftSettlementPeople(s),status=FT.historyStatus(r),effect=ftReceiptApproved(s)&&s.ledgerVersion===2&&!s.legacySource?FT.button('effect','Sync saved account',s.id):'';if(household)return '<tr><td class="p-3">'+FT.escape(s.date)+'</td><td class="p-3">'+FT.escape(p.payer.name)+'</td><td class="p-3">'+FT.escape(p.payee.name)+'</td><td class="p-3">'+FT.escape(formatCurrency(Number(s.amount)||0,s.currency))+'</td><td class="p-3">'+FT.escape(s.payerAccountName||s.fromAccountName||'—')+'</td><td class="p-3">'+FT.escape(s.notes||'—')+'</td><td class="p-3">'+status+effect+'</td></tr>';var other=p.payer.uid===FT.me().uid?p.payee:p.payer;return '<tr><td class="p-3">'+FT.escape(s.date)+'</td><td class="p-3">'+FT.escape(other.name)+'</td><td class="p-3">'+(p.payer.uid===FT.me().uid?'You paid':'Received from friend')+'</td><td class="p-3">'+FT.escape(formatCurrency(Number(s.amount)||0,s.currency))+'</td><td class="p-3">'+FT.escape(s.payerAccountName||'—')+'</td><td class="p-3">'+FT.escape(s.notes||'—')+'</td><td class="p-3" colspan="3">'+status+effect+'</td></tr>';}).join('');};
@@ -6813,18 +6885,20 @@ window.ftToggleHhMenu = function (e) {
       '<div class="ft-greet"><p class="ft-greet-hi" id="ftHello">' + greeting() + ',</p><h2 class="ft-hero-name" id="ftHeroName">' + esc(currentUser && currentUser.name || 'Welcome') + '</h2><div id="ftHeroCaptionSlot"></div></div>' +
       '<div id="ftHeroAccount"></div>' +
       '<div class="ft-actions">' +
-        '<button type="button" class="ft-action" onclick="switchTab(\'accounts-spending\')"><i class="fa-solid fa-building-columns"></i><span>Accounts</span></button>' +
-        '<button type="button" class="ft-action" onclick="ftOpenAddMenu()"><i class="fa-solid fa-plus"></i><span>Income / Expense</span></button>' +
+        '<button type="button" class="ft-action" onclick="switchTab(\'accounts\')"><i class="fa-solid fa-building-columns"></i><span>Accounts</span></button>' +
+        '<button type="button" class="ft-action" onclick="switchTab(\'expenses\')"><i class="fa-solid fa-receipt"></i><span>Expenses</span></button>' +
         '<button type="button" class="ft-action" onclick="switchTab(\'friends\')"><i class="fa-solid fa-user-group"></i><span>FinTrackers</span></button>' +
       '</div>' +
       '<div class="ft-card" id="ftQuickLinks">' +
-        '<div class="ft-card-head"><h3>Quick Links</h3><button type="button" id="ftQlToggle" aria-expanded="false" onclick="ftToggleQuickLinks()">More <i class="fa-solid fa-chevron-right text-[9px]"></i></button></div>' +
+        '<div class="ft-card-head"><h3>Quick Links</h3></div>' +
         '<div class="ft-quick-grid">' +
-          '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend / Trip Split</span></button>' +
-          '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span></button>' +
+          '<button type="button" class="ft-quick" onclick="switchTab(\'household\')"><i class="fa-solid fa-house-chimney-user"></i><span>Household</span></button>' +
+          '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend Split</span></button>' +
+          '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span><small class="ft-quick-note">Gold &amp; SIP</small></button>' +
           '<button type="button" class="ft-quick" onclick="switchTab(\'liabilities\')"><i class="fa-solid fa-hand-holding-dollar"></i><span>Loan</span></button>' +
+          '<button type="button" class="ft-quick" onclick="switchTab(\'trips\')"><i class="fa-solid fa-route"></i><span>Trip Split</span></button>' +
         '</div>' +
-        '<div id="ftQlMore" class="hidden"></div>' +
+        '<div id="ftLegacyQuick" class="hidden"></div>' +
       '</div>' +
       '';
 
@@ -6840,17 +6914,9 @@ window.ftToggleHhMenu = function (e) {
     }
 
     var quick = document.getElementById('ftQuickActions');
-    if (quick) document.getElementById('ftQlMore').appendChild(quick);
+    var legacyQuick = document.getElementById('ftLegacyQuick');
+    if (quick && legacyQuick) legacyQuick.appendChild(quick);
   }
-
-  window.ftToggleQuickLinks = function () {
-    var more = document.getElementById('ftQlMore');
-    var toggle = document.getElementById('ftQlToggle');
-    if (!more || !toggle) return;
-    var open = more.classList.toggle('hidden') === false;
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.innerHTML = (open ? 'Less' : 'More') + ' <i class="fa-solid fa-chevron-' + (open ? 'left' : 'right') + ' text-[9px]"></i>';
-  };
 
   window.ftOpenAddMenu = function () {
     var existing = document.getElementById('ftAddSheet');
@@ -6943,7 +7009,7 @@ window.ftToggleHhMenu = function (e) {
     try {
       (state.banks || []).forEach(function (b) {
         if (String(b.name || '').toLowerCase().indexOf(q) < 0 && String(b.currency || '').toLowerCase().indexOf(q) < 0) return;
-        push({ icon: 'fa-building-columns', title: b.name || 'Account', sub: 'Account · ' + (b.currency || ''), tab: 'accounts-spending' });
+        push({ icon: 'fa-building-columns', title: b.name || 'Account', sub: 'Account · ' + (b.currency || ''), tab: 'accounts' });
       });
       Object.keys(state.expenses || {}).forEach(function (month) {
         (state.expenses[month] || []).forEach(function (e) {
@@ -7048,8 +7114,6 @@ window.ftToggleHhMenu = function (e) {
     buildSideProfile();
     buildHero();
     buildNumpad();
-    var accountsTab = document.querySelector('#mobileBottomNav button[data-tab="accounts-spending"]');
-    if (accountsTab) accountsTab.remove();
     renderTrackers();
     syncBellBadge();
   }
@@ -7072,9 +7136,9 @@ window.ftToggleHhMenu = function (e) {
     var acct = document.getElementById('ftHeroAccount');
     var bank = document.getElementById('overviewCardBank');
     if (acct && bank && bank.parentNode !== acct) acct.appendChild(bank);
-    var more = document.getElementById('ftQlMore');
+    var legacyQuick = document.getElementById('ftLegacyQuick');
     var quick = document.getElementById('ftQuickActions');
-    if (more && quick && quick.parentNode !== more) more.appendChild(quick);
+    if (legacyQuick && quick && quick.parentNode !== legacyQuick) legacyQuick.appendChild(quick);
     var capSlot = document.getElementById('ftHeroCaptionSlot');
     var caption = document.getElementById('homeCaption');
     if (capSlot && caption && caption.parentNode !== capSlot) capSlot.appendChild(caption);
@@ -7224,7 +7288,6 @@ window.ftToggleHhMenu = function (e) {
   var ratings = section('ratings', 'Rating & Feedback');
   var rateCard = document.getElementById('ftRateCard');
   if (rateCard) ratings.appendChild(rateCard);
-  else if (!ratings.querySelector('.ft-empty')) ratings.insertAdjacentHTML('beforeend', '<div class="ft-card"><p class="ft-empty">Ratings and feedback are available in the app store listing.</p></div>');
 
   var links = document.createElement('div');
   links.id = 'ftDrawerLinks';
@@ -7250,7 +7313,7 @@ window.ftToggleHhMenu = function (e) {
   var bottom = document.getElementById('mobileBottomNav');
   if (bottom) {
     bottom.innerHTML = '';
-    [['overview', 'Overview', 'fa-house'], ['insights', 'Insights', 'fa-chart-column'], ['transactions', 'Transactions', 'fa-receipt']].forEach(function (item) {
+    [['overview', 'Home', 'fa-house'], ['insights', 'Insights', 'fa-chart-column'], ['transactions', 'Transactions', 'fa-receipt']].forEach(function (item) {
       var button = document.createElement('button');
       button.type = 'button';
       button.className = 'ftbn';
@@ -7317,6 +7380,308 @@ window.ftToggleHhMenu = function (e) {
   };
 })(window.FTReview);
 </script>
+<script data-ft-update="ratings">
+/* global currentUser */
+// Rating & Feedback: rate inside the app, or open the Google Play listing.
+(function (FT) {
+  var section = document.getElementById('sec-ratings');
+  if (!section) return;
+
+  var options = (window.FT_RATING_OPTIONS || [
+    { value: 5, smiley: '😍', label: 'Very Happy', stars: 5 },
+    { value: 4, smiley: '😊', label: 'Happy', stars: 4 },
+    { value: 3, smiley: '😐', label: 'Neutral', stars: 3 },
+    { value: 2, smiley: '🙁', label: 'Sad', stars: 2 },
+    { value: 1, smiley: '😢', label: 'Very Sad', stars: 1 }
+  ]);
+
+  section.innerHTML =
+    '<div class="ft-section-head"><h2>Rating &amp; Feedback</h2></div>' +
+    '<div class="ft-card" id="ftRateCard">' +
+      '<div class="ft-card-head"><h3>Rate FinTrack</h3></div>' +
+      '<p class="ft-empty">Pick how you feel about the app and leave a note — it reaches us directly.</p>' +
+      '<div id="ftRatingOptions" class="ft-rating-options"></div>' +
+      '<textarea id="ftRatingComment" class="ft-rating-comment" rows="3" maxlength="400" placeholder="Tell us what to improve (optional)"></textarea>' +
+      '<button type="button" class="ft-btn" onclick="ftSubmitRating()">Submit rating</button>' +
+      '<a class="ft-play-link" href="https://play.google.com/store/search?q=FinTrack&c=apps" target="_blank" rel="noopener">' +
+        '<i class="fa-brands fa-google-play"></i> Rate on Google Play</a>' +
+    '</div>' +
+    '<div class="ft-card"><div class="ft-card-head"><h3>Recent feedback</h3></div><div id="ftPublicFeedbackList"></div></div>';
+
+  window.ftRating = window.ftRating || 0;
+
+  window.ftRenderRatingOptions = function () {
+    var host = document.getElementById('ftRatingOptions');
+    if (!host) return;
+    host.innerHTML = options.map(function (option) {
+      var selected = window.ftRating === option.value;
+      var stars = '★'.repeat(option.stars) + '☆'.repeat(5 - option.stars);
+      return '<button type="button" class="ft-rating-option' + (selected ? ' active' : '') + '" onclick="ftSetRating(' + option.value + ')">' +
+        '<span class="ft-rating-face">' + option.smiley + '</span><span class="ft-rating-label">' + FT.escape(option.label) + '</span><span class="ft-rating-stars">' + stars + '</span></button>';
+    }).join('');
+  };
+
+  window.ftSetRating = function (value) {
+    window.ftRating = value;
+    window.ftRenderRatingOptions();
+  };
+
+  window.ftRenderRatingOptions();
+  if (window.ftLoadPublicFeedback) {
+    try { window.ftLoadPublicFeedback(); } catch (e) { /* feed loads after sign-in */ }
+  }
+})(window.FTReview);
+</script>
+<script data-ft-update="help">
+/* global window */
+// Help & Support kept truthful to what the app actually does today.
+(function (FT) {
+  var help = document.getElementById('sec-help');
+  if (!help) return;
+
+  var list = help.querySelector('div.space-y-4') || help;
+
+  function findDetails(title) {
+    return Array.prototype.slice.call(help.querySelectorAll('details')).filter(function (block) {
+      var summary = block.querySelector('summary');
+      return summary && summary.textContent.indexOf(title) !== -1;
+    })[0];
+  }
+
+  var themeBlock = findDetails('Theme System');
+  if (themeBlock) {
+    var body = themeBlock.querySelector('div') || themeBlock;
+    body.innerHTML = '<p>FinTrack has two app appearances. Both are free and available on every account:</p>' +
+      '<ul class="list-disc list-inside space-y-1"><li><b>Light</b> — blue and white.</li><li><b>Dark</b> — black, ash and white.</li></ul>' +
+      '<p>Choose one under <b>Settings → App appearance</b>. Your choice is saved to your profile and applied every time you log in.</p>' +
+      '<p>Income amounts stay green and expense amounts stay red; every other label, title and icon follows the blue and white design.</p>';
+  }
+
+  var friendsBlock = findDetails('Friends');
+  if (friendsBlock) {
+    var friendsBody = friendsBlock.querySelector('p');
+    if (friendsBody) friendsBody.textContent = 'FinTrackers holds your friends list with what each person owes you or you owe them, followed by your friend split transactions. Open a friend to send a reminder, settle, or view their splits. Trip splits now live in their own Trip Split area.';
+  }
+
+  list.insertAdjacentHTML('beforeend',
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Accounts</summary>' +
+    '<p class="mt-2 text-xs text-slate-600">Accounts shows every bank account, cash in hand and credit card you have added, with the balance in its own currency. Use the buttons at the top of the list to add an account, or tap an account to edit it. Transfers to move money between accounts open from the same area.</p></details>' +
+
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Home &amp; Quick Links</summary>' +
+    '<div class="mt-2 text-xs text-slate-600 space-y-2"><p>Home greets you, shows the motivational quote and your total bank and cash balance. The eye icon hides only the amount, never the currency.</p>' +
+    '<p>The three actions open <b>Accounts</b>, <b>Expenses</b> and <b>FinTrackers</b>. Quick Links open <b>Household</b>, <b>Friend Split</b>, <b>Add Investment</b> (gold and SIP), <b>Loan</b> and <b>Trip Split</b>.</p></div></details>' +
+
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Household</summary>' +
+    '<p class="mt-2 text-xs text-slate-600">A household shares expenses and balances between its members. Each member sees what they owe and what they should receive, and every payment claim is confirmed by the person who receives the money. Members and household settings live in the menu at the top of the area.</p></details>' +
+
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Trip Split</summary>' +
+    '<div class="mt-2 text-xs text-slate-600 space-y-2"><p>Create a trip, add the people who travelled, then record each shared cost. FinTrack divides every cost equally between the members and keeps the running balance for each person.</p>' +
+    '<p>A trip closes on its own once every member has settled. If your own share is settled while others are still open, you can remove the trip from your list — it stays with everyone else. Only the trip leader can delete a whole trip.</p></div></details>' +
+
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Transactions</summary>' +
+    '<p class="mt-2 text-xs text-slate-600">Every transaction for the chosen month, with a year view of monthly totals. Income, settlements received and money in are green; expenses, splits, household costs and settlements paid are red. Colour alone shows the direction, so no minus signs are used.</p></details>' +
+
+    '<details class="border rounded-lg p-3"><summary class="font-bold cursor-pointer">Rating &amp; Feedback</summary>' +
+    '<p class="mt-2 text-xs text-slate-600">Rate FinTrack inside the app with a note for the team, or use the Google Play button in the same area to leave a store rating once the listing is live.</p></details>'
+  );
+})(window.FTReview);
+</script>
+<script data-ft-update="accounts">
+/* global state, formatCurrency */
+// Accounts area: every bank account, cash-in-hand and credit card in one list.
+(function (FT) {
+  var main = document.querySelector('main');
+  if (!main) return;
+
+  var section = document.getElementById('sec-accounts');
+  if (!section) {
+    section = document.createElement('section');
+    section.id = 'sec-accounts';
+    section.className = 'tab-content hidden space-y-4';
+    main.appendChild(section);
+  }
+  section.innerHTML =
+    '<div class="ft-section-head"><h2>Accounts</h2></div>' +
+    '<div class="ft-card"><div class="ft-card-head"><h3>Your accounts</h3><div class="ft-account-actions">' +
+      '<button type="button" class="ft-link" onclick="openForm(\'modalBank\', \'bankForm\', {bankType: 1})">+ Bank</button>' +
+      '<button type="button" class="ft-link" onclick="openCashEntry()">+ Cash</button>' +
+      '<button type="button" class="ft-link" onclick="openCreditCardEntry()">+ Card</button>' +
+    '</div></div><div id="ftAccountList"></div></div>' +
+    '<div class="ft-card"><div class="ft-card-head"><h3>Transfers</h3><button type="button" class="ft-link" onclick="switchTab(\'transfers\')">Open transfers</button></div>' +
+    '<p class="ft-empty">Move money between your accounts and review the transfer log.</p></div>';
+
+  function typeLabel(account) {
+    if (account.name === 'Cash in Hand') return 'Cash in hand';
+    if (account.bankType === 3) return 'Credit card';
+    try { return account.bankType === 2 ? window.getBankType2() : window.getBankType1(); } catch (e) { return 'Bank account'; }
+  }
+
+  function render() {
+    var host = document.getElementById('ftAccountList');
+    if (!host) return;
+    var accounts = (state.banks || []);
+    if (!accounts.length) {
+      host.innerHTML = '<p class="ft-empty">No accounts yet. Add a bank account, cash in hand or a credit card.</p>';
+      return;
+    }
+    host.innerHTML = accounts.map(function (account) {
+      var value = account.bankType === 3 ? (Number(account.cardOutstanding) || 0) : (Number(account.balance) || 0);
+      var icon = account.name === 'Cash in Hand' ? 'fa-wallet' : account.bankType === 3 ? 'fa-credit-card' : 'fa-building-columns';
+      var sub = typeLabel(account) + ' · ' + (account.currency || '');
+      if (account.owner) sub += ' · ' + account.owner;
+      return '<button type="button" class="ft-account-row" onclick="editEntry(\'banks\', \'' + FT.escape(account.id) + '\')">' +
+        '<span class="ft-account-icon"><i class="fa-solid ' + icon + '"></i></span>' +
+        '<span class="ft-account-main"><span class="ft-account-name">' + FT.escape(account.name || 'Account') + '</span><small>' + FT.escape(sub) + '</small></span>' +
+        '<span class="ft-account-value">' + FT.escape(formatCurrency(value, account.currency)) + '</span></button>';
+    }).join('');
+  }
+
+  window.ftRenderAccounts = render;
+  render();
+
+  var hostSwitch = window.switchTab;
+  window.switchTab = function (tab) {
+    var result = hostSwitch.apply(this, arguments);
+    if (tab === 'accounts') { try { render(); } catch (e) { /* data loading */ } }
+    return result;
+  };
+
+  var hostRender = window.renderAll;
+  if (hostRender) {
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      if (section && !section.classList.contains('hidden')) { try { render(); } catch (e) { /* data loading */ } }
+      return result;
+    };
+  }
+})(window.FTReview);
+</script>
+<script data-ft-update="trips">
+/* global state, currentUser, formatCurrency, update, ref, db */
+// Trip Split lives in its own area, outside FinTrackers.
+// A trip leaves the list once every member's share is settled, and any member
+// whose own share is settled can remove it from their list.
+(function (FT) {
+  var main = document.querySelector('main');
+  if (!main) return;
+
+  var section = document.getElementById('sec-trips');
+  if (!section) {
+    section = document.createElement('section');
+    section.id = 'sec-trips';
+    section.className = 'tab-content hidden space-y-4';
+    main.appendChild(section);
+  }
+  section.innerHTML =
+    '<div class="ft-section-head"><h2>Trip Split</h2></div>' +
+    '<div class="ft-card"><div class="ft-card-head"><h3>Saved trips</h3><button type="button" class="ft-link" onclick="window.ftOpenTripModal()">+ New trip</button></div>' +
+    '<p class="ft-empty">Split trip spending with the people who travelled. A trip closes on its own once everyone has settled.</p>' +
+    '<div id="ftTripList"></div><div id="ftTripSettled"></div></div>';
+
+  var tripsBlock = document.getElementById('tripsBlock');
+  if (tripsBlock) {
+    var holder = document.createElement('div');
+    holder.className = 'ft-card';
+    holder.innerHTML = '<div class="ft-card-head"><h3>Trip activity</h3></div>';
+    holder.appendChild(tripsBlock);
+    section.appendChild(holder);
+  }
+
+  function myUid() { return currentUser && currentUser.uid; }
+
+  function nets(trip) {
+    var members = trip.members || [];
+    var count = members.length || 1;
+    var out = {};
+    members.forEach(function (member) { out[member.uid] = {}; });
+    Object.keys(trip.splits || {}).forEach(function (key) {
+      var split = trip.splits[key];
+      var currency = split.currency || 'INR';
+      var share = (Number(split.amount) || 0) / count;
+      members.forEach(function (member) { out[member.uid][currency] = (out[member.uid][currency] || 0) - share; });
+      if (out[split.paidByUid]) out[split.paidByUid][currency] = (out[split.paidByUid][currency] || 0) + (Number(split.amount) || 0);
+    });
+    return out;
+  }
+
+  function zeroFor(list) {
+    return Object.keys(list || {}).every(function (currency) { return Math.abs(Number(list[currency]) || 0) < 0.01; });
+  }
+
+  function fullySettled(trip) {
+    if (!Object.keys(trip.splits || {}).length) return false;
+    var table = nets(trip);
+    return Object.keys(table).every(function (uid) { return zeroFor(table[uid]); });
+  }
+
+  function mineSettled(trip) {
+    if (!Object.keys(trip.splits || {}).length) return false;
+    return zeroFor(nets(trip)[myUid()] || {});
+  }
+
+  function hiddenForMe(trip) {
+    return !!(trip.hiddenFor && trip.hiddenFor[myUid()]);
+  }
+
+  function visible(trip) {
+    return !hiddenForMe(trip) && !fullySettled(trip);
+  }
+
+  function renderSettled() {
+    var host = document.getElementById('ftTripSettled');
+    if (!host) return;
+    var mine = (state.trips || []).filter(function (trip) { return !hiddenForMe(trip) && mineSettled(trip); });
+    if (!mine.length) { host.innerHTML = ''; return; }
+    host.innerHTML = '<div class="ft-remove-list"><p>Your share is settled in these trips. Remove them from your list whenever you like — they stay with everyone else.</p>' +
+      mine.map(function (trip) {
+        return '<div class="ft-remove-row"><span>' + FT.escape(trip.name || 'Trip') + '</span><button type="button" class="ft-link" onclick="ftRemoveTripForMe(\'' + FT.escape(trip.id) + '\')">Remove from my list</button></div>';
+      }).join('') + '</div>';
+  }
+
+  window.ftRemoveTripForMe = async function (tripId) {
+    var trip = (state.trips || []).find(function (item) { return String(item.id) === String(tripId); });
+    if (!trip || !myUid()) return;
+    trip.hiddenFor = trip.hiddenFor || {};
+    trip.hiddenFor[myUid()] = true;
+    try { await update(ref(db, 'sharedSplits/' + tripId + '/hiddenFor'), trip.hiddenFor); } catch (e) { /* local removal still applies */ }
+    render();
+  };
+
+  function render() {
+    renderSettled();
+    if (window.renderTrips) { try { window.renderTrips(); } catch (e) { /* list renders after data load */ } }
+  }
+  window.ftRenderTrips = render;
+
+  // Trip Split never appears inside FinTrackers again.
+  var hostSwitch = window.switchTab;
+  window.switchTab = function (tab) {
+    var result = hostSwitch.apply(this, arguments);
+    if (tab === 'trips') { try { render(); } catch (e) { /* data loading */ } }
+    return result;
+  };
+
+  var hostRenderTrips = window.renderTrips;
+  if (hostRenderTrips) {
+    window.renderTrips = function () {
+      var all = state.trips;
+      state.trips = (all || []).filter(visible);
+      var result = hostRenderTrips.apply(this, arguments);
+      state.trips = all;
+      return result;
+    };
+  }
+
+  var hostRender = window.renderAll;
+  if (hostRender) {
+    window.renderAll = function () {
+      var result = hostRender.apply(this, arguments);
+      if (section && !section.classList.contains('hidden')) { try { render(); } catch (e) { /* data loading */ } }
+      return result;
+    };
+  }
+})(window.FTReview);
+</script>
 <script data-ft-update="settings-theme">
 /* global state, saveData */
 // Light is the default; the choice is saved with the account and restored at login.
@@ -7377,6 +7742,7 @@ window.ftToggleHhMenu = function (e) {
 <script data-ft-update="transactions">
 /* global state, dateMonth, currentMonthStr, formatCurrency, ftOwnSplitShare, ftHhMyShare, ftReceiptApproved, ftSettlementPeople */
 // Every transaction for a chosen month, with a year overview.
+// Amounts carry the meaning in colour alone: green received, red spent.
 (function (FT) {
   function gather(month) {
     var items = [];
@@ -7413,7 +7779,8 @@ window.ftToggleHhMenu = function (e) {
   function monthRows(items) {
     if (!items.length) return '<p class="ft-empty">No transactions recorded in this month.</p>';
     return '<div class="ft-tx-list">' + items.map(function (item) {
-      return '<div class="ft-tx"><span class="ft-tx-icon ' + (item.kind === 'in' ? 'in' : 'out') + '"><i class="fa-solid ' + (item.kind === 'in' ? 'fa-arrow-down' : 'fa-arrow-up') + '"></i></span><div class="ft-tx-main"><p>' + FT.escape(item.title) + '</p><small>' + FT.escape(item.date) + ' · ' + FT.escape(item.tag) + '</small></div><strong class="' + (item.kind === 'in' ? 'in' : 'out') + '">' + (item.kind === 'in' ? '+' : '−') + FT.escape(formatCurrency(item.amount, item.currency)) + '</strong></div>';
+      var kind = item.kind === 'in' ? 'in' : 'out';
+      return '<div class="ft-tx"><span class="ft-tx-icon ' + kind + '"><i class="fa-solid ' + (kind === 'in' ? 'fa-arrow-down' : 'fa-arrow-up') + '"></i></span><div class="ft-tx-main"><p>' + FT.escape(item.title) + '</p><small>' + FT.escape(item.date) + ' · ' + FT.escape(item.tag) + '</small></div><strong class="' + kind + '">' + FT.escape(formatCurrency(item.amount, item.currency)) + '</strong></div>';
     }).join('') + '</div>';
   }
 
@@ -7477,21 +7844,29 @@ window.ftToggleHhMenu = function (e) {
 </script>
 <script data-ft-update="tour">
 // Short guided tour of each area, opened from Help & Support.
+// Every step can be explored straight away: Explore closes the tour on that area.
 (function (FT) {
   var steps = [
-    ['overview', 'Overview', 'Your greeting, total bank and cash balance, the three quick actions and Quick Links. Use the search and bell icons at the top for anything you need.'],
-    ['financial-overview', 'Financial Overview', 'Income and expenses for the month, plus each account balance, so you can see what came in and what was spent.'],
+    ['overview', 'Home', 'Your greeting, total bank and cash balance, the three actions and the five Quick Links. The eye hides the amount only.'],
+    ['accounts', 'Accounts', 'Every bank account, cash in hand and credit card with its balance. Tap an account to edit it, or add a new one here.'],
+    ['expenses', 'Expenses', 'Log an expense against an account and a category, and review the expense history by month.'],
+    ['friends', 'FinTrackers', 'Your friends with what each one owes you or you owe them, followed by your friend split transactions.'],
+    ['household', 'Household', 'Shared household expenses and balances, with every payment confirmed by the person receiving it.'],
+    ['trips', 'Trip Split', 'Trips you share with friends, the running balance per member, and the trips that have closed.'],
+    ['financial-overview', 'Financial Overview', 'Income and spending for the month, the individual bank and cash summary, and each account balance.'],
     ['insights', 'Insights', 'Savings and category totals for a month, a year or a chosen range.'],
-    ['transactions', 'Transactions', 'Every transaction from the first to the last day of the selected month, and a year view with monthly totals.'],
-    ['settings', 'Settings', 'Appearance, security and the options that control what appears in your account.'],
-    ['help', 'Help & Support', 'Answers, the support email, and this tour whenever you want to repeat it.']
+    ['transactions', 'Transactions', 'Every transaction for the selected month, or a year view with monthly totals. Green is money in, red is money out.'],
+    ['settings', 'Settings', 'App appearance, FinPIN security, currencies, exchange rates and visibility settings.'],
+    ['ratings', 'Rating & Feedback', 'Rate FinTrack inside the app, or open the Google Play listing to leave a store rating.'],
+    ['help', 'Help & Support', 'Answers to common questions and this tour whenever you want to repeat it.']
   ];
+
   var help = document.getElementById('sec-help');
   if (help && !document.getElementById('ftTourCard')) {
     var card = document.createElement('div');
     card.id = 'ftTourCard';
     card.className = 'ft-card';
-    card.innerHTML = '<div class="ft-card-head"><h3>Take a full tour</h3><button type="button" class="ft-link" onclick="ftStartTour()">Start tour</button></div><p class="ft-empty">Move through every area once and see what each one does.</p>';
+    card.innerHTML = '<div class="ft-card-head"><h3>Take a full tour</h3><button type="button" class="ft-link" onclick="ftStartTour()">Start tour</button></div><p class="ft-empty">Move through every area once, or jump straight into any of them.</p>';
     help.appendChild(card);
   }
 
@@ -7499,13 +7874,19 @@ window.ftToggleHhMenu = function (e) {
     var index = 0;
     function show() {
       var step = steps[index];
-      window.switchTab(step[0]);
-      var view = FT.openOverlay({
+      if (window.switchTab) window.switchTab(step[0]);
+      FT.openOverlay({
         title: 'App tour · ' + (index + 1) + ' of ' + steps.length,
         html: '<h3 class="ft-tour-title">' + FT.escape(step[1]) + '</h3><p class="ft-tour-text">' + FT.escape(step[2]) + '</p>',
-        actions: index ? [{ label: 'Back', secondary: true, keepOpen: true, run: function (close) { index--; close(); setTimeout(show, 60); } }, { label: index === steps.length - 1 ? 'Finish tour' : 'Next', run: function () { if (index < steps.length - 1) { index++; setTimeout(show, 60); } } }] : [{ label: 'Next', run: function () { index++; setTimeout(show, 60); } }]
+        actions: [
+          { label: 'Explore', secondary: true, run: function (close) { close(); } }
+        ].concat(index ? [
+          { label: 'Back', secondary: true, keepOpen: true, run: function (close) { index--; close(); setTimeout(show, 60); } },
+          { label: index === steps.length - 1 ? 'Finish tour' : 'Next', run: function () { if (index < steps.length - 1) { index++; setTimeout(show, 60); } } }
+        ] : [
+          { label: 'Next', run: function () { index++; setTimeout(show, 60); } }
+        ])
       });
-      return view;
     }
     show();
   };
@@ -7629,6 +8010,98 @@ window.ftToggleHhMenu = function (e) {
   });
   // The host login keeps its own order: the FIN PIN lock is offered first, exactly as before.
 })(window.FTReview);
+</script>
+<script data-ft-update="back-nav">
+/* global window */
+// A back arrow for every area: one bar above the open section, plus one in the drawer.
+(function (FT) {
+  var HOME = 'overview';
+  var stack = [];
+  var current = HOME;
+
+  function visibleTab() {
+    var open = document.querySelector('main > .tab-content:not(.hidden)');
+    return open && open.id ? open.id.replace(/^sec-/, '') : current;
+  }
+
+  function bar() {
+    var el = document.getElementById('ftBackBar');
+    if (!el) {
+      var main = document.querySelector('main');
+      if (!main) return null;
+      el = document.createElement('div');
+      el.id = 'ftBackBar';
+      el.innerHTML = '<button type="button" id="ftBackBtn" aria-label="Go back"><i class="fa-solid fa-arrow-left"></i><span>Back</span></button>';
+      main.insertBefore(el, main.firstChild);
+      el.querySelector('#ftBackBtn').onclick = function () { goBack(); };
+    }
+    return el;
+  }
+
+  function sync() {
+    var el = bar();
+    if (!el) return;
+    var main = document.querySelector('main');
+    if (main && main.firstElementChild !== el) main.insertBefore(el, main.firstChild);
+    current = visibleTab();
+    el.style.display = current === HOME ? 'none' : 'flex';
+  }
+
+  function goBack() {
+    var target = HOME;
+    while (stack.length) {
+      var candidate = stack.pop();
+      if (candidate && candidate !== current) { target = candidate; break; }
+    }
+    if (window.switchTab) window.switchTab(target);
+    else sync();
+  }
+
+  /* drawer: arrow replaces the "Navigation" title */
+  function buildDrawer() {
+    var head = document.querySelector('#sidebar > div');
+    if (!head || head.dataset.ftBackHead) return;
+    head.dataset.ftBackHead = '1';
+    head.querySelectorAll('span').forEach(function (node) { node.style.display = 'none'; });
+    var close = head.querySelector('button');
+    if (close) {
+      close.className = 'ft-head-icon';
+      close.title = 'Back';
+      close.setAttribute('aria-label', 'Back');
+      close.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+      close.onclick = function () {
+        var drawer = document.getElementById('sidebar');
+        if (drawer && !drawer.classList.contains('hidden') && window.toggleSidebar) window.toggleSidebar();
+        else goBack();
+      };
+    }
+  }
+
+  function boot() {
+    bar();
+    buildDrawer();
+    current = visibleTab();
+    sync();
+  }
+
+  var hostSwitch = window.switchTab;
+  if (hostSwitch) {
+    window.switchTab = function (tab) {
+      if (tab && tab !== current) {
+        stack.push(current);
+        if (stack.length > 25) stack.shift();
+      }
+      var result = hostSwitch.apply(this, arguments);
+      sync();
+      return result;
+    };
+  }
+
+  window.ftGoBack = goBack;
+  boot();
+  document.addEventListener('DOMContentLoaded', boot);
+  setInterval(function () { try { buildDrawer(); sync(); } catch (e) { /* not ready */ } }, 1500);
+})(window.FTReview = window.FTReview || {});
 </script>
 </body>
 </html>
