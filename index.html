@@ -174,7 +174,9 @@ button:active, .ft-qa:active { transform:scale(.96); }
       td, th { padding: 6px 4px; white-space: nowrap; }
       .overflow-x-auto { -webkit-overflow-scrolling: touch; overflow-x: auto; }
     }
-    /* ===== STICKY ACTIONS COLUMN: edit/delete always visible on mobile ===== */ @media (max-width: 640px) { .overflow-x-auto table td:last-child, .overflow-x-auto table th:last-child { position: sticky !important; right: 0; z-index: 6; background-color: #ffffff; box-shadow: -8px 0 8px -6px rgba(15,23,42,0.25); } .overflow-x-auto table thead th:last-child { background-color: #f8fafc; } .overflow-x-auto table td:last-child button { min-width: 30px; min-height: 30px; display: inline-flex; align-items: center; justify-content: center; } } /* ===== MODERN BOTTOM NAV ACTIVE COLOR ===== */
+    /* ===== Mobile tables scroll horizontally as one unit (no pinned columns) ===== */
+    @media (max-width: 640px) { .overflow-x-auto { overflow-x: auto !important; } .overflow-x-auto table { min-width: 720px; } }
+    /* ===== MODERN BOTTOM NAV ACTIVE COLOR ===== */
     #mobileBottomNav .ftbn.active { color: #1E3A8A !important; }
     /* ===== 14-DAY DESCRIPTION AUTO-HIDE ===== */
     #appContainer.ft-hide-desc .ft-desc { display: none !important; }
@@ -275,7 +277,8 @@ body #ftHeroCaptionSlot #homeCaption{color:#DBEAFE!important;font-size:11px;marg
 #ftHeroAccount #overviewCardBank h3{color:var(--ftb)!important;font-size:clamp(20px,5vw,28px)!important;}
 #ftBalanceAdd{margin-top:12px;padding:9px 14px;border-radius:999px;background:var(--ftb);color:var(--ftsurface);font-size:11px;font-weight:700;}
 #overviewGreeting{display:none!important;}
-.ft-actions,.ft-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.ft-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.ft-quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
 .ft-action,.ft-quick{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:14px 6px;border:1px solid var(--ftline);border-radius:16px;background:var(--ftsurface);}
 .ft-action i,.ft-quick i{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ftsoft);color:var(--ftb);font-size:17px;}
 .ft-action span,.ft-quick span{font-size:11px;font-weight:700;color:var(--ftink);line-height:1.3;}
@@ -822,7 +825,7 @@ body.ft-dark main .ft-account-group+.ft-account-group{border-top-color:#2C313A;}
           <div id="addMoneySection" class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex items-center justify-between border-b border-emerald-200 pb-3"><h3 class="font-bold text-slate-800 flex items-center"><i class="fa-solid fa-circle-plus text-emerald-600 mr-2"></i> Add Income</h3><div class="flex items-center gap-2 flex-wrap"><div class="inline-flex items-center gap-0.5 bg-white/70 border border-emerald-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('incomeMonthSelect','renderIncomeSection()')" class="text-slate-500 hover:text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_incomeMonthSelect"></span><button onclick="navMonthNext('incomeMonthSelect','renderIncomeSection()')" class="text-slate-500 hover:text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('incomeMonthSelect','renderIncomeSection()')" class="text-slate-500 hover:text-emerald-600 px-2 py-1 rounded hover:bg-emerald-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="incomeMonthSelect" value=""><button onclick="openAddMoneyModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow">+ Add Income</button></div></div><p class="text-xs text-slate-500">Record income by selecting where it was added: Bank Account, Cash in Hand, or Credit Card. This creates a transaction log without duplicating entries.</p><div id="recentIncomeContainer" class="space-y-1"></div><div id="recentIncomeViewMore" class="hidden text-center py-2"><button onclick="showMoreIncome()" class="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold text-xs rounded-lg transition">View More</button></div></div>
           
           </section>
-        <div id="modalCashbookPdf" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4"><h3 class="font-bold text-base">Monthly Cashbook (PDF)</h3><div class="flex items-center gap-2"><label class="text-xs font-bold text-slate-500 uppercase">Month</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-indigo-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('cashbookPdfMonthSelect','')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[110px] text-center select-none" id="navLabel_cashbookPdfMonthSelect"></span><button onclick="navMonthNext('cashbookPdfMonthSelect','')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button></div><input type="hidden" id="cashbookPdfMonthSelect" /></div><div class="flex items-center gap-2"><label class="text-xs font-bold text-slate-500 uppercase">Currency</label><select id="cashbookPdfCurrencySelect" class="text-xs font-bold border border-slate-200 rounded-lg px-2 py-1 bg-white"></select></div><div class="flex gap-2"><button onclick="ftViewCashbookPDF()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-eye mr-1"></i>Open</button><button onclick="downloadCashbookPDF()" class="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-download mr-1"></i>Download</button></div><button onclick="document.getElementById('modalCashbookPdf').classList.add('hidden')" class="w-full px-4 py-2 bg-slate-200 font-bold text-xs rounded-lg">Close</button></div></div>
+        <div id="modalCashbookPdf" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-4"><h3 class="font-bold text-base">Monthly Cashbook (PDF)</h3><div class="flex items-center gap-2"><label class="text-xs font-bold text-slate-500 uppercase">Month</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-indigo-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('cashbookPdfMonthSelect','')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[110px] text-center select-none" id="navLabel_cashbookPdfMonthSelect"></span><button onclick="navMonthNext('cashbookPdfMonthSelect','')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button></div><input type="hidden" id="cashbookPdfMonthSelect" /></div><div class="flex items-center gap-2 flex-wrap"><label class="text-xs font-bold text-slate-500 uppercase">Currency</label><div id="cashbookPdfCurrencyToggle" class="ft-cur-toggle" role="group" aria-label="Cashbook currency"></div><select id="cashbookPdfCurrencySelect" class="hidden" aria-hidden="true" tabindex="-1"></select></div><div class="flex gap-2"><button onclick="ftViewCashbookPDF()" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-eye mr-1"></i>Open</button><button onclick="downloadCashbookPDF()" class="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-download mr-1"></i>Download</button></div><button onclick="document.getElementById('modalCashbookPdf').classList.add('hidden')" class="w-full px-4 py-2 bg-slate-200 font-bold text-xs rounded-lg">Close</button></div></div>
 <div id="modalTrip" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="font-bold text-base mb-4">Group Trip</h3><p class="text-[10px] text-slate-500 mb-3"><i class="fa-solid fa-crown text-amber-500 mr-1"></i>You will be the Trip Leader. Only the leader can delete or complete the trip.</p><form id="tripForm" onsubmit="saveTrip(event)" class="space-y-3 text-xs"><div><label class="block font-bold text-slate-600 mb-1">Trip Name</label><input type="text" id="tripName" required class="fintrack-field p-2 border rounded-lg w-full"></div><div><label class="block font-bold text-slate-600 mb-1">Friends</label><div id="tripMembersList" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto"></div></div><div class="flex gap-2 pt-2"><button type="button" onclick="document.getElementById('modalTrip').classList.add('hidden')" class="flex-1 px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-sky-600 text-white font-bold rounded-lg">Save Trip</button></div></form></div></div>
 <div id="modalTripSplit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"><div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"><h3 class="font-bold text-base mb-4">Trip Split</h3><form id="tripSplitForm" onsubmit="saveTripSplit(event)" class="space-y-3 text-xs"><input type="hidden" id="tripSplitTripId"><input type="hidden" id="tripSplitId"><div><label class="block font-bold text-slate-600 mb-1">Date</label><input type="date" id="tripSplitDate" required class="fintrack-field p-2 border rounded-lg w-full"></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div><label class="block font-bold text-slate-600 mb-1">Amount</label><input type="number" step="0.01" id="tripSplitAmount" required class="fintrack-field p-2 border rounded-lg w-full"></div><div><label class="block font-bold text-slate-600 mb-1">Currency</label><select id="tripSplitCurrency" onchange="ftUpdateTripAccountOptions()" class="fintrack-field p-2 border rounded-lg w-full"><option value="SAR">SAR</option><option value="INR">INR</option><option value="AED">AED</option><option value="OMR">OMR</option><option value="QAR">QAR</option><option value="BHD">BHD</option><option value="KWD">KWD</option><option value="UZS">UZS</option><option value="USD">USD</option><option value="GBP">GBP</option><option value="CAD">CAD</option><option value="AUD">AUD</option></select></div></div><div><label class="block font-bold text-slate-600 mb-1">Paid By</label><select id="tripSplitPaidBy" onchange="ftUpdateTripAccountOptions()" class="fintrack-field p-2 border rounded-lg w-full"></select></div><div id="tripSplitAccountWrap" class="hidden p-3 bg-indigo-50 border border-indigo-100 rounded-lg space-y-2"><input type="hidden" id="tripSplitPaymentMethod" value=""><div><label class="block font-bold text-indigo-900">Payment Method <span class="text-red-500">*</span></label><div class="flex flex-wrap gap-2"><button type="button" data-pm="bank" onclick="ftSelectTripPaymentMethod('bank')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-building-columns mr-1"></i>Bank Account</button><button type="button" data-pm="cash" onclick="ftSelectTripPaymentMethod('cash')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-wallet mr-1"></i>Cash in Hand</button><button type="button" data-pm="credit" onclick="ftSelectTripPaymentMethod('credit')" class="trip-pm-btn px-3 py-2 rounded-xl text-xs font-bold transition"><i class="fa-solid fa-credit-card mr-1"></i>Credit Card</button></div></div><div><label class="block font-bold text-indigo-900 mb-1">Deduct From</label><select id="tripSplitAccount" class="fintrack-field p-2 border rounded-lg bg-white w-full"></select></div><p class="text-[10px] text-indigo-700">Your full payment is deducted; only your share counts as a personal expense.</p></div><div class="flex gap-2 pt-2"><button type="button" onclick="document.getElementById('modalTripSplit').classList.add('hidden')" class="flex-1 px-4 py-2 bg-slate-200 font-bold rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-sky-600 text-white font-bold rounded-lg">Save</button></div></form></div></div>
 <section id="sec-expenses" class="tab-content hidden space-y-6"><div class="hidden"><input id="cashbookMonthSelect" type="hidden"><select id="cashbookCurrencySelect"></select><span id="cashbookPeriod"></span><div id="cashbookContainer"></div></div><div class="pastel-rose p-5 rounded-2xl border border-rose-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-rose-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Monthly Expenses</h3><p class="text-xs text-slate-500">Real-time tracker. Logs update instantly upon saving.</p></div><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-rose-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_expenseMonthSelect"></span><button onclick="navMonthNext('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('expenseMonthSelect','renderExpenses()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="expenseMonthSelect" value=""><button onclick="openNewExpenseModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg shadow">+ Add Expense</button></div></div><div id="expenseSummaryContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div><div id="ftAnalyticsBlock" class="pt-2"></div><div class="overflow-x-auto border rounded-lg border-rose-200"><table class="w-full text-left text-xs"><thead><tr class="bg-rose-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3 text-center">Paid By</th><th class="p-3 text-center">Category</th><th class="p-3">Description</th><th class="p-3 text-center">Account</th><th class="p-3 text-right">Amount</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="expensesTable" class="divide-y divide-rose-100 font-medium text-slate-700"></tbody></table></div><div id="expensesViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('expenses')" class="px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-xs rounded-lg transition">View More</button></div><div class="mt-6 border-t pt-4"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-clock-rotate-left mr-1 text-slate-400"></i> Settlement Transfer Logs (this month)</h4><div class="overflow-x-auto"><table class="w-full text-left text-xs bg-slate-50 rounded-lg"><tbody id="settlementsTable" class="divide-y divide-slate-200 text-slate-600"></tbody></table></div></div></div></section>
@@ -4416,7 +4419,7 @@ window.ftUpdateFooterStatus = function() {
   window.deleteHouseholdExpense = async function(id){
     var exp=(state.householdExpenses||[]).find(x=>String(x.id)===String(id));
     if(!exp)return;window._ftHhDeleteBusy=window._ftHhDeleteBusy||{};if(window._ftHhDeleteBusy[id])return;
-    if(exp.paidByUid?exp.paidByUid!==_uid():window.ftFinancialIdentity(exp.paidBy)!==window.ftFinancialIdentity({uid:_uid()})){alert('Only the person who paid can delete this household expense.');return;}
+    /* shared household entries can be edited or removed by any household member */
     if(!window.__ftok){ftConfirm('Delete this household expense? The account deduction will be reversed.',function(){window.__ftok=1;deleteHouseholdExpense(id);});return;}
     window.__ftok=0;window._ftHhDeleteBusy[id]=true;
     var refunded=false;
@@ -6924,7 +6927,7 @@ window.ftToggleHhMenu = function (e) {
           '<button type="button" class="ft-quick" onclick="switchTab(\'household\')"><i class="fa-solid fa-house-chimney-user"></i><span>Household</span></button>' +
           '<button type="button" class="ft-quick" onclick="openFriendSplitModal()"><i class="fa-solid fa-people-arrows"></i><span>Friend Split</span></button>' +
           '<button type="button" class="ft-quick" onclick="switchTab(\'gold-sip\')"><i class="fa-solid fa-coins"></i><span>Add Investment</span><small class="ft-quick-note">Gold &amp; SIP</small></button>' +
-          '<button type="button" class="ft-quick" onclick="ftOpenMoreLinks()"><i class="fa-solid fa-ellipsis"></i><span>More</span></button>' +
+          '<button type="button" class="ft-quick" onclick="ftOpenMoreLinks()"><i class="fa-solid fa-chevron-right"></i><span>More ›</span></button>' +
         '</div>' +
         '<div id="ftLegacyQuick" class="hidden"></div>' +
       '</div>' +
@@ -8157,5 +8160,1063 @@ window.ftToggleHhMenu = function (e) {
   setInterval(function () { try { buildDrawer(); sync(); } catch (e) { /* not ready */ } }, 1500);
 })(window.FTReview = window.FTReview || {});
 </script>
+<style data-ft-patch="styles">
+/* ===== Quick Links: four options in one row ===== */
+.ft-quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;}
+.ft-quick{padding:12px 2px!important;gap:6px!important;min-width:0!important;}
+.ft-quick i{width:38px!important;height:38px!important;font-size:15px!important;}
+.ft-quick span{font-size:10px!important;line-height:1.15!important;letter-spacing:.1px;white-space:normal!important;word-break:normal!important;}
+.ft-quick .ft-quick-note{font-size:8px!important;line-height:1.1;opacity:.75;}
+#ftQuickLinks .ft-quick-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+@media (max-width:360px){
+  .ft-quick{padding:10px 1px!important;gap:5px!important;}
+  .ft-quick i{width:34px!important;height:34px!important;font-size:13px!important;}
+  .ft-quick span{font-size:9px!important;}
+}
+/* ===== Hexagon currency toggle (Monthly Cashbook PDF) ===== */
+.ft-cur-toggle{display:inline-flex;align-items:center;gap:6px;padding:3px;border:1px solid #C7D2FE;border-radius:12px;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04);}
+.ft-cur-btn{position:relative;border:0;background:#fff;color:#1E3A8A;font-weight:800;font-size:11px;letter-spacing:.4px;padding:9px 18px;cursor:pointer;
+  clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);
+  -webkit-clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);
+  transition:background .18s ease,color .18s ease;outline:none;}
+.ft-cur-btn:focus-visible{box-shadow:inset 0 0 0 2px #93C5FD;}
+.ft-cur-btn.is-active{background:#1E3A8A;color:#fff;}
+.ft-cur-btn:not(.is-active):hover{background:#EEF2FF;}
+/* ===== PDF viewer overlay ===== */
+#ftPdfOverlay{position:fixed;inset:0;z-index:130;background:#0f172a;display:flex;flex-direction:column;}
+#ftPdfOverlay .ft-pdf-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-bottom:1px solid #e2e8f0;}
+#ftPdfOverlay .ft-pdf-bar h3{flex:1;min-width:0;font-size:12px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#ftPdfOverlay iframe{flex:1;width:100%;border:0;background:#525659;}
+/* ===== Android update gate ===== */
+#ftUpdateGate{position:fixed;inset:0;z-index:140;background:linear-gradient(160deg,#1E3A8A,#0f172a);display:flex;align-items:center;justify-content:center;padding:24px;}
+#ftUpdateGate .ft-up-card{background:#fff;border-radius:18px;padding:24px;max-width:380px;text-align:center;box-shadow:0 20px 50px rgba(2,6,23,.45);}
+#ftUpdateGate h2{font-size:17px;font-weight:800;color:#0f172a;margin-bottom:10px;}
+#ftUpdateGate p{font-size:13px;color:#475569;line-height:1.5;margin-bottom:18px;}
+#ftUpdateGate button{width:100%;padding:13px;border-radius:12px;background:#1E3A8A;color:#fff;font-weight:800;font-size:13px;border:0;}
+body.ft-scroll-lock{overscroll-behavior:none;}
+</style>
+<script data-ft-patch="core">
+/* FinTrack patch: UI + reports + date integrity + platform gates */
+(function () {
+  'use strict';
+  var NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  var PLATFORM = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : 'web';
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function pad2(n) { return String(n).length < 2 ? '0' + n : String(n); }
+  function monthLabel(month) {
+    if (!month) return '';
+    var p = String(month).split('-');
+    var y = parseInt(p[0], 10), m = parseInt(p[1], 10);
+    if (!y || !m) return String(month);
+    return MONTHS[m - 1] + ' ' + y;
+  }
+  function periodLabel(month) {
+    var p = String(month).split('-');
+    var y = parseInt(p[0], 10), m = parseInt(p[1], 10);
+    if (!y || !m) return '';
+    var last = new Date(y, m, 0).getDate();
+    return '1 ' + MONTHS[m - 1] + ' ' + y + ' \u2013 ' + last + ' ' + MONTHS[m - 1] + ' ' + y;
+  }
+  function fileStamp(month) { return monthLabel(month).replace(' ', '_'); }
+
+  /* ============================================================
+     1. MODAL SCROLL LOCK — freezes the page behind every overlay
+     ============================================================ */
+  var locked = false, prevBodyOverflow = '', prevHtmlOverflow = '', lockDepth = 0;
+  var OVERLAY_SELECTOR = '[id^="modal"]:not(.hidden),[id^="Modal"]:not(.hidden),.ft-sheet,#ftReportViewer,#ftMoreSheet,#ftPdfOverlay';
+
+  function overlayVisible() {
+    var nodes = document.querySelectorAll(OVERLAY_SELECTOR);
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (!el || el.getAttribute('aria-hidden') === 'true') continue;
+      var cs = window.getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      if (cs.position !== 'fixed') continue;
+      var box = el.getBoundingClientRect();
+      if (box.height < 40 || box.width < 40) continue;
+      return true;
+    }
+    return false;
+  }
+  function syncScrollLock() {
+    var open = overlayVisible();
+    if (open && !locked) {
+      locked = true;
+      prevBodyOverflow = document.body.style.overflow || '';
+      prevHtmlOverflow = document.documentElement.style.overflow || '';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.classList.add('ft-scroll-lock');
+    } else if (!open && locked) {
+      locked = false;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.classList.remove('ft-scroll-lock');
+    }
+  }
+  window.ftSyncScrollLock = syncScrollLock;
+  var scheduled = false;
+  function scheduleSync() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(function () { scheduled = false; try { syncScrollLock(); } catch (e) {} });
+  }
+  try {
+    new MutationObserver(scheduleSync).observe(document.documentElement, {
+      subtree: true, attributes: true, attributeFilter: ['class', 'style']
+    });
+  } catch (e) {}
+  document.addEventListener('touchmove', function (e) {
+    if (!locked) return;
+    var node = e.target;
+    while (node && node !== document.body) {
+      var cs = window.getComputedStyle(node);
+      var oy = cs.overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 2) return;
+      node = node.parentElement;
+    }
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('DOMContentLoaded', scheduleSync);
+  setInterval(function () { try { syncScrollLock(); } catch (e) {} }, 1200);
+
+  /* ============================================================
+     2. EXPENSE DATE INTEGRITY — month always follows the
+        transaction date, never the month being viewed
+     ============================================================ */
+  function normalizeExpenseMonths() {
+    var st = window.state;
+    if (!st || !st.expenses || typeof st.expenses !== 'object') return false;
+    var keys = Object.keys(st.expenses), changed = false, i, k;
+    for (i = 0; i < keys.length; i++) {
+      k = keys[i];
+      var list = st.expenses[k];
+      if (!list || !list.length) continue;
+      var keep = [];
+      for (var j = 0; j < list.length; j++) {
+        var item = list[j];
+        var m = item && item.date ? String(item.date).slice(0, 7) : '';
+        if (/^\d{4}-\d{2}$/.test(m) && m !== k) {
+          if (!st.expenses[m]) st.expenses[m] = [];
+          st.expenses[m].push(item);
+          changed = true;
+        } else { keep.push(item); }
+      }
+      if (changed) st.expenses[k] = keep;
+    }
+    return changed;
+  }
+  var normalizing = false;
+  function patchSaveData() {
+    if (typeof window.saveData !== 'function' || window.saveData.__ftPatched) return;
+    var host = window.saveData;
+    var wrapped = function () {
+      if (!normalizing) {
+        normalizing = true;
+        try { normalizeExpenseMonths(); } catch (e) {} finally { normalizing = false; }
+      }
+      return host.apply(this, arguments);
+    };
+    wrapped.__ftPatched = true;
+    window.saveData = wrapped;
+  }
+  patchSaveData();
+  var patchTries = 0;
+  var patchTimer = setInterval(function () {
+    patchSaveData();
+    if (window.saveData && window.saveData.__ftPatched) clearInterval(patchTimer);
+    if (++patchTries > 40) clearInterval(patchTimer);
+  }, 250);
+
+  /* Latest transaction first: transaction date, then creation time */
+  function createdStamp(o) {
+    if (!o) return 0;
+    var raw = o.createdAt || o.created_at || o.updatedAt || o.addedAt || '';
+    var t = raw ? Date.parse(raw) : 0;
+    if (isNaN(t)) t = 0;
+    if (!t && o.id != null && String(o.id).match(/^\d{10,}$/)) t = Number(o.id);
+    return t;
+  }
+  window.sortByDateDesc = function (arr) {
+    return (arr || []).slice().sort(function (a, b) {
+      var da = String((a && a.date) || ''), db = String((b && b.date) || '');
+      if (db !== da) return db.localeCompare(da);
+      var ta = createdStamp(a), tb = createdStamp(b);
+      if (tb !== ta) return tb - ta;
+      return String((b && b.id) || '').localeCompare(String((a && a.id) || ''));
+    });
+  };
+  window.ftCreatedStamp = createdStamp;
+
+  /* Household month = transaction date only (no created-date fallback) */
+  window.ftHhInMonth = function (e, month) {
+    if (!e) return false;
+    if (String(e.date || '').slice(0, 7) === month) return true;
+    if (!e.date && month === (window.currentMonthStr ? currentMonthStr() : '')) return true;
+    return false;
+  };
+
+  /* ============================================================
+     3. MONTHLY CASHBOOK PDF — currency toggle (hexagonal)
+     ============================================================ */
+  function cashbookCurrencyPair() {
+    var list = [];
+    try {
+      var month = (window.currentMonthStr ? currentMonthStr() : '');
+      if (window._cashbookCurrencies) list = window._cashbookCurrencies(month) || [];
+    } catch (e) { list = []; }
+    var first = window.getFirstCurrency ? window.getFirstCurrency() : 'INR';
+    var second = window.getSecondCurrency ? window.getSecondCurrency() : '';
+    if (!list.length) list = [first];
+    if (second && list.indexOf(second) === -1) list.push(second);
+    if (list.length > 2) {
+      var pair = [];
+      if (first && list.indexOf(first) > -1) pair.push(first);
+      if (second && list.indexOf(second) > -1 && pair.indexOf(second) === -1) pair.push(second);
+      if (pair.length < 2) {
+        for (var i = 0; i < list.length && pair.length < 2; i++) if (pair.indexOf(list[i]) === -1) pair.push(list[i]);
+      }
+      list = pair;
+    }
+    return list.slice(0, 2);
+  }
+
+  window.ftRenderCashbookCurrencyToggle = function () {
+    var host = document.getElementById('cashbookPdfCurrencyToggle');
+    var sel = document.getElementById('cashbookPdfCurrencySelect');
+    if (!host) return;
+    var list = cashbookCurrencyPair();
+    var current = (sel && sel.value && list.indexOf(sel.value) > -1) ? sel.value : list[0];
+    if (sel) {
+      sel.innerHTML = list.map(function (c) { return '<option value="' + c + '">' + c + '</option>'; }).join('');
+      sel.value = current;
+    }
+    host.innerHTML = list.map(function (c) {
+      return '<button type="button" class="ft-cur-btn' + (c === current ? ' is-active' : '') +
+        '" data-cur="' + c + '" aria-pressed="' + (c === current) + '" onclick="ftSelectCashbookCurrency(\'' + c + '\')">' + c + '</button>';
+    }).join('');
+  };
+
+  window.ftSelectCashbookCurrency = function (code) {
+    var sel = document.getElementById('cashbookPdfCurrencySelect');
+    if (sel) sel.value = code;
+    var host = document.getElementById('cashbookPdfCurrencyToggle');
+    if (host) {
+      var buttons = host.querySelectorAll('.ft-cur-btn');
+      for (var i = 0; i < buttons.length; i++) {
+        var on = buttons[i].getAttribute('data-cur') === code;
+        buttons[i].classList.toggle('is-active', on);
+        buttons[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+    }
+  };
+
+  var hostOpenCashbookModal = window.ftOpenCashbookPdfModal;
+  window.ftOpenCashbookPdfModal = function () {
+    if (typeof hostOpenCashbookModal === 'function') hostOpenCashbookModal.apply(this, arguments);
+    try { window.ftRenderCashbookCurrencyToggle(); } catch (e) {}
+    try { window.ftSyncScrollLock(); } catch (e) {}
+  };
+  window.ftViewCashbookPDF = function () { window.downloadCashbookPDF('view'); };
+
+  /* ============================================================
+     4. BRANDED PDF ENGINE — blue/white hexagonal reports
+     ============================================================ */
+  var C_BLUE = [30, 58, 138], C_BLUE_MID = [48, 80, 170], C_INK = [15, 23, 42];
+  var C_HEAD = [232, 238, 251], C_ZEBRA = [247, 249, 254], C_GRID = [219, 228, 246], C_GRID_HEAD = [199, 210, 240];
+  var C_INK_SOFT = [100, 116, 139];
+  var C_GOOD_BG = [236, 253, 245], C_GOOD_INK = [4, 120, 87];
+  var C_BAD_BG = [254, 242, 242], C_BAD_INK = [185, 28, 28];
+  var C_NEUTRAL_BG = [238, 242, 255], C_NEUTRAL_INK = [30, 58, 138];
+
+  function getJsPDF() { var m = window.jspdf || {}; return m.jsPDF || null; }
+
+  function pdfMoney(value, currency) {
+    var n = Number(value || 0);
+    var neg = n < 0;
+    n = Math.abs(n);
+    var txt = n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (neg ? '-' : '') + (currency ? currency + ' ' : '') + txt;
+  }
+  function cleanCell(v) {
+    var s = (v == null ? '' : String(v)).trim();
+    if (s === '\u2014' || s === '-') return '';
+    return s;
+  }
+  function hexVerts(cx, cy, r) {
+    var v = [];
+    for (var i = 0; i < 6; i++) {
+      var a = Math.PI / 180 * (60 * i - 90);
+      v.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+    }
+    return v;
+  }
+  function fillHex(doc, cx, cy, r, color) {
+    doc.setFillColor(color[0], color[1], color[2]);
+    var v = hexVerts(cx, cy, r);
+    for (var i = 0; i < 6; i++) {
+      var a = v[i], b = v[(i + 1) % 6];
+      doc.triangle(cx, cy, a[0], a[1], b[0], b[1], 'F');
+    }
+  }
+  function strokeHex(doc, cx, cy, r, color, width) {
+    doc.setDrawColor(color[0], color[1], color[2]);
+    doc.setLineWidth(width || 0.6);
+    var v = hexVerts(cx, cy, r);
+    for (var i = 0; i < 6; i++) {
+      var a = v[i], b = v[(i + 1) % 6];
+      doc.line(a[0], a[1], b[0], b[1]);
+    }
+  }
+
+  function drawHeader(doc, meta) {
+    var pw = doc.internal.pageSize.getWidth();
+    var H = meta.headerH;
+    doc.setFillColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
+    doc.rect(0, 0, pw, H, 'F');
+    var rows = Math.ceil(H / 30) + 1;
+    for (var r = 0; r < rows; r++) {
+      for (var cx = 6; cx < pw + 26; cx += 26) {
+        strokeHex(doc, cx + (r % 2 ? 13 : 0), 10 + r * 30, 10.5, C_BLUE_MID, 0.7);
+      }
+    }
+    for (var x = 4; x < pw + 14; x += 17) { fillHex(doc, x, H, 6.4, [255, 255, 255]); }
+    var badgeX = pw - 56, badgeY = H - 36;
+    fillHex(doc, badgeX, badgeY, 25, [255, 255, 255]);
+    doc.setTextColor(C_BLUE[0], C_BLUE[1], C_BLUE[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(meta.currency && String(meta.currency).length > 3 ? 8 : 10.5);
+    doc.text(String(meta.currency || ''), badgeX, badgeY + 3.6, { align: 'center' });
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.text('FinTrack', 32, 42);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.4);
+    doc.text(meta.docType || 'Monthly Cashbook', 32, 55);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14.5);
+    doc.text(String(meta.title || '').slice(0, 56), 32, 84);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.8);
+    doc.text('Reporting period: ' + meta.period, 32, 101);
+    doc.text((meta.accountLabel || 'Primary Cashbook') + '   \u2022   Currency: ' + meta.currency, 32, 115);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(15);
+    doc.text(meta.monthLabel, pw - 32, 42, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.2);
+    if (meta.generated) doc.text(meta.generated, pw - 32, 55, { align: 'right' });
+  }
+
+  function drawTable(doc, meta, head, body, columnStyles, fontSize) {
+    doc.autoTable({
+      startY: meta.headerH + 24,
+      head: [head],
+      body: body,
+      margin: { top: meta.headerH + 24, left: 28, right: 28, bottom: 48 },
+      theme: 'grid',
+      styles: {
+        font: 'helvetica', fontSize: fontSize || 7.6, cellPadding: 4.4, textColor: C_INK,
+        lineColor: C_GRID, lineWidth: 0.4, overflow: 'linebreak', valign: 'middle'
+      },
+      headStyles: {
+        fillColor: C_HEAD, textColor: C_BLUE, fontStyle: 'bold', fontSize: (fontSize || 7.6) + 0.3,
+        lineColor: C_GRID_HEAD, lineWidth: 0.5
+      },
+      alternateRowStyles: { fillColor: C_ZEBRA },
+      columnStyles: columnStyles || {},
+      didDrawPage: function () { drawHeader(doc, meta); }
+    });
+    return doc.lastAutoTable ? doc.lastAutoTable.finalY : meta.headerH + 40;
+  }
+
+  function drawTotals(doc, meta, y, chips) {
+    var pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight();
+    var h = 38, gap = 10;
+    var w = Math.min(210, (pw - 56 - gap * (chips.length - 1)) / chips.length);
+    if (y + h + 70 > ph) { doc.addPage(); drawHeader(doc, meta); y = meta.headerH + 26; }
+    var x = 28;
+    chips.forEach(function (chip) {
+      doc.setFillColor(chip.bg[0], chip.bg[1], chip.bg[2]);
+      doc.roundedRect(x, y, w, h, 7, 7, 'F');
+      doc.setTextColor(C_INK_SOFT[0], C_INK_SOFT[1], C_INK_SOFT[2]);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.2);
+      doc.text(String(chip.label).toUpperCase(), x + 9, y + 13);
+      doc.setTextColor(chip.ink[0], chip.ink[1], chip.ink[2]);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5);
+      doc.text(chip.value, x + 9, y + 28);
+      x += w + gap;
+    });
+    return y + h;
+  }
+
+  function finalizePdf(doc, footerLabel) {
+    var total = doc.internal.getNumberOfPages();
+    for (var p = 1; p <= total; p++) {
+      doc.setPage(p);
+      var pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight();
+      doc.setDrawColor(C_GRID[0], C_GRID[1], C_GRID[2]);
+      doc.setLineWidth(0.9);
+      doc.line(28, ph - 32, pw - 28, ph - 32);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7.4);
+      doc.setTextColor(C_INK_SOFT[0], C_INK_SOFT[1], C_INK_SOFT[2]);
+      doc.text('FinTrack  \u2022  ' + (footerLabel || ''), 28, ph - 19);
+      doc.text('Page ' + p + ' of ' + total, pw - 28, ph - 19, { align: 'right' });
+    }
+    doc.setPage(1);
+    return doc;
+  }
+
+  function cashbookBody(entries, currency) {
+    var body = [], income = 0, expense = 0, cumExpense = 0;
+    entries.forEach(function (e) {
+      var amt = Number(e.amount || 0);
+      var isPos = (e.type === 'Income' || e.type === 'Payment');
+      var isNeg = (e.type === 'Expense' || e.type === 'Charge');
+      if (isPos) income += amt;
+      if (isNeg) { expense += amt; cumExpense += amt; }
+      body.push([
+        cleanCell(e.date),
+        cleanCell(e.desc),
+        cleanCell(e.category) || 'Other',
+        cleanCell(e.type),
+        (isPos ? '+' : (isNeg ? '\u2013' : '')) + pdfMoney(amt, e.currency || currency),
+        cleanCell(e.mode),
+        cleanCell(e.account),
+        cumExpense > 0 ? pdfMoney(cumExpense, currency) : ''
+      ]);
+    });
+    return { body: body, income: income, expense: expense };
+  }
+
+  var CASHBOOK_COLS = {
+    0: { cellWidth: 54 },
+    1: { cellWidth: 'auto' },
+    2: { cellWidth: 72 },
+    3: { cellWidth: 52 },
+    4: { cellWidth: 82, halign: 'right' },
+    5: { cellWidth: 50 },
+    6: { cellWidth: 88 },
+    7: { cellWidth: 82, halign: 'right' }
+  };
+  var CASHBOOK_HEAD = ['Date', 'Description', 'Category', 'Type', 'Amount', 'Mode', 'Account', 'Total Expense'];
+
+  function buildCashbookReport(month, currency, entriesOverride, cardsOverride) {
+    var JsPDF = getJsPDF();
+    if (!JsPDF) return null;
+    var doc = new JsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    var first = window.getFirstCurrency ? window.getFirstCurrency() : 'INR';
+    var second = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR';
+    var accountLabel = currency === first ? 'Primary Cashbook' : (currency === second ? 'Secondary Cashbook' : currency + ' Cashbook');
+    var meta = {
+      headerH: 138,
+      docType: 'Monthly Cashbook',
+      title: 'Monthly Cashbook',
+      period: periodLabel(month),
+      accountLabel: accountLabel,
+      currency: currency,
+      monthLabel: monthLabel(month),
+      generated: 'Generated ' + new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    };
+    var entries = entriesOverride || (window._buildCashbookEntriesForCurrency ? window._buildCashbookEntriesForCurrency(month, currency) : []) || [];
+    var built = cashbookBody(entries, currency);
+    var body = built.body.length ? built.body : [['\u2014', 'No transactions recorded for this month', '', '', '', '', '', '']];
+    var y = drawTable(doc, meta, CASHBOOK_HEAD, body, CASHBOOK_COLS, 7.6);
+    drawTotals(doc, meta, y + 16, [
+      { label: 'Income added', value: pdfMoney(built.income, currency), bg: C_GOOD_BG, ink: C_GOOD_INK },
+      { label: 'Total expense', value: pdfMoney(built.expense, currency), bg: C_BAD_BG, ink: C_BAD_INK },
+      { label: 'Net movement', value: pdfMoney(built.income - built.expense, currency), bg: C_NEUTRAL_BG, ink: C_NEUTRAL_INK }
+    ]);
+
+    var cards = cardsOverride;
+    if (!cards) {
+      cards = (window.state && window.state.banks ? window.state.banks : []).filter(function (b) {
+        return b.bankType === 3 && (b.currency || 'INR') === currency;
+      });
+    }
+    (cards || []).forEach(function (card) {
+      doc.addPage();
+      var cardMeta = {
+        headerH: 138,
+        docType: 'Monthly Cashbook',
+        title: 'Credit Card Cashbook \u2013 ' + (card.name || 'Card'),
+        period: meta.period,
+        accountLabel: 'Credit Card Cashbook',
+        currency: card.currency || currency,
+        monthLabel: meta.monthLabel,
+        generated: meta.generated
+      };
+      var cardEntries = window._buildCashbookEntriesForCard ? window._buildCashbookEntriesForCard(month, card) : [];
+      var cardBuilt = cashbookBody(cardEntries || [], cardMeta.currency);
+      var cardBody = cardBuilt.body.length ? cardBuilt.body : [['\u2014', 'No transactions recorded for this month', '', '', '', '', '', '']];
+      var cy = drawTable(doc, cardMeta, CASHBOOK_HEAD, cardBody, CASHBOOK_COLS, 7.6);
+      drawTotals(doc, cardMeta, cy + 16, [
+        { label: 'Payments', value: pdfMoney(cardBuilt.income, cardMeta.currency), bg: C_GOOD_BG, ink: C_GOOD_INK },
+        { label: 'Charges', value: pdfMoney(cardBuilt.expense, cardMeta.currency), bg: C_BAD_BG, ink: C_BAD_INK },
+        { label: 'Net movement', value: pdfMoney(cardBuilt.income - cardBuilt.expense, cardMeta.currency), bg: C_NEUTRAL_BG, ink: C_NEUTRAL_INK }
+      ]);
+    });
+
+    finalizePdf(doc, 'Monthly Cashbook  \u2022  ' + monthLabel(month) + '  \u2022  ' + currency);
+    return doc;
+  }
+
+  function buildHouseholdReport(month) {
+    var JsPDF = getJsPDF();
+    if (!JsPDF) return null;
+    var doc = new JsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    var first = window.getFirstCurrency ? window.getFirstCurrency() : 'INR';
+    var second = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR';
+    var meta = {
+      headerH: 132,
+      docType: 'Household Settlement',
+      title: 'Household Settlement',
+      period: periodLabel(month),
+      accountLabel: 'Shared Household Account',
+      currency: first + ' / ' + second,
+      monthLabel: monthLabel(month),
+      generated: 'Generated ' + new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    };
+
+    var members = (window.ftHhUniqueMembers ? window.ftHhUniqueMembers() : []) || [];
+    var memberNames = members.map(function (m) { return m.name; });
+    var hhExpenses = (window.state.householdExpenses || []).filter(function (e) { return window.ftHhInMonth(e, month); });
+    var crossSplits = [];
+    ((window.state.friendSplits && window.state.friendSplits[month]) || []).forEach(function (fs) {
+      var people = fs.participants || [];
+      if (!people.some(function (p) { return memberNames.indexOf(p) !== -1; })) return;
+      crossSplits.push({
+        date: fs.date, description: 'Friends Split: ' + (fs.description || ''), category: 'Friends Split',
+        paidBy: fs.paidBy || (people[0] || ''), amount: fs.amount, currency: fs.currency || 'INR',
+        splitAmong: people.slice()
+      });
+    });
+    (window.state.trips || []).forEach(function (trip) {
+      Object.values(trip.splits || {}).forEach(function (s) {
+        if (String(s.date || '').slice(0, 7) !== month) return;
+        var tMembers = (trip.members || []).map(function (m) { return m.name || m; });
+        if (!tMembers.some(function (n) { return memberNames.indexOf(n) !== -1; })) return;
+        crossSplits.push({
+          date: s.date, description: 'Trip Split: ' + (trip.name || 'Trip') + (s.description ? ' - ' + s.description : ''),
+          category: 'Trip Split', paidBy: s.paidBy || '', amount: s.amount, currency: s.currency || 'INR',
+          splitAmong: tMembers.slice()
+        });
+      });
+    });
+    var allExpenses = window.sortByDateDesc([].concat(hhExpenses, crossSplits));
+    var settlements = window.sortByDateDesc((window.state.householdSettlements || []).filter(function (s) {
+      return String(s.date || '').slice(0, 7) === month;
+    }));
+
+    var totals = {};
+    hhExpenses.concat(crossSplits).forEach(function (e) {
+      var c = e.currency || 'INR';
+      totals[c] = (totals[c] || 0) + Number(e.amount || 0);
+    });
+
+    var memberBody = members.map(function (m) {
+      var bal = window.householdBalanceByCurrency ? householdBalanceByCurrency(m.name) : {};
+      var inr = Object.keys(bal).reduce(function (sum, c) { return sum + (window.convertToINR ? convertToINR(bal[c], c) : bal[c]); }, 0);
+      var status = 'Settled';
+      if (inr > 0.01) status = 'To receive';
+      else if (inr < -0.01) status = 'To pay';
+      var outstanding = window.formatMultiCurrency ? formatMultiCurrency(bal) : pdfMoney(bal[first] || 0, first);
+      return [m.name, status, outstanding];
+    });
+    if (!memberBody.length) memberBody = [['No members', '-', '-']];
+
+    var y = drawTable(doc, meta, ['Member', 'Status', 'Outstanding'], memberBody, {
+      1: { cellWidth: 74 }, 2: { cellWidth: 140, halign: 'right' }
+    }, 8.4);
+
+    y = drawTotals(doc, meta, y + 16, [
+      { label: 'Household spend (' + first + ')', value: pdfMoney(totals[first] || 0, first), bg: C_NEUTRAL_BG, ink: C_NEUTRAL_INK },
+      { label: 'Household spend (' + second + ')', value: pdfMoney(totals[second] || 0, second), bg: C_HEAD, ink: C_BLUE }
+    ]);
+
+    var expBody = allExpenses.map(function (e) {
+      var split = (e.splitAmong && e.splitAmong.length ? e.splitAmong : memberNames).join(', ');
+      return [cleanCell(e.date), cleanCell(e.description), cleanCell(e.category) || 'Other',
+        cleanCell(e.paidBy), pdfMoney(e.amount, e.currency || first), split];
+    });
+    if (!expBody.length) expBody = [['\u2014', 'No household expenses for this month', '', '', '', '']];
+
+    doc.addPage();
+    var y2 = drawTable(doc, meta, ['Date', 'Description', 'Category', 'Paid By', 'Amount', 'Split Among'], expBody, {
+      0: { cellWidth: 50 }, 2: { cellWidth: 64 }, 4: { cellWidth: 72, halign: 'right' }, 5: { cellWidth: 96 }
+    }, 7.8);
+
+    var setBody = settlements.map(function (s) {
+      return [cleanCell(s.date), cleanCell(s.fromMember), cleanCell(s.toMember),
+        pdfMoney(s.amount, s.currency || first), cleanCell(s.accountName) || '-', cleanCell(s.notes) || '-'];
+    });
+    if (!setBody.length) setBody = [['\u2014', 'No settlements for this month', '', '', '', '']];
+
+    doc.addPage();
+    drawTable(doc, meta, ['Date', 'From', 'To', 'Amount', 'Account', 'Notes'], setBody, {
+      0: { cellWidth: 50 }, 1: { cellWidth: 74 }, 2: { cellWidth: 74 }, 3: { cellWidth: 74, halign: 'right' },
+      4: { cellWidth: 80 }
+    }, 7.8);
+
+    finalizePdf(doc, 'Household Settlement  \u2022  ' + monthLabel(month));
+    return doc;
+  }
+
+  /* ============================================================
+     5. OPEN / DOWNLOAD — works on web, Android and iOS
+     ============================================================ */
+  function blobToBase64(blob) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        try { resolve(String(reader.result || '').split(',')[1] || ''); } catch (e) { reject(e); }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function nativeSavePdf(blob, fileName, title, open) {
+    var plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
+    if (!plugins.Filesystem || !blob.size) return false;
+    var base64 = await blobToBase64(blob);
+    var dir = (plugins.Filesystem.Directory && (plugins.Filesystem.Directory.Documents || plugins.Filesystem.Directory.Data)) || 'DOCUMENTS';
+    await plugins.Filesystem.writeFile({ path: fileName, data: base64, directory: dir, recursive: true });
+    var uriRes = await plugins.Filesystem.getUri({ path: fileName, directory: dir });
+    var fileUri = uriRes && uriRes.uri;
+    if (open && plugins.FileOpener && fileUri) {
+      try { await plugins.FileOpener.open({ filePath: fileUri, contentType: 'application/pdf' }); return true; } catch (e) {}
+    }
+    if (plugins.Share && fileUri) {
+      try { await plugins.Share.share({ files: [fileUri], title: title || fileName, dialogTitle: title || fileName }); return true; } catch (e) {}
+    }
+    return true;
+  }
+
+  function showPdfOverlay(url, fileName, blob) {
+    var old = document.getElementById('ftPdfOverlay');
+    if (old) old.remove();
+    var wrap = document.createElement('div');
+    wrap.id = 'ftPdfOverlay';
+    var bar = document.createElement('div');
+    bar.className = 'ft-pdf-bar';
+    var title = document.createElement('h3');
+    title.textContent = fileName;
+    var saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'px-3 py-2 bg-[#1E3A8A] text-white font-bold text-xs rounded-lg';
+    saveBtn.textContent = 'Download';
+    saveBtn.onclick = function () {
+      var a = document.createElement('a');
+      a.href = url; a.download = fileName;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { try { a.remove(); } catch (e) {} }, 1500);
+    };
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'px-3 py-2 bg-slate-200 text-slate-800 font-bold text-xs rounded-lg';
+    closeBtn.textContent = 'Close';
+    closeBtn.onclick = function () { wrap.remove(); try { window.ftSyncScrollLock(); } catch (e) {} };
+    bar.appendChild(title); bar.appendChild(saveBtn); bar.appendChild(closeBtn);
+    var frame = document.createElement('iframe');
+    frame.src = url;
+    frame.title = fileName;
+    wrap.appendChild(bar); wrap.appendChild(frame);
+    document.body.appendChild(wrap);
+    try { window.ftSyncScrollLock(); } catch (e) {}
+  }
+
+  window.ftOpenPdfDocument = function (doc, fileName, title) {
+    var blob;
+    try { blob = doc.output('blob'); } catch (e) { blob = null; }
+    if (!blob || !blob.size || blob.size < 700) {
+      alert('The PDF could not be created. Please try again.');
+      return false;
+    }
+    if (NATIVE) {
+      nativeSavePdf(blob, fileName, title, true).catch(function (err) {
+        console.error('Native PDF open failed', err);
+        alert('Could not open the PDF on this device: ' + (err && err.message ? err.message : err));
+      });
+      return true;
+    }
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var file = null;
+    try { file = new File([blob], fileName, { type: 'application/pdf' }); } catch (e) { file = null; }
+    if (isIOS && file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: title || fileName }).catch(function () {
+        showPdfOverlay(URL.createObjectURL(blob), fileName, blob);
+      });
+      return true;
+    }
+    var url = URL.createObjectURL(blob);
+    var win = null;
+    try { win = window.open(url, '_blank'); } catch (e) { win = null; }
+    if (!win) showPdfOverlay(url, fileName, blob);
+    setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 90000);
+    return true;
+  };
+
+  window.ftDownloadPdfDocument = async function (doc, fileName) {
+    var blob;
+    try { blob = doc.output('blob'); } catch (e) { blob = null; }
+    if (!blob || !blob.size || blob.size < 700) {
+      alert('The PDF could not be created. Please try again.');
+      return false;
+    }
+    if (NATIVE) {
+      try {
+        await nativeSavePdf(blob, fileName, fileName, false);
+        if (typeof window.ftToast === 'function') window.ftToast('Saved ' + fileName);
+        return true;
+      } catch (err) {
+        console.error('Native PDF save failed', err);
+      }
+    }
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    try {
+      var file = new File([blob], fileName, { type: 'application/pdf' });
+      if (isIOS && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: fileName });
+        return true;
+      }
+    } catch (e) { /* fall through to a normal download */ }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      try { a.remove(); } catch (e) {}
+      try { URL.revokeObjectURL(url); } catch (e) {}
+    }, 5000);
+    if (typeof window.ftToast === 'function') window.ftToast('Downloading ' + fileName);
+    return true;
+  };
+
+  /* ============================================================
+     6. WIRE THE REPORTS INTO THE EXISTING BUTTONS
+     ============================================================ */
+  window.downloadCashbookPDF = function (mode) {
+    var monthSel = document.getElementById('cashbookPdfMonthSelect');
+    var month = (monthSel && monthSel.value) ? monthSel.value : (window.currentMonthStr ? currentMonthStr() : '');
+    if (!month) { alert('Please select a month.'); return; }
+    if (!getJsPDF()) {
+      alert('The PDF library did not load (check your internet connection). Please reload the page and try again.');
+      return;
+    }
+    var sel = document.getElementById('cashbookPdfCurrencySelect');
+    var pair = cashbookCurrencyPair();
+    var currency = (sel && sel.value && pair.indexOf(sel.value) > -1) ? sel.value : (pair[0] || 'INR');
+    var doc;
+    try {
+      doc = buildCashbookReport(month, currency);
+    } catch (err) {
+      console.error('Cashbook PDF failed', err);
+      alert('Could not generate the cashbook PDF: ' + (err && err.message ? err.message : err));
+      return;
+    }
+    var fileName = 'FinTrack_Monthly_Cashbook_' + fileStamp(month) + '.pdf';
+    if (mode === 'view') window.ftOpenPdfDocument(doc, fileName, 'Monthly Cashbook ' + monthLabel(month));
+    else window.ftDownloadPdfDocument(doc, fileName);
+  };
+
+  window.downloadCashbookPDFByKey = function (key) {
+    var data = (window._cbEntries || {})[key];
+    if (!data || !data.entries) {
+      alert('No cashbook data found for this month. Please open the Monthly Cashbook in the Overview first.');
+      return;
+    }
+    var monthSel = document.getElementById('cashbookMonthSelect');
+    var month = (monthSel && monthSel.value) ? monthSel.value : (window.currentMonthStr ? currentMonthStr() : '');
+    if (!month) { alert('Please select a month.'); return; }
+    if (!getJsPDF()) { alert('The PDF library did not load. Please reload the page and try again.'); return; }
+    var currency = data.currency || (window.getFirstCurrency ? getFirstCurrency() : 'INR');
+    var meta = {
+      headerH: 138, docType: 'Monthly Cashbook', title: data.title || 'Monthly Cashbook',
+      period: periodLabel(month), accountLabel: data.title || 'Cashbook', currency: currency,
+      monthLabel: monthLabel(month),
+      generated: 'Generated ' + new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    };
+    var doc = new (getJsPDF())({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    var built = cashbookBody(data.entries || [], currency);
+    var body = built.body.length ? built.body : [['\u2014', 'No transactions recorded for this month', '', '', '', '', '', '']];
+    var y = drawTable(doc, meta, CASHBOOK_HEAD, body, CASHBOOK_COLS, 7.6);
+    drawTotals(doc, meta, y + 16, [
+      { label: 'Income added', value: pdfMoney(built.income, currency), bg: C_GOOD_BG, ink: C_GOOD_INK },
+      { label: 'Total expense', value: pdfMoney(built.expense, currency), bg: C_BAD_BG, ink: C_BAD_INK },
+      { label: 'Net movement', value: pdfMoney(built.income - built.expense, currency), bg: C_NEUTRAL_BG, ink: C_NEUTRAL_INK }
+    ]);
+    finalizePdf(doc, 'Monthly Cashbook  \u2022  ' + monthLabel(month) + '  \u2022  ' + currency);
+    var fileName = 'FinTrack_Monthly_Cashbook_' + fileStamp(month) + '.pdf';
+    window.ftDownloadPdfDocument(doc, fileName);
+  };
+
+  window.downloadHouseholdPDF = function () {
+    var monthSel = document.getElementById('householdMonthSelect');
+    var month = (monthSel && monthSel.value) ? monthSel.value : (window.currentMonthStr ? currentMonthStr() : '');
+    if (!month) { alert('Please select a month.'); return; }
+    if (!getJsPDF()) { alert('The PDF library did not load. Please reload the page and try again.'); return; }
+    var doc;
+    try {
+      doc = buildHouseholdReport(month);
+    } catch (err) {
+      console.error('Household PDF failed', err);
+      alert('Could not generate the household PDF: ' + (err && err.message ? err.message : err));
+      return;
+    }
+    window.ftDownloadPdfDocument(doc, 'FinTrack_Household_Settlement_' + fileStamp(month) + '.pdf');
+  };
+
+  window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
+    if (mode === 'view') return window.ftOpenPdfDocument(doc, fileName, title);
+    return window.ftDownloadPdfDocument(doc, fileName);
+  };
+
+  window.ftPdfSelfTest = function (month) {
+    var m = month || '2026-11';
+    var sample = [];
+    for (var i = 1; i <= 34; i++) {
+      sample.push({
+        date: m + '-' + pad2((i % 28) + 1),
+        desc: i % 3 === 0 ? 'Grocery run at the neighbourhood market with a long description to test wrapping' : 'Sample transaction ' + i,
+        category: i % 3 === 0 ? 'Groceries' : 'Misc', type: i % 4 === 0 ? 'Income' : 'Expense',
+        amount: 100 + i * 37.5, currency: 'INR', mode: 'UPI', account: 'HDFC Savings'
+      });
+    }
+    try {
+      var doc = buildCashbookReport(m, 'INR', sample, []);
+      if (!doc) return { ok: false, reason: 'jsPDF unavailable' };
+      var blob = doc.output('blob');
+      return { ok: true, pages: doc.internal.getNumberOfPages(), bytes: blob.size };
+    } catch (e) {
+      return { ok: false, reason: e && e.message ? e.message : String(e) };
+    }
+  };
+
+  /* ============================================================
+     7. EXPENSE DATA READY HOOK — correct existing records once
+     ============================================================ */
+  window.ftNormalizeExpenseMonths = normalizeExpenseMonths;
+  var normalizeTries = 0, normalizedOnce = false;
+  var normalizeTimer = setInterval(function () {
+    normalizeTries++;
+    var ready = !!(window.state && window.state.expenses && window.dataLoaded);
+    if (ready && !normalizedOnce) {
+      normalizedOnce = true;
+      clearInterval(normalizeTimer);
+      var changed = false;
+      try { changed = normalizeExpenseMonths(); } catch (e) {}
+      if (changed && typeof window.saveData === 'function') {
+        try { window.saveData(); } catch (e) {}
+      }
+    }
+    if (normalizeTries > 120) clearInterval(normalizeTimer);
+  }, 500);
+
+  /* ============================================================
+     8. LAUNCH SPLASH + MOBILE VERSION GATE
+        The splash covers the app while the running build is compared
+        with the published version. Older builds get an update prompt
+        that opens the Google Play listing.
+     ============================================================ */
+  var FT_APP = {
+    version: '1.2.0',   /* build baked into this file */
+    build: 12,
+    packageId: 'com.fintrackapp.fazy',
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.fintrackapp.fazy'
+  };
+  window.FT_APP = FT_APP;
+
+  function isMobileRuntime() {
+    try {
+      if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) return true;
+      if (window.ftNativeShell && window.ftNativeShell.isApp && window.ftNativeShell.isApp()) return true;
+    } catch (e) {}
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+  }
+
+  function versionLower(current, minimum) {
+    if (!minimum) return false;
+    var a = String(current || '').split('.').map(function (n) { return parseInt(n, 10) || 0; });
+    var b = String(minimum).split('.').map(function (n) { return parseInt(n, 10) || 0; });
+    var len = Math.max(a.length, b.length);
+    for (var i = 0; i < len; i++) {
+      var x = a[i] || 0, y = b[i] || 0;
+      if (x < y) return true;
+      if (x > y) return false;
+    }
+    return false;
+  }
+
+  /* ---------- splash ---------- */
+  function launchSplashShow() {
+    if (document.getElementById('ftLaunchSplash')) return;
+    var el = document.createElement('div');
+    el.id = 'ftLaunchSplash';
+    el.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+      'background:linear-gradient(165deg,#1E3A8A 0%,#172554 55%,#0f172a 100%);opacity:0;transition:opacity .3s ease;' +
+      'font-family:inherit;-webkit-tap-highlight-color:transparent;';
+    el.innerHTML =
+      '<div style="width:76px;height:76px;border-radius:22px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);' +
+        'display:flex;align-items:center;justify-content:center;box-shadow:0 18px 40px rgba(2,6,23,.45);">' +
+        '<span style="font-size:26px;font-weight:800;letter-spacing:-.5px;color:#fff;">FT</span></div>' +
+      '<div style="margin-top:18px;font-size:21px;font-weight:800;color:#fff;letter-spacing:-.4px;">FinTrack</div>' +
+      '<div style="margin-top:6px;font-size:12px;font-weight:600;color:#BFDBFE;">Household finances, clearly.</div>' +
+      '<div style="margin-top:26px;width:132px;height:3px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;">' +
+        '<div style="height:100%;width:38%;border-radius:3px;background:#fff;animation:ftSplashLoad 1s ease-in-out infinite;"></div></div>' +
+      '<div id="ftSplashStatus" style="margin-top:14px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(191,219,254,.85);">Checking for updates</div>' +
+      '<div style="position:absolute;bottom:26px;font-size:10px;font-weight:600;color:rgba(191,219,254,.6);">v' + FT_APP.version + '</div>';
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.style.opacity = '1'; });
+  }
+  function launchSplashStatus(text) {
+    var s = document.getElementById('ftSplashStatus');
+    if (s) s.textContent = text;
+  }
+  function launchSplashHide() {
+    var el = document.getElementById('ftLaunchSplash');
+    if (!el) return;
+    el.style.opacity = '0';
+    setTimeout(function () { if (el.parentNode) el.remove(); }, 320);
+  }
+
+  /* ---------- published version ---------- */
+  async function readLatestConfig() {
+    var out = { latest: '', minimum: '', playStoreUrl: '', packageId: '', message: '' };
+    try {
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var t = setTimeout(function () { try { if (ctrl) ctrl.abort(); } catch (e) {} }, 4000);
+      var res = await fetch('version.json?_=' + Date.now(), { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined });
+      clearTimeout(t);
+      if (res && res.ok) {
+        var data = await res.json();
+        Object.keys(out).forEach(function (k) {
+          if (data && data[k] !== undefined && data[k] !== null && data[k] !== '') out[k] = String(data[k]);
+        });
+      }
+    } catch (e) { /* offline or standalone copy: nothing to compare */ }
+    return out;
+  }
+
+  function storeUrl(cfg) {
+    if (cfg && cfg.playStoreUrl) return cfg.playStoreUrl;
+    if (FT_APP.playStoreUrl) return FT_APP.playStoreUrl;
+    var id = (cfg && cfg.packageId) || FT_APP.packageId;
+    if (id) return 'https://play.google.com/store/apps/details?id=' + encodeURIComponent(id);
+    return 'https://play.google.com/store/search?q=FinTrack&c=apps';
+  }
+  window.ftStoreUrl = storeUrl;
+
+  window.ftOpenStore = function (cfg) {
+    var url = storeUrl(cfg || {});
+    try {
+      var plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
+      if (plugins.Browser && plugins.Browser.open) { plugins.Browser.open({ url: url }); return url; }
+    } catch (e) {}
+    var win = window.open(url, '_blank');
+    if (!win) { window.location.href = url; }
+    return url;
+  };
+
+  window.ftShowUpdateGate = function (info) {
+    if (document.getElementById('ftUpdateGate')) return;
+    var cfg = info || {};
+    var gate = document.createElement('div');
+    gate.id = 'ftUpdateGate';
+    gate.innerHTML =
+      '<div class="ft-up-card">' +
+        '<div style="width:56px;height:56px;margin:0 auto 14px;border-radius:18px;background:#E8EEFC;display:flex;align-items:center;justify-content:center;">' +
+          '<span style="font-size:18px;font-weight:800;color:#1E3A8A;">FT</span></div>' +
+        '<h2>Update FinTrack</h2>' +
+        '<p class="ft-up-msg"></p>' +
+        '<p class="ft-up-ver" style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:16px;letter-spacing:.04em;"></p>' +
+        '<button type="button" class="ft-up-primary">Update now</button>' +
+        '<button type="button" class="ft-up-secondary" style="width:100%;margin-top:8px;padding:11px;border-radius:12px;background:transparent;color:#64748b;font-weight:700;font-size:12px;border:0;">Continue</button>' +
+      '</div>';
+    gate.querySelector('.ft-up-msg').textContent = cfg.message ||
+      'A newer version of FinTrack is available with the latest fixes. Update the app to keep everything working smoothly.';
+    var parts = [];
+    if (cfg.current) parts.push('Installed ' + cfg.current);
+    if (cfg.latest) parts.push('Latest ' + cfg.latest);
+    gate.querySelector('.ft-up-ver').textContent = parts.join('  ·  ');
+    gate.querySelector('.ft-up-primary').onclick = function () { window.ftOpenStore(cfg); };
+    gate.querySelector('.ft-up-secondary').onclick = function () { gate.remove(); };
+    document.body.appendChild(gate);
+    return gate;
+  };
+
+  window.ftRunUpdateCheck = async function () {
+    var cfg = await readLatestConfig();
+    var current = FT_APP.version;
+    var latest = cfg.latest || current;
+    var minimum = cfg.minimum || '';
+    var required = !!minimum && versionLower(current, minimum);
+    var outdated = required || (!!cfg.latest && versionLower(current, latest));
+    return {
+      checked: true, outdated: outdated, required: required, forced: required,
+      current: current, latest: latest,
+      config: {
+        latest: latest, minimum: minimum, message: cfg.message,
+        playStoreUrl: cfg.playStoreUrl, packageId: cfg.packageId,
+        current: current
+      },
+      platform: isMobileRuntime() ? 'mobile' : 'web'
+    };
+  };
+
+  function ftBootFlow() {
+    launchSplashShow();
+    launchSplashStatus('Checking for updates');
+    var started = Date.now();
+    var finish = function (res) {
+      var wait = Math.max(0, 900 - (Date.now() - started));
+      setTimeout(function () {
+        launchSplashHide();
+        if (res && res.outdated && isMobileRuntime()) window.ftShowUpdateGate(res.config);
+      }, wait);
+    };
+    window.ftRunUpdateCheck().then(finish).catch(function () { finish(null); });
+  }
+  window.ftBootFlow = ftBootFlow;
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ftBootFlow);
+  } else {
+    ftBootFlow();
+  }
+
+  /* keep the toggle rendered whenever the cashbook modal is on screen */
+  setInterval(function () {
+    try {
+      var host = document.getElementById('cashbookPdfCurrencyToggle');
+      var modal = document.getElementById('modalCashbookPdf');
+      if (host && !host.children.length && modal && !modal.classList.contains('hidden')) {
+        window.ftRenderCashbookCurrencyToggle();
+      }
+    } catch (e) {}
+  }, 800);
+
+  /* keep the toggle fresh whenever the cashbook modal becomes visible */
+  document.addEventListener('click', function (ev) {
+    var el = ev.target;
+    while (el && el !== document.body) {
+      var handler = el.getAttribute && el.getAttribute('onclick');
+      if (handler && handler.indexOf('ftOpenCashbookPdfModal') > -1) {
+        setTimeout(function () { try { window.ftRenderCashbookCurrencyToggle(); } catch (e) {} }, 0);
+        break;
+      }
+      el = el.parentElement;
+    }
+  }, true);
+})();
+</script>
+
 </body>
 </html>
