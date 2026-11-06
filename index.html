@@ -224,7 +224,7 @@ button:active, .ft-qa:active { transform:scale(.96); }
     }
 /* Responsive tables: no letter-broken headings; controlled internal scrolling */
 .overflow-x-auto th { white-space: nowrap; } .overflow-x-auto td { overflow-wrap: anywhere; } /* ===== Multi-Theme System ===== */ body[data-theme="midnight"] { --ft-bg: #0F172A; --ft-surface: #1E293B; --ft-text: #F1F5F9; --ft-muted: #94A3B8; --ft-border: #334155; --ft-accent: #818CF8; --ft-card-grad: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); } body[data-theme="emerald"] { --ft-bg: #ECFDF5; --ft-surface: #FFFFFF; --ft-text: #064E3B; --ft-muted: #047857; --ft-border: #A7F3D0; --ft-accent: #059669; --ft-card-grad: linear-gradient(135deg, #FFFFFF 0%, #ECFDF5 100%); } body[data-theme="rose"] { --ft-bg: #FFF1F2; --ft-surface: #FFFFFF; --ft-text: #881337; --ft-muted: #BE123C; --ft-border: #FECDD3; --ft-accent: #E11D48; --ft-card-grad: linear-gradient(135deg, #FFFFFF 0%, #FFF1F2 100%); } body[data-theme="ocean"] { --ft-bg: #F0F9FF; --ft-surface: #FFFFFF; --ft-text: #0C4A6E; --ft-muted: #0369A1; --ft-border: #BAE6FD; --ft-accent: #0284C7; --ft-card-grad: linear-gradient(135deg, #FFFFFF 0%, #F0F9FF 100%); } body[data-theme="royal"] { --ft-bg: #F5F3FF; --ft-surface: #FFFFFF; --ft-text: #4C1D95; --ft-muted: #6D28D9; --ft-border: #DDD6FE; --ft-accent: #7C3AED; --ft-card-grad: linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 100%); } body[data-theme="midnight"] #sec-overview, body[data-theme="midnight"] #sec-expenses, body[data-theme="midnight"] #sec-friends, body[data-theme="midnight"] #sec-settings, body[data-theme="midnight"] #sec-help { background: var(--ft-bg) !important; } body[data-theme="midnight"] .bg-white { background: var(--ft-surface) !important; } body[data-theme="midnight"] .text-slate-800, body[data-theme="midnight"] .text-slate-700 { color: var(--ft-text) !important; } body[data-theme="midnight"] .text-slate-500, body[data-theme="midnight"] .text-slate-400 { color: var(--ft-muted) !important; } body[data-theme="midnight"] .border-slate-200 { border-color: var(--ft-border) !important; } body[data-theme="midnight"] .pastel-indigo, body[data-theme="midnight"] .pastel-rose, body[data-theme="midnight"] .pastel-emerald, body[data-theme="midnight"] .pastel-amber, body[data-theme="midnight"] .pastel-sky, body[data-theme="midnight"] .pastel-violet, body[data-theme="midnight"] .pastel-red, body[data-theme="midnight"] .pastel-slate { background: var(--ft-card-grad) !important; border-color: var(--ft-border) !important; } body[data-theme="emerald"] .pastel-indigo, body[data-theme="emerald"] .pastel-rose, body[data-theme="emerald"] .pastel-amber, body[data-theme="emerald"] .pastel-sky, body[data-theme="emerald"] .pastel-violet, body[data-theme="emerald"] .pastel-red, body[data-theme="emerald"] .pastel-slate { background: var(--ft-card-grad) !important; border-color: var(--ft-border) !important; } body[data-theme="rose"] .pastel-indigo, body[data-theme="rose"] .pastel-emerald, body[data-theme="rose"] .pastel-amber, body[data-theme="rose"] .pastel-sky, body[data-theme="rose"] .pastel-violet, body[data-theme="rose"] .pastel-slate { background: var(--ft-card-grad) !important; border-color: var(--ft-border) !important; } body[data-theme="ocean"] .pastel-indigo, body[data-theme="ocean"] .pastel-rose, body[data-theme="ocean"] .pastel-emerald, body[data-theme="ocean"] .pastel-amber, body[data-theme="ocean"] .pastel-violet, body[data-theme="ocean"] .pastel-red, body[data-theme="ocean"] .pastel-slate { background: var(--ft-card-grad) !important; border-color: var(--ft-border) !important; } body[data-theme="royal"] .pastel-indigo, body[data-theme="royal"] .pastel-rose, body[data-theme="royal"] .pastel-emerald, body[data-theme="royal"] .pastel-amber, body[data-theme="royal"] .pastel-sky, body[data-theme="royal"] .pastel-red, body[data-theme="royal"] .pastel-slate { background: var(--ft-card-grad) !important; border-color: var(--ft-border) !important; } body[data-theme="midnight"] .bg-slate-100 { background: var(--ft-bg) !important; } body[data-theme="midnight"] input, body[data-theme="midnight"] select, body[data-theme="midnight"] textarea { background: var(--ft-surface) !important; color: var(--ft-text) !important; border-color: var(--ft-border) !important; } body[data-theme="midnight"] .bg-slate-800\/90 { background: rgba(30,41,59,0.95) !important; } body[data-theme="midnight"] .text-amber-400 { color: #FBBF24 !important; } body[data-theme="midnight"] .text-white { color: var(--ft-text) !important; }
-.ft-scroll{max-height:360px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}.ft-scroll::-webkit-scrollbar{width:6px;}.ft-scroll::-webkit-scrollbar-thumb{background:rgba(100,116,139,.35);border-radius:999px;}.ft-scroll::-webkit-scrollbar-track{background:transparent;}#expensesViewMoreContainer,#debtsViewMoreContainer,#friendLedgerViewMoreContainer,#friendSplitsViewMoreContainer,#adminUsersViewMoreContainer,#recentIncomeViewMore{display:none !important;}</style>
+.ft-scroll{max-height:360px;overflow-y:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;}.ft-scroll::-webkit-scrollbar{width:6px;}.ft-scroll::-webkit-scrollbar-thumb{background:rgba(100,116,139,.35);border-radius:999px;}.ft-scroll::-webkit-scrollbar-track{background:transparent;}#expensesViewMoreContainer,#debtsViewMoreContainer,#friendLedgerViewMoreContainer,#friendSplitsViewMoreContainer,#adminUsersViewMoreContainer,#recentIncomeViewMore{display:none !important;}</style>
 <style id="ft-desktop-fill-fix">
 /* Desktop-only width fix: summary grids fill their container; pairs split 50/50.
    Mobile (<1024px) is untouched. Reversible — remove this block to revert. */
@@ -4773,7 +4773,7 @@ window.ftUpdateFooterStatus = function() {
 
     function mkNav(inputId, onCh) {
       var w = document.createElement('div');
-      w.className = 'inline-flex items-center gap-0.5 bg-white/70 border border-slate-200 rounded-lg px-1 py-0.5 my-2';
+      w.className = 'inline-flex items-center gap-0.5 bg-white/70 border border-slate-200 rounded-lg px-1 py-0.5 my-2'; w.setAttribute('data-ft-month-handler', onCh || '');
       w.innerHTML =
         '<button type="button" class="text-slate-500 px-2 py-1 rounded hover:bg-slate-100"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>' +
         '<span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_' + inputId + '"></span>' +
@@ -9225,7 +9225,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   }
 
   function scan() {
-    Array.prototype.forEach.call(document.querySelectorAll('input[type="date"], input[type="month"]'), upgrade);
+    Array.prototype.forEach.call(document.querySelectorAll('input[type="month"]'), function (i) { var s = i.nextElementSibling; if (s && String(s.className || '').indexOf('ftcal-field') > -1) s.remove(); if (i.style.display === 'none') i.style.display = ''; }); Array.prototype.forEach.call(document.querySelectorAll('input[type="date"]'), upgrade);
   }
 
   /* ---------------- month jumps in every section ---------------- */
@@ -11312,7 +11312,7 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
     var hidden = document.getElementById(inputId);
     var box = document.createElement('input');
     box.type = 'month';
-    box.className = 'ft-mbox';
+    box.className = 'ft-mbox'; box.setAttribute('data-month', inputId); box.setAttribute('data-ft-handler', handler || '');
     box.setAttribute('aria-label', 'Month');
     box.value = (hidden && /^\d{4}-\d{2}$/.test(hidden.value || '')) ? hidden.value : monthNow();
     if (hidden && !hidden.value) hidden.value = box.value;
@@ -11327,26 +11327,15 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
     if (/^month\s*:?$/i.test(text)) previous.style.display = 'none';
   }
 
-  function upgradeMonthPickers() {
-    var buttons = document.querySelectorAll('button[onclick^="navMonthPrev("]');
-    for (var i = 0; i < buttons.length; i++) {
-      var button = buttons[i];
-      var wrap = button.parentNode;
-      if (!wrap || wrap.nodeType !== 1 || !wrap.parentNode) continue;
-      var match = /navMonthPrev\(\s*'([^']+)'\s*,\s*'([^']*)'\s*\)/.exec(button.getAttribute('onclick') || '');
-      if (!match) continue;
-      var inputId = match[1];
-      var handler = match[2];
-      var hidden = document.getElementById(inputId);
-      var box = makeMonthBox(inputId, handler);
-      hideMonthLabel(wrap);
-      wrap.parentNode.insertBefore(box, wrap);
-      if (hidden && wrap.contains(hidden)) wrap.parentNode.insertBefore(hidden, wrap);
-      wrap.parentNode.removeChild(wrap);
-    }
-  }
-
-  function monthPass() { try { upgradeMonthPickers(); } catch (error) { console.error('FinTrack month pass error:', error); } }
+  function handlerFor(cluster) { if (cluster && cluster.dataset && cluster.dataset.ftMonthHandler) return cluster.dataset.ftMonthHandler; var b = cluster && cluster.querySelector ? cluster.querySelector('button[onclick*="navMonthPrev("]') : null; var m = b ? /navMonthPrev\(\s*'[^']*'\s*,\s*'([^']*)'\s*\)/.exec(b.getAttribute('onclick') || '') : null; return m ? m[1] : ''; }
+  function monthBoxFor(id) { var l = document.querySelectorAll('input.ft-mbox'); for (var i = 0; i < l.length; i++) if (l[i].getAttribute('data-month') === id) return l[i]; return null; }
+  function upgradeCluster(span) { var id = String(span.id || '').replace(/^navLabel_/, ''), wrap = span.parentElement; if (!id || !wrap || !wrap.parentNode) return; var parent = wrap.parentNode, hidden = document.getElementById(id); if (!hidden) return; hideMonthLabel(wrap); var box = monthBoxFor(id); if (!box) { box = makeMonthBox(id, handlerFor(wrap)); parent.insertBefore(box, wrap); } if (wrap.contains(hidden)) parent.insertBefore(hidden, wrap); if (wrap.parentNode) wrap.parentNode.removeChild(wrap); }
+  function upgradeMonthPickers() { Array.prototype.forEach.call(document.querySelectorAll('span[id^="navLabel_"]'), upgradeCluster); Array.prototype.forEach.call(document.querySelectorAll('button[title="Jump to month"]'), function (b) { var bar = b.parentElement; if (bar && bar.querySelector('input[type="month"]')) b.remove(); }); }
+  function tidyMonthWords() { Array.prototype.forEach.call(document.querySelectorAll('label'), function (l) { if (!l.querySelector('input[type="month"], input.ft-mbox')) return; Array.prototype.slice.call(l.childNodes).forEach(function (n) { if (n.nodeType === 3 && /^\s*month\s*:?\s*$/i.test(n.nodeValue || '')) l.removeChild(n); }); }); }
+  function areaOf(n) { var e = n.parentElement; while (e && e !== document.body) { var k = typeof e.className === 'string' ? e.className : ''; if (/(^|\s)(pastel-|gold-card|ft-card|tab-content)/.test(k)) return e; e = e.parentElement; } return null; }
+  function followMonth(p, f) { f.value = p.value; var t = document.getElementById(f.getAttribute('data-month')); if (t) t.value = p.value; try { if (window.updateAllMonthNavLabels) window.updateAllMonthNavLabels(); } catch (e) {} var name = String(f.getAttribute('data-ft-handler') || '').replace(/\(\s*\)\s*$/, '').trim(); if (name && typeof window[name] === 'function') { try { window[name](); } catch (error) { console.error('FinTrack month change failed', error); } } else if (t) { try { t.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {} } }
+  function oneCalendarPerArea() { var kept = []; Array.prototype.forEach.call(document.querySelectorAll('input.ft-mbox'), function (box) { var area = areaOf(box); if (!area) return; var p = null; for (var i = 0; i < kept.length; i++) if (kept[i].area === area) p = kept[i].box; if (!p) { kept.push({ area: area, box: box }); box.style.removeProperty('display'); return; } if (box === p) return; if (box._ftPrimary === p) return; box._ftPrimary = p; box.setAttribute('data-ft-follower', p.getAttribute('data-month')); box.style.setProperty('display', 'none', 'important'); p.addEventListener('change', function () { followMonth(p, box); }); followMonth(p, box); }); Array.prototype.forEach.call(document.querySelectorAll('input[type="month"]'), function (native) { if (native.classList.contains('ft-mbox') || native._ftPrimary) return; var area = areaOf(native), box = area && area.querySelector('input.ft-mbox'); if (!box) return; native._ftPrimary = box; native.style.setProperty('display', 'none', 'important'); }); }
+  function monthPass() { try { upgradeMonthPickers(); tidyMonthWords(); oneCalendarPerArea(); } catch (error) { console.error('FinTrack month pass error:', error); } }
   monthPass();
   document.addEventListener('DOMContentLoaded', monthPass);
   window.addEventListener('load', monthPass);
@@ -11804,38 +11793,14 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 })();
 </script>
 <script data-ft-layer="table-align">
-/* FinTrack — money tables: date as DD/MM/YYYY, fixed columns, one line, no sideways drift */
+/* FinTrack — money tables: dates as DD/MM/YYYY; each table keeps its own horizontal scroll */
 (function () {
   'use strict';
-  var CFG = { expensesTable: '19,13,14,18,11,17,8', hhExpensesTable: '19,21,14,13,17,8,8', friendSplitsTable: '19,19,13,16,15,10,8' };
-  var css = document.createElement('style');
-  css.textContent = '.ft-fit{table-layout:fixed!important;width:100%!important}.ft-fit th,.ft-fit td{padding:6px 4px!important;font-size:10px!important;line-height:1.3!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;vertical-align:middle!important}.ft-fit th{font-size:9px!important;letter-spacing:0!important}.ft-fit td>span{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}.ft-fit td button{margin:0 2px!important}';
-  document.head.appendChild(css);
+  var TBODIES = ['expensesTable', 'hhExpensesTable', 'friendSplitsTable', 'friendLedgerHistoryTable', 'hhSettlementsTable', 'settlementsTable', 'cashTable', 'bankType1Table', 'bankType2Table', 'creditCardTable', 'goldTable', 'sipTable', 'transfersTable', 'debtsTable'];
   function dmy(t) { var s = String(t || '').trim(), m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return m[3] + '/' + m[2] + '/' + m[1]; m = s.match(/^(\d{4})-(\d{2})$/); return m ? m[2] + '/' + m[1] : s; }
-  function tidy(tbody) {
-    var table = tbody.closest('table'); if (!table) return;
-    var head = table.tHead && table.tHead.rows[0], cols = head ? head.cells.length : 0;
-    for (var i = 0; i < tbody.rows.length; i++) {
-      var row = tbody.rows[i];
-      if (!row.cells.length || (row.cells.length === 1 && row.cells[0].colSpan > 1)) continue;
-      while (cols && row.cells.length < cols) row.insertCell(row.cells.length - 1);
-      var first = row.cells[0], shown = dmy(first.textContent);
-      if (shown !== first.textContent.trim()) first.textContent = shown;
-    }
-  }
-  function prep(tbody, widths) {
-    var table = tbody.closest('table'); if (!table) return;
-    var parts = widths.split(','), colgroup = document.createElement('colgroup');
-    parts.forEach(function (w) { var col = document.createElement('col'); col.style.width = w + '%'; colgroup.appendChild(col); });
-    if (table.tHead && table.tHead.rows[0] && table.tHead.rows[0].cells.length === parts.length) table.insertBefore(colgroup, table.firstChild);
-    table.classList.add('ft-fit');
-    var box = table.parentElement;
-    while (box && box !== document.body && !box.classList.contains('overflow-x-auto') && !box.classList.contains('ft-scroll')) box = box.parentElement;
-    if (box && box !== document.body) box.style.setProperty('overflow-x', 'hidden', 'important');
-    tidy(tbody);
-    new MutationObserver(function () { tidy(tbody); }).observe(tbody, { childList: true, subtree: true });
-  }
-  Object.keys(CFG).forEach(function (id) { var tb = document.getElementById(id); if (tb) prep(tb, CFG[id]); });
+  function tidy(tbody) { for (var i = 0; i < tbody.rows.length; i++) { var row = tbody.rows[i]; if (!row.cells.length || row.cells[0].colSpan > 1) continue; var first = row.cells[0], shown = dmy(first.textContent); if (shown !== first.textContent.trim()) first.textContent = shown; } }
+  function watch(tbody) { tidy(tbody); new MutationObserver(function () { tidy(tbody); }).observe(tbody, { childList: true, subtree: true }); }
+  TBODIES.forEach(function (id) { var tb = document.getElementById(id); if (tb) watch(tb); });
 })();
 </script>
 </body>
