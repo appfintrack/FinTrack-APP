@@ -836,11 +836,11 @@ body.ft-dark main .ft-account-group+.ft-account-group{border-top-color:#2C313A;}
         <section id="sec-transfers" class="tab-content hidden space-y-6 module-section-transfers"><div class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-200 pb-4"><div><h3 class="font-bold text-slate-800 text-base">Bank & Cash Transfers</h3><p class="text-xs text-slate-500">Record transfers between your accounts or cash in hand balances.</p></div><div class="flex items-center space-x-3 flex-wrap gap-y-2"><label class="text-xs font-bold text-slate-600 uppercase">Month:</label><div class="inline-flex items-center gap-0.5 bg-white/70 border border-sky-200 rounded-lg px-1 py-0.5"><button onclick="navMonthPrev('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button><span class="font-bold text-xs text-slate-700 min-w-[100px] text-center select-none" id="navLabel_transferMonthSelect"></span><button onclick="navMonthNext('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button><button onclick="ftOpenMonthPicker('transferMonthSelect','renderTransfers()')" class="text-slate-500 hover:text-indigo-600 px-2 py-1 rounded hover:bg-indigo-50 transition" title="Jump to month"><i class="fa-solid fa-calendar-day text-[10px]"></i></button></div><input type="hidden" id="transferMonthSelect" value=""><button onclick="openTransferModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">+ New Transfer</button></div></div><div class="overflow-x-auto border rounded-lg border-sky-200"><table class="w-full text-left text-xs"><thead><tr class="bg-sky-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Date</th><th class="p-3">From Account</th><th class="p-3">To Account</th><th class="p-3 text-right">Amount</th><th class="p-3">Notes</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="transfersTable" class="divide-y divide-sky-100 font-medium text-slate-700"></tbody></table></div><div id="transfersViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('transfers')" class="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold text-xs rounded-lg transition">View More</button></div></div></section>
         <section id="sec-profile" class="tab-content hidden space-y-6"><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-circle text-indigo-600 mr-2"></i> Profile</h3><p class="text-xs text-slate-500 mt-1">Your account information and mobile number settings.</p></div><div id="profileInfoContainer" class="space-y-3 text-sm"></div><div class="pt-3 border-t border-slate-200"><button onclick="openEditMobileModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-pen mr-1"></i> Update Profile</button></div></div><div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4"><div class="border-b border-slate-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-bell text-amber-500 mr-2"></i> Notifications</h3><p class="text-xs text-slate-500 mt-1">Friend requests, new splits and payment reminders — in real time.</p></div><div id="profileNotificationsList" class="space-y-3"></div></div></section>
         <section id="sec-settings" class="tab-content hidden space-y-6">
-          <div class="pastel-violet p-5 rounded-2xl border border-violet-200 shadow-sm space-y-4"><div class="border-b border-violet-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-eye text-violet-600 mr-2"></i> Visibility Settings</h3><p class="text-xs text-slate-500 mt-1">Control what is visible on your dashboard and navigation. Disabling a module hides it but does NOT delete its data.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[320px] overflow-y-auto pr-1"><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Liabilities in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Liabilities card. Liability data is preserved.</p></div><input type="checkbox" id="settingShowTotalLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Savings &amp; Gold in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Savings &amp; Gold card. Investment data is preserved.</p></div><input type="checkbox" id="settingShowTotalSavingsGold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Secondary Account on Dashboard</span><p class="text-[10px] text-slate-500 mt-1">When disabled, only Primary Account is shown. Secondary data is preserved.</p></div><input type="checkbox" id="settingShowSecondaryAccount" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Credit Card Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Credit Card section and Credit Card Spend card on the dashboard. Credit card data is preserved.</p></div><input type="checkbox" id="settingShowCreditCard" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Individual Bank & Cash Balance Summary</span><p class="text-[10px] text-slate-500 mt-1">Hides the Individual Balance Summary section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowIndividualSummary" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Monthly Cashbook</span><p class="text-[10px] text-slate-500 mt-1">Hides the Monthly Cashbook section on the dashboard. Cashbook data is preserved.</p></div><input type="checkbox" id="settingShowMonthlyCashbook" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Pending Payments</span><p class="text-[10px] text-slate-500 mt-1">Hides the Pending Payments section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowPendingPayments" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Liability & Debt Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Liability & Debt navigation and section.</p></div><input type="checkbox" id="settingShowLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Gold & SIP Investment Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Gold & SIP navigation and section.</p></div><input type="checkbox" id="settingShowGoldSip" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Bank & Cash Transfer Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Bank & Cash Transfer navigation and section.</p></div><input type="checkbox" id="settingShowTransfers" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Household Settlement Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Household Settlement navigation and section. Data is preserved.</p></div><input type="checkbox" id="settingShowHousehold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Optional Quick Links</span></div><input type="checkbox" id="settingShowOptionalQuickLinks" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label></div><div class="flex justify-end pt-2"><button onclick="saveVisibilitySettings()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">Save Visibility Settings</button></div></div><div class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4"><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-coins text-amber-600 mr-2"></i> Keep Selected Currency Only</h3><p class="text-xs text-slate-500 mt-1">Show only selected currencies in financial areas. Select up to 2 currencies (admin can select all). Leave empty to show all currencies. Currencies follow priority order: <b>INR</b> first, then Gulf (SAR, AED, OMR, QAR, BHD, KWD), then Global (USD, GBP, CAD, AUD, UZS).</p></div><div id="currencyRestrictionContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[180px] overflow-y-auto pr-1"></div><div class="flex justify-end"><button onclick="saveAllowedCurrencies()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Currency Selection</button></div></div>
+          <div class="pastel-violet p-5 rounded-2xl border border-violet-200 shadow-sm space-y-4"><div class="border-b border-violet-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-eye text-violet-600 mr-2"></i> Visibility Settings</h3><p class="text-xs text-slate-500 mt-1">Control what is visible on your dashboard and navigation. Disabling a module hides it but does NOT delete its data.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[320px] overflow-y-auto pr-1"><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Liabilities in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Liabilities card. Liability data is preserved.</p></div><input type="checkbox" id="settingShowTotalLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Total Savings &amp; Gold in Overview</span><p class="text-[10px] text-slate-500 mt-1">Hides the Total Savings &amp; Gold card. Investment data is preserved.</p></div><input type="checkbox" id="settingShowTotalSavingsGold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Secondary Account on Dashboard</span><p class="text-[10px] text-slate-500 mt-1">When disabled, only Primary Account is shown. Secondary data is preserved.</p></div><input type="checkbox" id="settingShowSecondaryAccount" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Credit Card Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Credit Card section and Credit Card Spend card on the dashboard. Credit card data is preserved.</p></div><input type="checkbox" id="settingShowCreditCard" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Individual Bank & Cash Balance Summary</span><p class="text-[10px] text-slate-500 mt-1">Hides the Individual Balance Summary section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowIndividualSummary" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Monthly Cashbook</span><p class="text-[10px] text-slate-500 mt-1">Hides the Monthly Cashbook section on the dashboard. Cashbook data is preserved.</p></div><input type="checkbox" id="settingShowMonthlyCashbook" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Pending Payments</span><p class="text-[10px] text-slate-500 mt-1">Hides the Pending Payments section on the dashboard. Data is preserved.</p></div><input type="checkbox" id="settingShowPendingPayments" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Liability & Debt Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Liability & Debt navigation and section.</p></div><input type="checkbox" id="settingShowLiabilities" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Gold & SIP Investment Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Gold & SIP navigation and section.</p></div><input type="checkbox" id="settingShowGoldSip" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Bank & Cash Transfer Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Bank & Cash Transfer navigation and section.</p></div><input type="checkbox" id="settingShowTransfers" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Household Settlement Module</span><p class="text-[10px] text-slate-500 mt-1">Hides the Household Settlement navigation and section. Data is preserved.</p></div><input type="checkbox" id="settingShowHousehold" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label><label class="flex items-center justify-between bg-white/70 p-4 rounded-xl border border-violet-200 cursor-pointer"><div><span class="font-bold text-sm text-slate-800">Show Optional Quick Links</span></div><input type="checkbox" id="settingShowOptionalQuickLinks" class="w-5 h-5 rounded text-violet-600 focus:ring-violet-500"></label></div><div class="flex justify-end pt-2"><button onclick="saveVisibilitySettings()" class="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-lg shadow">Save Visibility Settings</button></div></div><div class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4"><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-coins text-amber-600 mr-2"></i> Select Currency (Primary &amp; Secondary)</h3><p class="text-xs text-slate-500 mt-1">Choose one <b>primary</b> currency — this one is required. A <b>secondary</b> currency is optional. The ticked order sets primary first, then secondary, and you can change both here at any time.</p></div><div id="currencyRestrictionContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[180px] overflow-y-auto pr-1"></div><div class="flex justify-end"><button onclick="saveAllowedCurrencies()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Currency Selection</button></div></div>
           <div id="adminBrandingCard" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4 hidden"><div class="bg-white/80 p-4 rounded-xl border border-amber-200"><h4 class="text-xs font-black text-amber-800 uppercase mb-2"><i class="fa-solid fa-chart-simple mr-1"></i>Registered & Online Users</h4><div class="grid grid-cols-3 gap-2 text-center"><div><p id="ftAdminTotalUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Registered</p><p id="ftAdminOnlineUsers" class="text-lg font-black text-emerald-700">—</p><p class="text-[10px] font-bold text-slate-500 uppercase">Online now</p></div><div><p id="ftAdminMobileUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Mobile online</p></div><div><p id="ftAdminWebUsers" class="text-lg font-black text-slate-800">0</p><p class="text-[10px] font-bold text-slate-500 uppercase">Web online</p></div></div><p id="ftLiveUsersStatus" role="status" class="text-xs text-slate-500 mt-2">Connecting to live user activity…</p></div><div class="border-b border-amber-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-palette text-amber-600 mr-2"></i> Admin Branding</h3><p class="text-xs text-slate-500 mt-1">Customize the application logo and tagline. Supports PNG, JPG, or SVG.</p></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Custom Logo (PNG, JPG, or SVG)</label><input type="file" id="adminLogoFile" accept="image/png,image/jpeg,image/svg+xml" onchange="handleLogoUpload(event)" class="w-full text-xs p-2 border border-amber-200 rounded-lg"><div id="adminLogoPreview" class="mt-2 flex items-center space-x-3"></div><button onclick="removeAdminLogo()" id="removeLogoBtn" class="hidden text-xs text-red-600 hover:text-red-700 font-bold mt-1">Remove Custom Logo</button></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Application Tagline</label><input type="text" id="adminTaglineInput" placeholder="e.g. Financial Planning & Portfolio" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><button onclick="saveAdminTagline()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Tagline</button></div></div></div>
-          <div class="pastel-indigo p-5 rounded-2xl border border-indigo-200 shadow-sm space-y-4"><div class="flex items-center justify-between border-b border-indigo-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-building-columns text-indigo-600 mr-2"></i> Currency Account Groups</h3><p class="text-xs text-slate-500">Your accounts are organized by currency, not by country. The first group holds your first selected currency (normally INR). The second group holds your second selected currency. You can add multiple bank accounts under each currency.</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-indigo-200 space-y-2"><label class="block text-xs font-bold text-indigo-700 uppercase">Currency Account Group 1</label><input type="text" id="settingBankType1" placeholder="Account group name" class="w-full p-2 border border-indigo-200 rounded-lg font-bold text-sm"><p class="text-[10px] text-slate-500">The first account group, normally for your INR accounts. Add multiple banks under this currency.</p></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Currency Account Group 2</label><input type="text" id="settingBankType2" placeholder="Account group name" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><p class="text-[10px] text-slate-500">The second account group. If you select SAR it can hold Saudi bank accounts; if AED, UAE bank accounts; and so on.</p></div></div><div class="flex justify-end"><button onclick="saveBankTypes()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow">Save Account Groups</button></div></div>
+          <div class="pastel-indigo p-5 rounded-2xl border border-indigo-200 shadow-sm space-y-4"><div class="flex items-center justify-between border-b border-indigo-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-building-columns text-indigo-600 mr-2"></i> Currency Based Accounts</h3><p class="text-xs text-slate-500">Your accounts are grouped by the currency you use. Each group carries the short country form of its currency — IND for INR, KSA for SAR, USA for USD — and every name can be edited.</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-indigo-200 space-y-2"><label class="block text-xs font-bold text-indigo-700 uppercase">Primary Currency</label><input type="text" id="settingBankType1" placeholder="Country code" class="w-full p-2 border border-indigo-200 rounded-lg font-bold uppercase text-sm"><p id="ftPrimaryCodeHint" class="text-[10px] text-slate-500">Filled from your primary currency.</p></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Secondary Currency</label><input type="text" id="settingBankType2" placeholder="Country code" class="w-full p-2 border border-amber-200 rounded-lg font-bold uppercase text-sm"><p id="ftSecondaryCodeHint" class="text-[10px] text-slate-500">Optional — leave empty when you use one currency.</p></div></div><div class="flex justify-end"><button onclick="saveBankTypes()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow">Save Currency Accounts</button></div></div>
           
-          <div class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-globe text-emerald-600 mr-2"></i> Exchange Rate Management</h3><p class="text-xs text-slate-500">Manage conversion rates to INR. Edit manually or fetch live rates online.</p></div><button onclick="fetchLiveRates()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-rotate mr-1"></i> Fetch Live Rates</button></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="bg-emerald-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Currency</th><th class="p-3">Country</th><th class="p-3 text-right">Rate to INR</th><th class="p-3 text-center">Action</th></tr></thead><tbody id="ratesTable" class="divide-y divide-emerald-100 font-medium text-slate-700"></tbody></table></div></div>
+          <div class="pastel-emerald p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-4"><div class="flex flex-wrap items-center justify-between gap-4 border-b border-emerald-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-globe text-emerald-600 mr-2"></i> Exchange Rate Management</h3><p class="text-xs text-slate-500">Manage conversion rates to INR. Edit manually or fetch live rates online.</p></div><button onclick="fetchLiveRates()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow"><i class="fa-solid fa-rotate mr-1"></i> Fetch Live Rates</button></div><div><table class="w-full table-fixed text-left text-xs"><colgroup><col style="width:20%"><col style="width:32%"><col style="width:34%"><col style="width:14%"></colgroup><thead><tr class="bg-emerald-50 text-slate-600 uppercase font-bold border-b"><th class="px-2 py-2">Currency</th><th class="px-2 py-2">Country</th><th class="px-2 py-2 text-right">Rate to INR</th><th class="px-2 py-2 text-center">Edit</th></tr></thead><tbody id="ratesTable" class="divide-y divide-emerald-100 font-medium text-slate-700"></tbody></table></div></div>
           <div id="adminBroadcastCard" class="pastel-sky p-5 rounded-2xl border border-sky-200 shadow-sm space-y-4 hidden"><div class="border-b border-sky-200 pb-3"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-bullhorn text-sky-600 mr-2"></i> Send Message to All Users</h3><p class="text-xs text-slate-500">Send wishes, offers or announcements — delivered instantly to every user's notifications. Auto-deleted after 30 days.</p></div><div class="space-y-2"><label class="block text-xs font-bold text-sky-700 uppercase">Message</label><textarea id="adminBroadcastMsg" rows="3" maxlength="500" class="w-full p-3 border border-sky-200 rounded-lg font-medium text-sm" placeholder="e.g. Ramadan Kareem! Enjoy a special offer this month..."></textarea><div class="flex justify-end"><button onclick="ftAdminBroadcast()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-lg shadow">Send to All Users</button></div></div><div id="adminBroadcastResult" class="text-xs"></div></div>
           <div id="adminControlsCard" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4 hidden"><div class="flex items-center justify-between border-b border-amber-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-shield-halved text-amber-600 mr-2"></i> Admin Controls — Account Limit</h3><p class="text-xs text-slate-500">Limit how many accounts can be created in this application. Example: 1 = admin-only (manual), 5 = only five members can create an ID, 10 = ten members.</p></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Maximum Accounts Allowed</label><input type="number" min="1" id="maxUsersInput" placeholder="e.g. 5" class="w-full p-2 border border-amber-200 rounded-lg font-bold text-sm"><p class="text-[10px] text-slate-500">New account creation is automatically blocked once this limit is reached.</p></div><div class="bg-white/70 p-4 rounded-xl border border-amber-200 space-y-2"><label class="block text-xs font-bold text-amber-700 uppercase">Current Status</label><p class="text-sm font-bold text-slate-800" id="adminUserCount">—</p><p class="text-[10px] text-slate-500">Accounts currently registered in the application.</p></div></div><div class="border-t border-amber-200 pt-4"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-users mr-1 text-amber-600"></i> Registered Accounts</h4><div class="overflow-x-auto border rounded-lg border-amber-200"><table class="w-full text-left text-xs"><thead><tr class="bg-amber-50 text-slate-600 uppercase font-bold border-b"><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">Status</th><th class="p-3">Subscription</th><th class="p-3 text-center">Actions</th></tr></thead><tbody id="adminUsersTable" class="divide-y divide-amber-100 font-medium text-slate-700"></tbody></table></div><div id="adminUsersViewMoreContainer" class="hidden text-center py-2"><button onclick="showAllEntries('adminUsers')" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold text-xs rounded-lg transition">View More</button></div></div><div class="border-t border-amber-200 pt-4"><h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-phone-slash mr-1 text-amber-600"></i> Orphaned Mobile Number Cleanup</h4><p class="text-[10px] text-slate-500 mb-2">Check if a mobile number is an unused/orphaned registration record. The lookup record is removed ONLY if no active user account is linked to it.</p><div class="flex flex-wrap items-end gap-2"><div><label class="block text-[10px] font-bold text-amber-700 uppercase">Country Code</label><input type="text" id="orphanMobileCC" value="91" class="w-16 p-2 border border-amber-200 rounded-lg font-bold text-sm"></div><div><label class="block text-[10px] font-bold text-amber-700 uppercase">Mobile Number</label><input type="text" id="orphanMobileNum" placeholder="e.g. 8089278115" class="w-40 p-2 border border-amber-200 rounded-lg font-bold text-sm"></div><button onclick="checkOrphanedMobile()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Check &amp; Remove if Orphaned</button></div><div id="orphanMobileResult" class="mt-2 text-xs"></div></div><div class="flex justify-end"><button onclick="saveMaxUsers()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-lg shadow">Save Limit</button></div></div>
           <div id="adminFeedbackCard" class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4 hidden"><div class="flex items-center justify-between border-b border-amber-200 pb-3"><div><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-star text-amber-600 mr-2"></i> Ratings &amp; Feedback</h3><p class="text-xs text-slate-500 mt-1">Submitted ratings and feedback from all users. Newest first. Older entries can be scrolled into view.</p></div></div><div id="adminFeedbackList" class="space-y-2 max-h-[320px] overflow-y-auto pr-1"></div></div>
@@ -853,7 +853,6 @@ body.ft-dark main .ft-account-group+.ft-account-group{border-top-color:#2C313A;}
           <p id="finpinStatusText" class="text-xs font-bold text-violet-700 bg-violet-50 border border-violet-100 rounded-lg py-1.5 px-2 text-center">Checking FinPIN…</p>
           <button type="button" onclick="ftOpenFinpinSetup()" class="w-full py-2.5 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded-lg text-sm flex items-center justify-center gap-2 transition-all"><i class="fa-solid fa-key"></i> Set or Reset FinPIN</button>
         </div>
-          <div class="pastel-slate p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"><h3 class="font-bold text-slate-800 text-base flex items-center"><i class="fa-solid fa-user-shield text-amber-600 mr-2"></i> Account Information</h3><div id="accountInfoContainer" class="space-y-2 text-sm"></div></div>
         </section>
         <section id="sec-premium-settings" class="tab-content hidden space-y-6">
           <div class="pastel-amber p-5 rounded-2xl border border-amber-200 shadow-sm space-y-4">
@@ -3309,7 +3308,7 @@ function renderSettings() { if (typeof window.ftRenderThemePicker === 'function'
   applyVisibilitySettings();
   applyAdminBranding();
   const ratesTbody = document.getElementById('ratesTable'); ratesTbody.innerHTML = '';
-  const _allowed = (getSetting('allowedCurrencies', []) || []); const _curList = _allowed.length ? _allowed : Object.keys(window.CURRENCIES); _curList.forEach(curr => { const c = window.CURRENCIES[curr]; const rate = window.state.rates[curr] || window.DEFAULT_RATES[curr] || 1; ratesTbody.innerHTML += `<tr><td class="p-3 font-bold">${curr}</td><td class="p-3 text-slate-500">${c.country}</td><td class="p-3 text-right font-bold">${curr === 'INR' ? '1 INR = 1.00 (Base)' : '1 ' + curr + ' = ' + rate.toFixed(2) + ' INR'}</td><td class="p-3 text-center text-slate-400">${curr === 'INR' ? '' : `<button onclick="editRate('${curr}')" class="hover:text-indigo-600"><i class="fa-solid fa-pen-to-square"></i></button>`}</td></tr>`; });
+  const _allowed = (getSetting('allowedCurrencies', []) || []); const _curList = _allowed.length ? _allowed : Object.keys(window.CURRENCIES); _curList.forEach(curr => { const c = window.CURRENCIES[curr]; const rate = window.state.rates[curr] || window.DEFAULT_RATES[curr] || 1; ratesTbody.innerHTML += `<tr><td class="px-2 py-2 font-bold">${curr}</td><td class="px-2 py-2 text-slate-500 leading-tight">${c.country}</td><td class="px-2 py-2 text-right font-bold tabular-nums">${curr === 'INR' ? '1.00 · base' : rate.toFixed(2) + ' INR'}</td><td class="px-2 py-2 text-center text-slate-400">${curr === 'INR' ? '' : `<button onclick="editRate('${curr}')" class="hover:text-indigo-600"><i class="fa-solid fa-pen-to-square"></i></button>`}</td></tr>`; });
   const adminCard = document.getElementById('adminControlsCard');
   const isAdminUser = window.currentUser && (window.currentUser.loginId === 'US' || window.currentUser.role === 'admin');
   if (adminCard) adminCard.classList.toggle('hidden', !isAdminUser);
@@ -3319,9 +3318,7 @@ function renderSettings() { if (typeof window.ftRenderThemePicker === 'function'
   if (adminFeedbackCard) adminFeedbackCard.classList.toggle('hidden', !isAdminUser);
   if (isAdminUser && typeof window.loadAdminFeedback === 'function') window.loadAdminFeedback();
   populateCurrencyRestriction();
-  const accountInfo = document.getElementById('accountInfoContainer');
-  if (window.currentUser) { accountInfo.innerHTML = `<div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Name:</span><span class="font-bold text-slate-800">${window.currentUser.name}</span></div><div class="flex justify-between border-b pb-2"><span class="text-slate-500 font-bold">Email ID:</span><span class="font-bold text-slate-800">${window.currentUser.email || window.currentUser.loginId}</span></div><div class="flex justify-between"><span class="text-slate-500 font-bold">Display Currency:</span><span class="font-bold text-slate-800">${window.state.displayCurrency || 'INR'}</span></div>`; }
-  else { accountInfo.innerHTML = '<p class="text-slate-400 text-xs">Not logged in.</p>'; }
+  if (window.ftSyncCurrencyGroupBoxes) window.ftSyncCurrencyGroupBoxes();
 }
 
 window.toggleLoginPass = function(btn){ const inp = document.getElementById('loginPass'); const icon = btn.querySelector('i'); if(!inp) return; if(inp.type === 'password'){ inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; } else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; } };
@@ -9109,6 +9106,352 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 </script>
 
 <script>
+/* FinTrack — one calendar, everywhere.
+   A single modern picker (same look as the Insights period control) takes over
+   every month jump and every date field in the app. The original inputs stay in
+   the page hidden, so all existing save and report logic keeps working. */
+(function () {
+  'use strict';
+
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+  var css = ''
+    + 'body [id^="navLabel_"]{cursor:pointer!important;}'
+    + 'body [id^="navLabel_"]:hover{color:#1E3A8A!important;}'
+    + '.ftcal-field{display:inline-flex!important;align-items:center!important;gap:7px!important;width:100%!important;'
+    + 'padding:9px 12px!important;border:1px solid #DFE7F3!important;border-radius:12px!important;background:#FFFFFF!important;'
+    + 'color:#0F172A!important;font-size:12px!important;font-weight:700!important;text-align:left!important;cursor:pointer!important;min-height:38px!important;}'
+    + '.ftcal-field i{color:#1E3A8A!important;font-size:12px!important;}'
+    + '.ftcal-field.is-empty{color:#94A3B8!important;font-weight:600!important;}'
+    + '.ftcal-field:active{background:#F5F8FF!important;}'
+    + '.ftcal-overlay{position:fixed!important;inset:0!important;z-index:100002!important;display:flex!important;align-items:center!important;'
+    + 'justify-content:center!important;padding:16px!important;background:rgba(15,23,42,.45)!important;}'
+    + '.ftcal-card{width:100%!important;max-width:334px!important;background:#FFFFFF!important;border-radius:22px!important;'
+    + 'box-shadow:0 26px 60px -24px rgba(15,23,42,.55)!important;overflow:hidden!important;}'
+    + '.ftcal-head{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:14px 16px!important;'
+    + 'background:linear-gradient(135deg,#1E3A8A 0%,#2A74E8 100%)!important;color:#FFFFFF!important;}'
+    + '.ftcal-title{display:flex!important;align-items:center!important;gap:8px!important;font-size:12px!important;font-weight:800!important;letter-spacing:.03em!important;}'
+    + '.ftcal-x{border:0!important;background:transparent!important;color:rgba(255,255,255,.92)!important;font-size:19px!important;'
+    + 'line-height:1!important;cursor:pointer!important;padding:0 2px!important;}'
+    + '.ftcal-nav{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;padding:14px 14px 8px!important;}'
+    + '.ftcal-arrow{width:34px!important;height:34px!important;flex:0 0 auto!important;border-radius:11px!important;border:1px solid #DFE7F3!important;'
+    + 'background:#F5F8FF!important;color:#1E3A8A!important;font-size:16px!important;font-weight:800!important;cursor:pointer!important;line-height:1!important;}'
+    + '.ftcal-arrow:active{background:#E4EDFF!important;}'
+    + '.ftcal-period{flex:1!important;border:0!important;background:transparent!important;color:#0F172A!important;font-size:13.5px!important;'
+    + 'font-weight:800!important;cursor:pointer!important;padding:4px!important;}'
+    + '.ftcal-body{padding:4px 14px 12px!important;min-height:224px!important;}'
+    + '.ftcal-week{display:grid!important;grid-template-columns:repeat(7,1fr)!important;gap:4px!important;margin-bottom:5px!important;}'
+    + '.ftcal-week span{text-align:center!important;font-size:10px!important;font-weight:800!important;color:#94A3B8!important;text-transform:uppercase!important;}'
+    + '.ftcal-grid{display:grid!important;grid-template-columns:repeat(7,1fr)!important;gap:4px!important;}'
+    + '.ftcal-day{aspect-ratio:1!important;border:0!important;background:transparent!important;border-radius:11px!important;font-size:12.5px!important;'
+    + 'font-weight:700!important;color:#0F172A!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;}'
+    + '.ftcal-day.blank{visibility:hidden!important;}'
+    + '.ftcal-day.today{box-shadow:inset 0 0 0 1.5px #1E3A8A!important;color:#1E3A8A!important;}'
+    + '.ftcal-day.sel,.ftcal-day.sel.today{background:#1E3A8A!important;color:#FFFFFF!important;}'
+    + '.ftcal-day:not(:disabled):active{background:#EEF3FF!important;}'
+    + '.ftcal-day:disabled{color:#CBD5E1!important;cursor:not-allowed!important;}'
+    + '.ftcal-months{display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;padding-top:4px!important;}'
+    + '.ftcal-month{padding:14px 4px!important;border-radius:12px!important;border:1px solid #DFE7F3!important;background:#F5F8FF!important;'
+    + 'color:#1E3A8A!important;font-size:12px!important;font-weight:800!important;cursor:pointer!important;}'
+    + '.ftcal-month.sel{background:#1E3A8A!important;border-color:#1E3A8A!important;color:#FFFFFF!important;}'
+    + '.ftcal-month:active{background:#E4EDFF!important;}'
+    + '.ftcal-foot{padding:0 14px 14px!important;}'
+    + '.ftcal-today{width:100%!important;padding:11px!important;border-radius:12px!important;border:1px solid #C7D7F5!important;'
+    + 'background:#F5F8FF!important;color:#1E3A8A!important;font-size:12px!important;font-weight:800!important;cursor:pointer!important;}'
+    + '.ftcal-today:active{background:#E4EDFF!important;}';
+
+  function injectStyles() {
+    if (document.getElementById('ftCalStyles')) return;
+    var style = document.createElement('style');
+    style.id = 'ftCalStyles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+  injectStyles();
+
+  function pad(value) { return String(value).length < 2 ? '0' + value : String(value); }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function thisMonth() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+
+  function parse(value, mode) {
+    var parts = String(value || '').split('-');
+    var year = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10) - 1;
+    var day = mode === 'day' ? parseInt(parts[2], 10) : 1;
+    if (!year || isNaN(month) || month < 0 || month > 11) {
+      var now = new Date();
+      return { year: now.getFullYear(), month: now.getMonth(), day: now.getDate() };
+    }
+    return { year: year, month: month, day: day > 0 ? day : 1 };
+  }
+
+  function labelFor(value, mode) {
+    if (!value) return mode === 'month' ? 'Choose month' : 'Choose date';
+    var parts = String(value).split('-');
+    var monthIndex = (parseInt(parts[1], 10) || 1) - 1;
+    if (mode === 'month' || parts.length < 3) return (SHORT[monthIndex] || '') + ' ' + parts[0];
+    return pad(parseInt(parts[2], 10) || 1) + ' ' + (SHORT[monthIndex] || '') + ' ' + parts[0];
+  }
+
+  var overlay = null;
+  var view = null;
+  document.addEventListener('keydown', function (event) { if (overlay && event.key === 'Escape') close(); });
+
+  function close() {
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    overlay = null;
+    view = null;
+  }
+
+  function onKey(event) {
+    if (!overlay) { document.removeEventListener('keydown', onKey); return; }
+    if (event.key === 'Escape') close();
+  }
+
+  function pick(value) {
+    if (!view) return;
+    var callback = view.onPick;
+    close();
+    if (callback) callback(value);
+  }
+
+  function render() {
+    if (!overlay || !view) return;
+    var period = overlay.querySelector('.ftcal-period');
+    var body = overlay.querySelector('.ftcal-body');
+    var foot = overlay.querySelector('.ftcal-today');
+
+    if (view.mode === 'month') {
+      period.textContent = String(view.cursor.year);
+      foot.textContent = 'This month';
+      var chosen = view.value ? parse(view.value, 'month') : null;
+      var months = '';
+      for (var m = 0; m < 12; m++) {
+        var active = chosen && chosen.year === view.cursor.year && chosen.month === m;
+        months += '<button type="button" class="ftcal-month' + (active ? ' sel' : '') + '" data-month="' + m + '">' + SHORT[m] + '</button>';
+      }
+      body.innerHTML = '<div class="ftcal-months">' + months + '</div>';
+      Array.prototype.forEach.call(body.querySelectorAll('[data-month]'), function (button) {
+        button.onclick = function () {
+          pick(view.cursor.year + '-' + pad(Number(button.getAttribute('data-month')) + 1));
+        };
+      });
+      return;
+    }
+
+    period.textContent = MONTHS[view.cursor.month] + ' ' + view.cursor.year;
+    foot.textContent = 'Today';
+
+    if (view.calView === 'months') {
+      var picks = '';
+      for (var i = 0; i < 12; i++) {
+        picks += '<button type="button" class="ftcal-month' + (i === view.cursor.month ? ' sel' : '') + '" data-calmonth="' + i + '">' + SHORT[i] + '</button>';
+      }
+      body.innerHTML = '<div class="ftcal-months">' + picks + '</div>';
+      Array.prototype.forEach.call(body.querySelectorAll('[data-calmonth]'), function (button) {
+        button.onclick = function () {
+          view.cursor.month = Number(button.getAttribute('data-calmonth'));
+          view.calView = 'days';
+          render();
+        };
+      });
+      return;
+    }
+
+    var first = new Date(view.cursor.year, view.cursor.month, 1).getDay();
+    var total = new Date(view.cursor.year, view.cursor.month + 1, 0).getDate();
+    var today = todayStr();
+    var selected = view.value && String(view.value).length >= 10 ? String(view.value).slice(0, 10) : '';
+    var cells = '';
+    var blank = 0;
+    for (; blank < first; blank++) cells += '<button type="button" class="ftcal-day blank" tabindex="-1"></button>';
+    for (var day = 1; day <= total; day++) {
+      var value = view.cursor.year + '-' + pad(view.cursor.month + 1) + '-' + pad(day);
+      var blocked = (view.min && value < view.min && view.allow.indexOf(value) === -1) || (view.max && value > view.max);
+      cells += '<button type="button" class="ftcal-day'
+        + (value === today ? ' today' : '')
+        + (value === selected ? ' sel' : '')
+        + '" data-day="' + value + '"' + (blocked ? ' disabled' : '') + '>' + day + '</button>';
+    }
+    body.innerHTML = '<div class="ftcal-week">' + WEEK.map(function (name) { return '<span>' + name + '</span>'; }).join('') + '</div>'
+      + '<div class="ftcal-grid">' + cells + '</div>';
+    Array.prototype.forEach.call(body.querySelectorAll('[data-day]'), function (button) {
+      button.onclick = function () { pick(button.getAttribute('data-day')); };
+    });
+  }
+
+  function open(options) {
+    close();
+    var mode = options.mode === 'month' ? 'month' : 'day';
+    view = {
+      mode: mode,
+      value: options.value || '',
+      min: options.min || '',
+      max: options.max || '',
+      allow: options.allow || [],
+      onPick: options.onPick,
+      cursor: parse(options.value || (mode === 'month' ? thisMonth() : todayStr()), mode),
+      calView: 'days'
+    };
+
+    overlay = document.createElement('div');
+    overlay.className = 'ftcal-overlay';
+    overlay.innerHTML = '<div class="ftcal-card" role="dialog" aria-modal="true">'
+      + '<div class="ftcal-head"><span class="ftcal-title"><i class="fa-solid fa-calendar-days"></i>'
+      + (mode === 'month' ? 'Choose month' : 'Choose date') + '</span>'
+      + '<button type="button" class="ftcal-x" aria-label="Close">&times;</button></div>'
+      + '<div class="ftcal-nav"><button type="button" class="ftcal-arrow" data-step="-1">&#8249;</button>'
+      + '<button type="button" class="ftcal-period"></button>'
+      + '<button type="button" class="ftcal-arrow" data-step="1">&#8250;</button></div>'
+      + '<div class="ftcal-body"></div>'
+      + '<div class="ftcal-foot"><button type="button" class="ftcal-today"></button></div>'
+      + '</div>';
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', function (event) { if (event.target === overlay) close(); });
+    overlay.querySelector('.ftcal-x').onclick = close;
+
+    Array.prototype.forEach.call(overlay.querySelectorAll('.ftcal-arrow'), function (button) {
+      button.onclick = function () {
+        var step = Number(button.getAttribute('data-step'));
+        if (view.mode === 'month' || view.calView === 'months') {
+          view.cursor.year += step;
+        } else {
+          view.cursor.month += step;
+          if (view.cursor.month > 11) { view.cursor.month = 0; view.cursor.year += 1; }
+          if (view.cursor.month < 0) { view.cursor.month = 11; view.cursor.year -= 1; }
+        }
+        render();
+      };
+    });
+
+    overlay.querySelector('.ftcal-period').onclick = function () {
+      if (view.mode === 'month') return;
+      view.calView = view.calView === 'months' ? 'days' : 'months';
+      render();
+    };
+
+    overlay.querySelector('.ftcal-today').onclick = function () {
+      pick(view.mode === 'month' ? thisMonth() : todayStr());
+    };
+
+    render();
+  }
+
+  /* ---------------- date and month fields ---------------- */
+  var triggers = [];
+
+  function sync(trigger) {
+    if (!trigger.input.value && trigger.auto) trigger.input.value = trigger.auto;
+    var text = labelFor(trigger.input.value, trigger.mode);
+    if (trigger.text === text) return;
+    trigger.text = text;
+    trigger.button.innerHTML = '<i class="fa-solid fa-calendar-days"></i><span>' + text + '</span>';
+    trigger.button.classList.toggle('is-empty', !trigger.input.value);
+  }
+
+  function syncAll() { triggers.forEach(sync); }
+
+  function upgrade(input) {
+    if (!input || input.dataset.ftcal || input.disabled) return;
+    var mode = input.type === 'month' ? 'month' : 'day';
+    input.dataset.ftcal = mode;
+    input.style.display = 'none';
+
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ftcal-field';
+    input.parentNode.insertBefore(button, input.nextSibling);
+
+    var trigger = { input: input, button: button, mode: mode, auto: input.hasAttribute('required') ? (mode === 'month' ? thisMonth() : todayStr()) : '' };
+    triggers.push(trigger);
+
+    button.onclick = function () {
+      open({
+        mode: mode,
+        value: input.value || trigger.auto || (mode === 'month' ? thisMonth() : todayStr()),
+        min: input.getAttribute('min') || '',
+        max: input.getAttribute('max') || '',
+        allow: input.dataset.orig ? [input.dataset.orig] : [],
+        onPick: function (value) {
+          input.value = value;
+          try { input.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+          try { input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+          sync(trigger);
+          if (window.updateAllMonthNavLabels) { try { window.updateAllMonthNavLabels(); } catch (e) {} }
+        }
+      });
+    };
+
+    sync(trigger);
+  }
+
+  function scan() {
+    Array.prototype.forEach.call(document.querySelectorAll('input[type="date"], input[type="month"]'), upgrade);
+  }
+
+  /* ---------------- month jumps in every section ---------------- */
+  window.ftOpenMonthPicker = function (inputId, onChangeFn) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    open({
+      mode: 'month',
+      value: input.value || thisMonth(),
+      onPick: function (value) {
+        input.value = value;
+        try { input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+        if (window.updateMonthNavLabel) { try { window.updateMonthNavLabel(inputId); } catch (e) {} }
+        if (onChangeFn) {
+          var name = String(onChangeFn).replace('()', '');
+          if (typeof window[name] === 'function') window[name]();
+        }
+        syncAll();
+      }
+    });
+  };
+
+  /* the month written beside the arrows opens the same calendar */
+  document.addEventListener('click', function (event) {
+    var label = event.target.closest ? event.target.closest('[id^="navLabel_"]') : null;
+    if (!label) return;
+    var inputId = label.id.slice('navLabel_'.length);
+    if (!document.getElementById(inputId)) return;
+    var cluster = label.parentNode;
+    var scope = (cluster && cluster.parentNode) || cluster;
+    var prev = null;
+    if (cluster && cluster.querySelector) prev = cluster.querySelector('button[onclick*="navMonthPrev"]');
+    if (!prev && scope && scope.querySelector) prev = scope.querySelector('button[onclick*="navMonthPrev"]');
+    var callback = '';
+    if (prev) {
+      var match = String(prev.getAttribute('onclick') || '').match(/navMonthPrev\('[^']*','([^']*)'\)/);
+      callback = match ? match[1] : '';
+    }
+    window.ftOpenMonthPicker(inputId, callback);
+  }, true);
+
+  /* values are also set by the app itself — keep every label honest */
+  setInterval(syncAll, 700);
+  document.addEventListener('click', function () { setTimeout(syncAll, 90); }, true);
+
+  var scanTimer = 0;
+  function scheduleScan() {
+    if (scanTimer) return;
+    scanTimer = setTimeout(function () { scanTimer = 0; scan(); }, 350);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan);
+  else scan();
+  try {
+    new MutationObserver(scheduleScan).observe(document.body, { childList: true, subtree: true });
+  } catch (e) {}
+  setTimeout(scan, 900);
+  setTimeout(scan, 2500);
+})();
+
+</script>
+<script>
 /* FinTrack — FinTrack AI, notification actions, PDF branding and layout polish.
    Loaded after the standalone app; everything here is additive. */
 (function () {
@@ -10599,6 +10942,423 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       }
     }
   });
+})();
+
+</script>
+<script>
+/* FinTrack — shared household ledger rights.
+   Every member of a household has equal rights: any member can open, edit or
+   remove any shared household expense, whoever entered it. */
+(function () {
+  'use strict';
+
+  function entry(id) {
+    return (((window.state || {}).householdExpenses) || []).filter(function (item) {
+      return String(item.id) === String(id);
+    })[0] || null;
+  }
+
+  function keepOriginalOptions(expense) {
+    var payer = document.getElementById('hhExpPaidBy');
+    if (payer && expense.paidBy && !Array.prototype.some.call(payer.options, function (option) { return option.value === expense.paidBy; })) {
+      payer.add(new Option(expense.paidBy, expense.paidBy));
+      payer.value = expense.paidBy;
+    }
+    var account = document.getElementById('hhExpAccount');
+    if (account && expense.accountId) {
+      account.value = expense.accountId;
+      if (String(account.value) !== String(expense.accountId)) {
+        account.add(new Option('Original account', expense.accountId));
+        account.value = expense.accountId;
+      }
+    }
+  }
+
+  var hostEdit = window.editHouseholdExpense;
+  window.editHouseholdExpense = function (id) {
+    var result = typeof hostEdit === 'function' ? hostEdit.apply(this, arguments) : undefined;
+    var expense = entry(id);
+    if (!expense) return result;
+    /* the form fills its lists asynchronously */
+    setTimeout(function () { keepOriginalOptions(expense); }, 120);
+    setTimeout(function () { keepOriginalOptions(expense); }, 600);
+    return result;
+  };
+
+  var hostSave = window.saveHouseholdExpense;
+  window.saveHouseholdExpense = function () {
+    var idField = document.getElementById('hhExpId');
+    var account = document.getElementById('hhExpAccount');
+    if (account && !account.value && idField && idField.value) {
+      var stored = entry(idField.value);
+      if (stored && stored.accountId) {
+        account.add(new Option('Original account', stored.accountId));
+        account.value = stored.accountId;
+      }
+    }
+    return typeof hostSave === 'function' ? hostSave.apply(this, arguments) : undefined;
+  };
+})();
+
+</script>
+<script>
+/* FinTrack — first-login tour, the mandatory primary currency, country short
+   forms for the currency accounts, and compact settings tables.
+   Everything here is additive: existing save and report logic stays untouched. */
+(function () {
+  'use strict';
+
+  var FT = window.FTReview || {};
+
+  /* ---------------- country short form of every currency ---------------- */
+  var COUNTRY = {
+    INR: 'IND', SAR: 'KSA', AED: 'UAE', OMR: 'OMN', QAR: 'QAT', BHD: 'BHR',
+    KWD: 'KWT', USD: 'USA', GBP: 'UK', CAD: 'CAN', EUR: 'EU', AUD: 'AUS',
+    SGD: 'SGP', NZD: 'NZL', CHF: 'SUI', HKD: 'HKG', CNY: 'CHN', ZAR: 'RSA',
+    MYR: 'MAS', UZS: 'UZB'
+  };
+  var OLD_DEFAULTS = ['PRIMARY CURRENCY ACCOUNTS', 'SECONDARY CURRENCY ACCOUNTS'];
+
+  function countryCode(currency) {
+    var code = String(currency || '').toUpperCase();
+    return COUNTRY[code] || code;
+  }
+  function currencyName(currency) {
+    var meta = (window.CURRENCIES || {})[currency];
+    return meta ? meta.name : currency;
+  }
+  /* empty, an old group name and any country code all count as "not customised" */
+  function isDefaultName(value) {
+    var text = String(value == null ? '' : value).trim().toUpperCase();
+    if (!text || OLD_DEFAULTS.indexOf(text) > -1) return true;
+    return Object.keys(COUNTRY).some(function (key) { return COUNTRY[key] === text; });
+  }
+  function allowedCurrencies() {
+    var settings = (window.state && window.state.settings) || {};
+    return Array.isArray(settings.allowedCurrencies) ? settings.allowedCurrencies : [];
+  }
+  function primaryCurrency() {
+    return window.getFirstCurrency ? window.getFirstCurrency() : 'INR';
+  }
+  function secondaryCurrency() {
+    var list = allowedCurrencies();
+    if (list.length > 1 && list[1] !== list[0]) return list[1];
+    return '';
+  }
+
+  /* ---------------- styles ---------------- */
+  var css = ''
+    /* tables readable at a glance, no sideways scrolling */
+    + 'body #sec-settings table th,body #sec-settings table td{white-space:normal!important;overflow-wrap:anywhere!important;vertical-align:middle!important;}'
+    + 'body #sec-settings table{font-size:11.5px!important;table-layout:auto!important;}'
+    + 'body #ratesTable td{white-space:normal!important;overflow-wrap:anywhere!important;}'
+    + '@media(max-width:640px){'
+    + 'body table th,body table td{padding:6px 5px!important;font-size:10.5px!important;line-height:1.35!important;}'
+    + 'body table{font-size:10.5px!important;}'
+    + 'body #sec-settings table th,body #sec-settings table td{padding:6px 4px!important;}'
+    + '}'
+    /* primary / secondary badges beside the currency checkboxes */
+    + '.ft-cur-badge{margin-left:auto;padding:2px 7px;border-radius:999px;font-size:8.5px;font-weight:800;'
+    + 'text-transform:uppercase;letter-spacing:.04em;line-height:1.5;}'
+    + '.ft-cur-badge.primary{background:#1E3A8A;color:#FFFFFF;}'
+    + '.ft-cur-badge.secondary{background:#FEF3C7;color:#92400E;}'
+    + '#currencyRestrictionContainer label{display:flex!important;align-items:center!important;gap:8px!important;}'
+    /* currency setup card */
+    + '.ftcur-lead{font-size:12.5px;line-height:1.55;color:#475569;margin:0 0 14px;}'
+    + '.ftcur-field{display:block;margin-bottom:12px;}'
+    + '.ftcur-field>span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;}'
+    + '.ftcur-field.primary>span{color:#1E3A8A;}'
+    + '.ftcur-field.secondary>span{color:#B45309;}'
+    + '.ftcur-field select{width:100%;padding:11px 12px;border:1px solid #CBD5E1;border-radius:12px;font-size:13px;'
+    + 'font-weight:700;color:#0F172A;background:#F8FAFC;}'
+    + '.ftcur-field select:focus{outline:2px solid rgba(37,99,235,.35);border-color:#2563EB;}'
+    + '.ftcur-error{color:#B91C1C;font-size:11.5px;font-weight:700;margin:6px 0 0;}'
+    + '.ftcur-note{font-size:10.5px;color:#94A3B8;margin:10px 0 0;line-height:1.5;}';
+
+  var style = document.createElement('style');
+  style.id = 'ftSetupStyles';
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  /* ---------------- currency account names ---------------- */
+  window.ftCurrencyCountryCode = countryCode;
+
+  window.ftSyncCurrencyGroupBoxes = function () {
+    var primary = primaryCurrency();
+    var second = secondaryCurrency();
+    var box1 = document.getElementById('settingBankType1');
+    var box2 = document.getElementById('settingBankType2');
+
+    if (box1 && isDefaultName(box1.value)) box1.value = countryCode(primary);
+    if (box2) {
+      if (!second) { if (isDefaultName(box2.value)) box2.value = ''; }
+      else if (isDefaultName(box2.value)) box2.value = countryCode(second);
+    }
+
+    var hint1 = document.getElementById('ftPrimaryCodeHint');
+    var hint2 = document.getElementById('ftSecondaryCodeHint');
+    if (hint1) hint1.textContent = 'Default ' + countryCode(primary) + ' · ' + primary + ' — ' + currencyName(primary) + '. You can rename it.';
+    if (hint2) hint2.textContent = second
+      ? 'Default ' + countryCode(second) + ' · ' + second + ' — ' + currencyName(second) + '. You can rename it.'
+      : 'Optional — no secondary currency is selected yet.';
+  };
+
+  window.saveBankTypes = function () {
+    var box1 = document.getElementById('settingBankType1');
+    var box2 = document.getElementById('settingBankType2');
+    var first = String((box1 && box1.value) || '').trim().toUpperCase();
+    var second = String((box2 && box2.value) || '').trim().toUpperCase();
+    if (!first) {
+      alert('Enter the short country form of your primary currency, for example IND for INR or KSA for SAR.');
+      return;
+    }
+    if (second && second === first) {
+      alert('The secondary name must be different from the primary one.');
+      return;
+    }
+    if (!window.state.settings) window.state.settings = {};
+    window.state.settings.bankType1 = first;
+    window.state.settings.bankType2 = second;
+    if (box1) box1.value = first;
+    if (box2) box2.value = second;
+    if (typeof window.saveData === 'function') window.saveData();
+    if (typeof window.renderAll === 'function') window.renderAll();
+    if (typeof window.ftToast === 'function') window.ftToast('Currency accounts saved');
+    else alert('Currency accounts saved.');
+  };
+
+  /* ---------------- one primary currency, one optional secondary ---------------- */
+  function checkedCurrencies() {
+    return Array.prototype.slice.call(document.querySelectorAll('.currency-restriction-checkbox:checked'))
+      .map(function (box) { return box.value; });
+  }
+
+  function paintBadges() {
+    var picked = checkedCurrencies();
+    document.querySelectorAll('#currencyRestrictionContainer label').forEach(function (label) {
+      var box = label.querySelector('.currency-restriction-checkbox');
+      if (!box) return;
+      var index = picked.indexOf(box.value);
+      var badge = label.querySelector('.ft-cur-badge');
+      if (index > -1 && index < 2) {
+        if (!badge) {
+          badge = document.createElement('span');
+          label.appendChild(badge);
+        }
+        badge.className = 'ft-cur-badge ' + (index === 0 ? 'primary' : 'secondary');
+        badge.textContent = index === 0 ? 'Primary' : 'Secondary';
+      } else if (badge) {
+        badge.remove();
+      }
+    });
+  }
+
+  var hostPopulateCurrencies = window.populateCurrencyRestriction;
+  window.populateCurrencyRestriction = function () {
+    if (typeof hostPopulateCurrencies === 'function') hostPopulateCurrencies.apply(this, arguments);
+    try { paintBadges(); } catch (e) {}
+  };
+
+  document.addEventListener('change', function (event) {
+    var box = event.target;
+    if (!box || !box.classList || !box.classList.contains('currency-restriction-checkbox')) return;
+    if (checkedCurrencies().length > 2) {
+      box.checked = false;
+      alert('Choose one primary currency and, if you need it, one secondary currency.');
+      return;
+    }
+    paintBadges();
+  }, true);
+
+  window.saveAllowedCurrencies = function () {
+    var picked = checkedCurrencies().slice(0, 2);
+    if (!picked.length) {
+      alert('Select one primary currency to continue. A secondary currency is optional.');
+      return;
+    }
+    if (!window.state.settings) window.state.settings = {};
+    var settings = window.state.settings;
+    settings.allowedCurrencies = picked;
+    if (isDefaultName(settings.bankType1)) settings.bankType1 = countryCode(picked[0]);
+    if (isDefaultName(settings.bankType2)) settings.bankType2 = picked[1] ? countryCode(picked[1]) : '';
+    if (picked.indexOf(window.state.displayCurrency) === -1) window.state.displayCurrency = picked[0];
+    if (typeof window.saveData === 'function') window.saveData();
+    if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect();
+    if (typeof window.populateLiveRateInput === 'function') window.populateLiveRateInput();
+    if (typeof window.renderAll === 'function') window.renderAll();
+    window.ftSyncCurrencyGroupBoxes();
+    if (typeof window.ftToast === 'function') window.ftToast('Currency selection saved');
+  };
+
+  /* the second currency is optional: without one, nothing secondary is shown */
+  window.getSecondCurrency = function () {
+    var list = allowedCurrencies();
+    if (list.length > 1) return list[1] !== list[0] ? list[1] : list[0];
+    if (list.length === 1) return list[0];
+    return 'INR';
+  };
+
+  /* ---------------- the mandatory currency choice ---------------- */
+  var currencyOverlayOpen = false;
+  document.addEventListener('click', function (event) {
+    if (!currencyOverlayOpen) return;
+    var wrap = event.target;
+    if (wrap && wrap.classList && wrap.classList.contains('ft-overlay')) event.stopPropagation();
+  }, true);
+
+  window.ftOpenCurrencySetup = function (onboarding, afterSave) {
+    var primary = allowedCurrencies()[0] || primaryCurrency();
+    var secondary = allowedCurrencies()[1] || '';
+
+    function options(selected, withNone) {
+      var list = (window.ftSortCurrenciesByPriority
+        ? window.ftSortCurrenciesByPriority(Object.keys(window.CURRENCIES || {}))
+        : Object.keys(window.CURRENCIES || {}));
+      var html = withNone ? '<option value="">No secondary currency</option>' : '';
+      return html + list.map(function (currency) {
+        var label = countryCode(currency) + ' · ' + currency + ' — ' + currencyName(currency);
+        return '<option value="' + currency + '"' + (currency === selected ? ' selected' : '') + '>' + label + '</option>';
+      }).join('');
+    }
+
+    var html = '<p class="ftcur-lead">Pick the currency you use most. One primary currency is required; a secondary currency is optional. You can change both in Settings whenever you need.</p>'
+      + '<label class="ftcur-field primary"><span>Primary currency — required</span>'
+      + '<select id="ftCurPrimary">' + options(primary, false) + '</select></label>'
+      + '<label class="ftcur-field secondary"><span>Secondary currency — optional</span>'
+      + '<select id="ftCurSecondary">' + options(secondary, true) + '</select></label>'
+      + '<p class="ftcur-error hidden" id="ftCurError"></p>'
+      + '<p class="ftcur-note">Your bank and cash accounts are grouped under these currencies, and every amount in FinTrack follows them.</p>';
+
+    var view = FT.openOverlay({
+      title: 'Select your currency',
+      html: html,
+      actions: [{
+        label: 'Save currency',
+        keepOpen: true,
+        run: function (close) {
+          var first = view.body.querySelector('#ftCurPrimary');
+          var second = view.body.querySelector('#ftCurSecondary');
+          var error = view.body.querySelector('#ftCurError');
+          var primaryValue = first ? first.value : '';
+          var secondaryValue = second ? second.value : '';
+          if (!primaryValue) {
+            if (error) { error.textContent = 'Choose one primary currency.'; error.classList.remove('hidden'); }
+            return;
+          }
+          if (secondaryValue && secondaryValue === primaryValue) {
+            if (error) { error.textContent = 'The secondary currency must differ from the primary one.'; error.classList.remove('hidden'); }
+            return;
+          }
+          if (!window.state.settings) window.state.settings = {};
+          var settings = window.state.settings;
+          settings.allowedCurrencies = secondaryValue ? [primaryValue, secondaryValue] : [primaryValue];
+          if (isDefaultName(settings.bankType1)) settings.bankType1 = countryCode(primaryValue);
+          if (isDefaultName(settings.bankType2)) settings.bankType2 = secondaryValue ? countryCode(secondaryValue) : '';
+          window.state.displayCurrency = primaryValue;
+          if (onboarding) window.state.settings.firstTimeSetupDone = true;
+          if (typeof window.saveData === 'function') window.saveData();
+          if (typeof window.populateDisplayCurrencySelect === 'function') window.populateDisplayCurrencySelect();
+          if (typeof window.populateCurrencyRestriction === 'function') window.populateCurrencyRestriction();
+          if (typeof window.renderAll === 'function') window.renderAll();
+          window.ftSyncCurrencyGroupBoxes();
+          close();
+          currencyOverlayOpen = false;
+          if (typeof window.ftToast === 'function') window.ftToast(primaryValue + ' saved as your primary currency');
+          if (onboarding && typeof window.switchTab === 'function') window.switchTab('overview');
+          if (typeof afterSave === 'function') afterSave(primaryValue, secondaryValue);
+        }
+      }]
+    });
+
+    currencyOverlayOpen = true;
+    var closer = view.el.querySelector('.ft-overlay-close');
+    if (closer) closer.style.display = 'none';
+    return view;
+  };
+
+  /* ---------------- the full tour, then the currency choice ---------------- */
+  var TOUR = [
+    ['overview', 'Home', 'Your greeting, total bank and cash balance, the three quick actions and the Quick Links that open every area.'],
+    ['accounts', 'Accounts', 'Every bank account, cash in hand and credit card with its balance. Tap an account to edit it, or add a new one here.'],
+    ['expenses', 'Expenses', 'Record an expense against an account and a category, then review the month with one calendar control.'],
+    ['friends', 'FinTrackers', 'Your friends with what each one owes you or you owe them, and the splits you share.'],
+    ['household', 'Household', 'Shared household expenses and balances, settled by the person receiving the money.'],
+    ['trips', 'Trip Split', 'Trips you share with friends, the running balance per member and the trips already closed.'],
+    ['financial-overview', 'FinTrack AI', 'Ask about your balances, spending or a goal, and get answers built from your own numbers.'],
+    ['insights', 'Insights', 'Savings and category totals for a month, a year or a chosen range.'],
+    ['transactions', 'Transactions', 'Every transaction of the month in date order, or a year view with monthly totals.'],
+    ['settings', 'Settings', 'Your primary and secondary currency, exchange rates, theme and FinPIN security.'],
+    ['ratings', 'Rating & Feedback', 'Rate FinTrack inside the app, or leave a store rating from the Play listing.'],
+    ['help', 'Help & Support', 'Answers to common questions and this tour whenever you want to repeat it.']
+  ];
+
+  var tourLocked = false;
+  document.addEventListener('click', function (event) {
+    if (!tourLocked) return;
+    var wrap = event.target;
+    if (wrap && wrap.classList && wrap.classList.contains('ft-overlay')) event.stopPropagation();
+  }, true);
+
+  window.ftStartTour = function (onDone, locked) {
+    var index = 0;
+    var finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      tourLocked = false;
+      if (typeof onDone === 'function') onDone();
+    }
+    function show() {
+      var step = TOUR[index];
+      if (!step) { finish(); return; }
+      if (typeof window.switchTab === 'function') window.switchTab(step[0]);
+      var view = FT.openOverlay({
+        title: 'App tour · ' + (index + 1) + ' of ' + TOUR.length,
+        html: '<h3 class="ft-tour-title">' + FT.escape(step[1]) + '</h3><p class="ft-tour-text">' + FT.escape(step[2]) + '</p>',
+        actions: [
+          { label: 'Explore', secondary: true, run: function (close) { close(); finish(); } }
+        ].concat(index ? [
+          { label: 'Back', secondary: true, keepOpen: true, run: function (close) { index--; close(); setTimeout(show, 60); } },
+          {
+            label: index === TOUR.length - 1 ? 'Finish tour' : 'Next',
+            run: function (close) {
+              if (index < TOUR.length - 1) { index++; setTimeout(show, 60); }
+              else { close(); finish(); }
+            }
+          }
+        ] : [
+          { label: 'Next', run: function (close) { index++; setTimeout(show, 60); } }
+        ])
+      });
+      tourLocked = !!locked;
+      var closer = view.el.querySelector('.ft-overlay-close');
+      if (closer && locked) closer.style.display = 'none';
+    }
+    show();
+  };
+
+  window._startGuidanceSteps = function () {
+    var welcome = document.getElementById('modalWelcomeScreen');
+    if (welcome) welcome.classList.add('hidden');
+    window._ftGuideIndex = 0;
+    window.ftStartTour(function () { window.ftOpenCurrencySetup(true); }, true);
+  };
+
+  window._skipWelcome = function () {
+    var welcome = document.getElementById('modalWelcomeScreen');
+    if (welcome) welcome.classList.add('hidden');
+    window.ftOpenCurrencySetup(true);
+  };
+
+  /* ---------------- keep the boxes honest ---------------- */
+  window.ftSyncCurrencyGroupBoxes();
+  setTimeout(window.ftSyncCurrencyGroupBoxes, 900);
+  setTimeout(window.ftSyncCurrencyGroupBoxes, 2600);
+  setInterval(function () {
+    if (document.getElementById('sec-settings') && !document.getElementById('sec-settings').classList.contains('hidden')) {
+      try { window.ftSyncCurrencyGroupBoxes(); } catch (e) {}
+    }
+  }, 2500);
 })();
 
 </script></body>
