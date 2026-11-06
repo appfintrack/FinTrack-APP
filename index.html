@@ -3963,11 +3963,8 @@ window.ftApplyDescriptionVisibility = function() {
   if (typeof window.ftTagDescriptions === 'function') window.ftTagDescriptions();
   var app = document.getElementById('appContainer');
   if (!app) return;
-  if (window.ftShouldHideDescriptions()) {
-    app.classList.add('ft-hide-desc');
-  } else {
-    app.classList.remove('ft-hide-desc');
-  }
+  var hide = window.ftShouldHideDescriptions();
+  if (app.classList.contains('ft-hide-desc') !== hide) app.classList.toggle('ft-hide-desc', hide);
 };
 window.ftShowDormantPopup1 = function() {
   var titleEl = document.getElementById('dormantWelcomeTitle');
@@ -5238,7 +5235,8 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
   onValue(ref(db, '.info/connected'), function (snapshot) { connected = snapshot.val() === true; if (!connected) { session = null; generation++; } sync(); });
   auth.onAuthStateChanged(function () { sync(); });
   document.addEventListener('visibilitychange', sync); window.addEventListener('pagehide', stop); window.addEventListener('pageshow', sync);
-  new MutationObserver(sync).observe(document.getElementById('appContainer'), { attributes: true, attributeFilter: ['class'] });
+  var presenceApp = document.getElementById('appContainer'), presenceHidden = presenceApp.classList.contains('hidden');
+  new MutationObserver(function () { var hidden = presenceApp.classList.contains('hidden'); if (hidden === presenceHidden) return; presenceHidden = hidden; sync(); }).observe(presenceApp, { attributes: true, attributeFilter: ['class'] });
   setInterval(function () { sync(); renderMetrics(); }, 30000);
   sync();
 })();
@@ -6146,14 +6144,15 @@ window.ftToggleHhMenu = function (e) {
     }catch(e){FT.enqueue({key:'sync_error_'+FT.me().uid,title:'Financial sync needs attention',message:e.message+' No payment is treated as received without recipient confirmation.'});}
     finally{FT.running=false;}
   };
-  var timer;FT.schedule=function(){clearTimeout(timer);timer=setTimeout(FT.scan,120);};
+  var timer=null;FT.schedule=function(){if(timer!==null)return;timer=setTimeout(function(){timer=null;FT.scan();},120);};
   var clear=window.clearAllNotifications;window.clearAllNotifications=function(){if(FT.requests().some(function(r){return r.s.status==='pending'&&ftSettlementPeople(r.s).payee.uid===FT.me().uid;})){alert('Respond to pending payment requests before clearing notifications.');return;}return clear.apply(this,arguments);};
   var removeNotice=window.deleteNotification;window.deleteNotification=function(id){var n=(window._ftNotifData||[]).find(function(n){return String(n.id)===String(id);});if(n&&n.type==='settlement_request'){var r=FT.requests().find(function(r){return String(r.s.id)===String(n.settlementId);});if(r&&!ftReceiptApproved(r.s)&&r.s.status!=='rejected'){ftEnqueueNotification(n,true);return;}}return removeNotice.apply(this,arguments);};
   // The per-friend inbox uses the same actionable payment review as the main inbox.
   window.ftOpenFriendNotifications=async function(uid,name){if(window.closeProfilePanel)window.closeProfilePanel();document.getElementById('friendNotifTitle').textContent='Notifications — '+name;var list=document.getElementById('friendNotifList');list.textContent='Loading…';document.getElementById('modalFriendNotifications').classList.remove('hidden');try{var snap=await get(ref(db,'users/'+FT.me().uid+'/notifications')),all=Object.entries(snap.val()||{}).map(function(entry){return Object.assign({},entry[1],{id:entry[0]});});window._ftNotifData=all;var rows=all.filter(function(n){return n.fromUid===uid;});list.innerHTML=rows.map(function(n){return '<div class="border rounded-lg p-3"><p class="text-xs">'+FT.escape(n.message)+'</p>'+FT.button('notice',n.type==='settlement_request'?'Review payment':'Open notification',n.id)+'</div>';}).join('')||'<p class="text-xs">No notifications from this friend.</p>';FT.scroll();}catch(e){list.textContent='Could not load notifications: '+e.message;}};
   var logout=window.handleLogout;window.handleLogout=function(){FT.queue=[];FT.seen.clear();FT.active=null;FT.session='';FT.summaryRun='';FT.published='';var dialog=document.getElementById('ftCenterNotice');if(dialog&&dialog.open)dialog.close();document.documentElement.classList.remove('ft-center-scroll');return logout.apply(this,arguments);};
   var scrollTimer;new MutationObserver(function(){clearTimeout(scrollTimer);scrollTimer=setTimeout(FT.scroll,100);}).observe(document.body,{childList:true,subtree:true});
-  new MutationObserver(function(){FT.schedule();FT.next();}).observe(document.getElementById('appContainer'),{attributes:true,attributeFilter:['class']});
+  var appForSync=document.getElementById('appContainer'),appWasHidden=appForSync.classList.contains('hidden');
+  new MutationObserver(function(){var hidden=appForSync.classList.contains('hidden');if(hidden===appWasHidden)return;appWasHidden=hidden;if(!hidden){FT.schedule();FT.next();}}).observe(appForSync,{attributes:true,attributeFilter:['class']});
   document.addEventListener('visibilitychange',function(){if(!document.hidden)FT.schedule();});document.addEventListener('DOMContentLoaded',function(){FT.render();FT.schedule();});FT.schedule();
 })(window.FTReview);
 </script>
@@ -10423,9 +10422,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     if (body && body.style.overflow === 'hidden') body.style.overflow = '';
   }
 
-  /* the app's own touchmove guard sits on the document in the bubble phase;
-     stopping the event at the capture phase keeps every swipe native */
-  document.addEventListener('touchmove', function (event) { event.stopPropagation(); }, { capture: true, passive: true });
+  /* Module controls receive their own gestures; never intercept touchmove globally. */
 
   freePageScroll();
   document.addEventListener('DOMContentLoaded', freePageScroll);
@@ -10442,10 +10439,10 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     var boxes = document.querySelectorAll('input[data-finpin-lock]');
     for (var i = 0; i < boxes.length; i++) {
       var box = boxes[i];
-      box.setAttribute('inputmode', 'none');
-      box.setAttribute('autocomplete', 'off');
-      box.setAttribute('autocorrect', 'off');
-      box.setAttribute('spellcheck', 'false');
+      if (box.getAttribute('inputmode') !== 'none') box.setAttribute('inputmode', 'none');
+      if (box.getAttribute('autocomplete') !== 'off') box.setAttribute('autocomplete', 'off');
+      if (box.getAttribute('autocorrect') !== 'off') box.setAttribute('autocorrect', 'off');
+      if (box.getAttribute('spellcheck') !== 'false') box.setAttribute('spellcheck', 'false');
       /* readonly is the one flag Android WebView always honours: a read-only
          field never summons the system keyboard, while the in-app keypad still
          writes every digit. Desktop keeps normal typing. */
@@ -10521,7 +10518,9 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   markPinBoxes();
   document.addEventListener('DOMContentLoaded', markPinBoxes);
   try {
-    new MutationObserver(markPinBoxes).observe(document.documentElement, { childList: true, subtree: true });
+    new MutationObserver(function (records) {
+      if (records.some(function (record) { return Array.prototype.some.call(record.addedNodes, function (node) { return node.nodeType === 1 && (node.matches('input[data-finpin-lock]') || node.querySelector('input[data-finpin-lock]')); }); })) markPinBoxes();
+    }).observe(document.getElementById('authContainer'), { childList: true, subtree: true });
   } catch (e) {}
 
   /* ============================================================
@@ -11179,10 +11178,13 @@ body #appContainer{background-color:var(--ftpage)!important;background-image:var
 body input.ft-mbox{display:inline-block!important;width:auto!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:5px 8px!important;border:1px solid var(--ftline)!important;border-radius:10px!important;background:var(--ftsurface)!important;color:var(--ftb)!important;font-family:var(--font-body)!important;font-size:11.5px!important;font-weight:700!important;line-height:1.35!important;box-shadow:none!important;outline:none!important;}
 body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 /* in-app PDF reader */
-#ftPdfOverlay .ft-pdf-pages{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 8px 26px;background:#525659;display:flex;flex-direction:column;align-items:center;gap:10px;}
-#ftPdfOverlay canvas.ft-pdf-page{display:block;width:100%!important;max-width:900px;height:auto!important;background:#fff;border-radius:2px;box-shadow:0 6px 20px #00000059;}
-#ftPdfOverlay .ft-pdf-msg{color:#E2E8F0;font-size:12px;font-weight:700;line-height:1.6;text-align:center;padding:22px 16px;max-width:520px;}
-#ftPdfOverlay .ft-pdf-bar{position:relative;z-index:2;}
+#ftPdfOverlay .ft-pdf-pages{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-x pan-y;padding:10px 8px 26px;background:#525659;}
+#ftPdfOverlay .ft-pdf-document{margin:0 auto;display:flex;flex-direction:column;gap:10px;}
+#ftPdfOverlay canvas.ft-pdf-page{display:block;flex:none;width:100%;max-width:none;height:auto;background:#fff;border-radius:2px;box-shadow:0 6px 20px #00000059;}
+#ftPdfOverlay .ft-pdf-msg{color:#E2E8F0;font-size:12px;font-weight:700;line-height:1.6;text-align:center;padding:22px 16px;max-width:520px;margin:0 auto;}
+#ftPdfOverlay .ft-pdf-bar{position:relative;z-index:2;flex-wrap:wrap;padding-top:max(10px,env(safe-area-inset-top));}#ftPdfOverlay .ft-pdf-bar h3{flex-basis:100%;}
+#ftPdfOverlay .ft-pdf-actions{display:flex;gap:6px;flex:1;justify-content:flex-end;}#ftPdfOverlay .ft-pdf-zoom{display:flex;align-items:center;gap:4px;}
+#ftPdfOverlay .ft-pdf-zoom button{padding:8px;min-width:32px;border-radius:8px;color:#1E3A8A;background:#EEF2FF;font-size:12px;font-weight:700;}#ftPdfOverlay .ft-pdf-actions button{padding:9px 10px;}#ftPdfOverlay button:disabled{opacity:.5;}
 </style>
 <script data-ft-update="uniform-month-box-and-pdf">
 /* global currentUser */
@@ -11285,6 +11287,7 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
   function closePdfViewer() {
     if (pdfSession) {
       pdfSession.closed = true;
+      if (pdfSession.renders) pdfSession.renders.forEach(function (render) { render.cancel(); });
       if (pdfSession.task) Promise.resolve(pdfSession.task.destroy()).catch(function () {});
       pdfSession = null;
     }
@@ -11295,196 +11298,114 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 
   function buildPdfViewer(fileName, title) {
     closePdfViewer();
-    var wrap = document.createElement('div');
-    wrap.id = 'ftPdfOverlay';
-    var bar = document.createElement('div');
-    bar.className = 'ft-pdf-bar';
-    var heading = document.createElement('h3');
-    heading.textContent = title || fileName;
-    var saveButton = document.createElement('button');
-    saveButton.type = 'button';
-    saveButton.className = 'px-3 py-2 bg-[#1E3A8A] text-white font-bold text-xs rounded-lg';
-    saveButton.textContent = 'Download';
-    var closeButton = document.createElement('button');
-    closeButton.type = 'button';
-    closeButton.className = 'px-3 py-2 bg-slate-200 text-slate-800 font-bold text-xs rounded-lg';
-    closeButton.textContent = 'Close';
-    var pages = document.createElement('div');
-    pages.className = 'ft-pdf-pages';
-    var note = document.createElement('p');
-    note.className = 'ft-pdf-msg';
-    note.textContent = 'Preparing the PDF\u2026';
-    pages.appendChild(note);
-    bar.appendChild(heading); bar.appendChild(saveButton); bar.appendChild(closeButton);
-    wrap.appendChild(bar); wrap.appendChild(pages);
-    document.body.appendChild(wrap);
-    closeButton.onclick = closePdfViewer;
-    try { if (typeof window.ftSyncScrollLock === 'function') window.ftSyncScrollLock(); } catch (e) {}
-    return { pages: pages, note: note, save: saveButton };
+    var wrap = document.createElement('div'); wrap.id = 'ftPdfOverlay';
+    wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true');
+    var bar = document.createElement('div'); bar.className = 'ft-pdf-bar';
+    var heading = document.createElement('h3'); heading.textContent = title || fileName;
+    var zoom = document.createElement('div'); zoom.className = 'ft-pdf-zoom';
+    zoom.innerHTML = '<button type="button" aria-label="Zoom out">−</button><button type="button" aria-label="Fit PDF to screen">100%</button><button type="button" aria-label="Zoom in">+</button>';
+    var actions = document.createElement('div'); actions.className = 'ft-pdf-actions';
+    var buttons = ['Download', 'Share', 'Close'].map(function (label) { var b = document.createElement('button'); b.type = 'button'; b.className = 'px-3 py-2 bg-[#1E3A8A] text-white font-bold text-xs rounded-lg'; b.textContent = label; actions.appendChild(b); return b; });
+    var pages = document.createElement('div'); pages.className = 'ft-pdf-pages'; pages.setAttribute('aria-label', 'PDF pages — pinch to zoom, drag to pan');
+    var note = document.createElement('p'); note.className = 'ft-pdf-msg'; note.textContent = 'Preparing the PDF…'; pages.appendChild(note);
+    var sheets = document.createElement('div'); sheets.className = 'ft-pdf-document'; pages.appendChild(sheets);
+    bar.appendChild(heading); bar.appendChild(zoom); bar.appendChild(actions); wrap.appendChild(bar); wrap.appendChild(pages); document.body.appendChild(wrap);
+    buttons[2].onclick = closePdfViewer;
+    return { pages: pages, sheets: sheets, note: note, save: buttons[0], share: buttons[1], zoom: zoom.querySelectorAll('button') };
   }
 
   function showPdf(blob, fileName, title) {
-    var view = buildPdfViewer(fileName, title);
-    var session = pdfSession = { closed: false, task: null };
-    view.save.onclick = async function () {
-      view.save.disabled = true; view.save.textContent = 'Saving…';
-      try { return await savePdfBlob(blob, fileName); }
-      finally { view.save.disabled = false; view.save.textContent = 'Download'; }
-    };
-    var bytes = blob.arrayBuffer ? blob.arrayBuffer() : new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function () { resolve(reader.result); };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(blob);
-    });
-    var failed = function (error) {
-      if (session.closed) return;
-      console.warn('FinTrack PDF reader failed', error);
-      view.pages.innerHTML = '';
-      var message = document.createElement('p');
-      message.className = 'ft-pdf-msg';
-      message.textContent = 'The PDF preview could not be loaded. Tap Download to use Android’s save / share sheet, or download the file in a browser.';
-      view.pages.appendChild(message);
-    };
+    var view = buildPdfViewer(fileName, title), session = pdfSession = { closed: false, task: null, pdf: null, zoom: 1, generation: 0, renders: new Set(), canvases: [] };
+    function exportPdf(button, action) { button.onclick = async function () { view.save.disabled = view.share.disabled = true; try { return await savePdfBlob(blob, fileName, action); } finally { view.save.disabled = view.share.disabled = false; } }; }
+    exportPdf(view.save, 'download'); exportPdf(view.share, 'share');
+    function limit(value) { return Math.max(1, Math.min(4, value)); }
+    function sizePages() { view.sheets.style.width = Math.round(session.width * session.zoom) + 'px'; view.zoom[1].textContent = Math.round(session.zoom * 100) + '%'; view.zoom[0].disabled = session.zoom <= 1; view.zoom[2].disabled = session.zoom >= 4; }
+    function failed(error) { if (session.closed || error && error.name === 'RenderingCancelledException') return; console.warn('FinTrack PDF reader failed', error); view.note.hidden = false; view.note.textContent = 'Preview unavailable. Download or Share still exports the original PDF.'; }
+    function renderPages() {
+      if (!session.pdf || session.closed) return;
+      var generation = ++session.generation, zoom = session.zoom, queue = Promise.resolve();
+      session.renders.forEach(function (task) { task.cancel(); }); session.renders.clear();
+      session.canvases.forEach(function (canvas, index) { queue = queue.then(async function () {
+        if (session.closed || generation !== session.generation) return;
+        var page = await session.pdf.getPage(index + 1); if (session.closed || generation !== session.generation) return;
+        var base = page.getViewport({ scale: 1 }), width = session.width * zoom, height = width * base.height / base.width;
+        var ratio = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(8000000 / (width * height)));
+        var viewport = page.getViewport({ scale: width / base.width * ratio }); canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height);
+        var task = page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }); session.renders.add(task);
+        try { await task.promise; } finally { session.renders.delete(task); }
+      }); });
+      queue.catch(failed);
+    }
+    function changeZoom(value) {
+      if (!session.pdf || session.closed) return;
+      var before = session.zoom, x = view.pages.clientWidth / 2, y = view.pages.clientHeight / 2;
+      session.zoom = limit(value); var left = (view.pages.scrollLeft + x) * session.zoom / before - x, top = (view.pages.scrollTop + y) * session.zoom / before - y;
+      sizePages(); view.pages.scrollLeft = left; view.pages.scrollTop = top; renderPages();
+    }
+    view.zoom[0].onclick = function () { changeZoom(session.zoom / 1.25); }; view.zoom[1].onclick = function () { changeZoom(1); }; view.zoom[2].onclick = function () { changeZoom(session.zoom * 1.25); };
+    var pinch = null;
+    function fingers(event) { var a = event.touches[0], b = event.touches[1], box = view.pages.getBoundingClientRect(); return { distance: Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY), x: (a.clientX + b.clientX) / 2 - box.left, y: (a.clientY + b.clientY) / 2 - box.top }; }
+    view.pages.addEventListener('touchstart', function (event) { if (event.touches.length !== 2 || !session.pdf) return; var p = fingers(event); pinch = { distance: Math.max(1, p.distance), zoom: session.zoom, x: (view.pages.scrollLeft + p.x) / session.zoom, y: (view.pages.scrollTop + p.y) / session.zoom }; }, { passive: true });
+    view.pages.addEventListener('touchmove', function (event) { if (!pinch || event.touches.length !== 2) return; if (event.cancelable) event.preventDefault(); var p = fingers(event); session.zoom = limit(pinch.zoom * p.distance / pinch.distance); sizePages(); view.pages.scrollLeft = pinch.x * session.zoom - p.x; view.pages.scrollTop = pinch.y * session.zoom - p.y; }, { passive: false });
+    function endPinch(event) { if (!pinch || event.touches.length >= 2) return; pinch = null; renderPages(); }
+    view.pages.addEventListener('touchend', endPinch); view.pages.addEventListener('touchcancel', endPinch);
+    var bytes = blob.arrayBuffer ? blob.arrayBuffer() : new Promise(function (resolve, reject) { var r = new FileReader(); r.onload = function () { resolve(r.result); }; r.onerror = reject; r.readAsArrayBuffer(blob); });
     Promise.all([loadPdfEngine(), bytes]).then(function (results) {
       if (session.closed) return null;
-      session.task = results[0].getDocument({ data: new Uint8Array(results[1]), isEvalSupported: false, disableStream: true, disableAutoFetch: true });
-      return session.task.promise;
-    }).then(function (pdf) {
-      if (!pdf || session.closed) return;
-      var available = (view.pages.clientWidth || window.innerWidth || 360) - 16;
-      var width = Math.max(240, Math.min(available, 900));
-      var ratio = Math.min(window.devicePixelRatio || 1, 2);
-      view.pages.innerHTML = '';
-      var queue = Promise.resolve();
-      for (var pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-        (function (number) {
-          queue = queue.then(function () {
-            if (session.closed) return;
-            return pdf.getPage(number).then(function (page) {
-              if (session.closed) return;
-              var base = page.getViewport({ scale: 1 });
-              var viewport = page.getViewport({ scale: (width / base.width) * ratio });
-              var canvas = document.createElement('canvas');
-              canvas.className = 'ft-pdf-page';
-              canvas.width = Math.floor(viewport.width);
-              canvas.height = Math.floor(viewport.height);
-              view.pages.appendChild(canvas);
-              return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(function () { page.cleanup(); });
-            });
-          });
-        })(pageNumber);
-      }
-      return queue;
+      session.task = results[0].getDocument({ data: new Uint8Array(results[1]), isEvalSupported: false, disableStream: true, disableAutoFetch: true }); return session.task.promise;
+    }).then(async function (pdf) {
+      if (!pdf || session.closed) return; var first = await pdf.getPage(1); if (session.closed) return;
+      var base = first.getViewport({ scale: 1 }); session.pdf = pdf; session.width = Math.max(200, Math.min(view.pages.clientWidth - 16, 900)); view.note.hidden = true;
+      for (var n = 1; n <= pdf.numPages; n++) { var canvas = document.createElement('canvas'); canvas.className = 'ft-pdf-page'; canvas.width = Math.ceil(base.width); canvas.height = Math.ceil(base.height); canvas.setAttribute('aria-label', 'PDF page ' + n); session.canvases.push(canvas); view.sheets.appendChild(canvas); }
+      sizePages(); renderPages();
     }).catch(failed);
   }
 
-  function toBase64(blob) {
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function () { resolve(String(reader.result || '').split(',')[1] || ''); };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
+  function toBase64(blob) { return new Promise(function (resolve, reject) { var r = new FileReader(); r.onload = function () { resolve(String(r.result || '').split(',')[1] || ''); }; r.onerror = reject; r.readAsDataURL(blob); }); }
   function anchorDownload(blob, fileName) {
-    var url = URL.createObjectURL(blob);
-    var link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.rel = 'noopener';
-    document.body.appendChild(link);
-    try { link.click(); } catch (e) {}
-    setTimeout(function () {
-      try { if (link.parentNode) link.parentNode.removeChild(link); URL.revokeObjectURL(url); } catch (e) {}
-    }, 8000);
-    say('Downloading ' + fileName);
-    return true;
+    var url = URL.createObjectURL(blob), link = document.createElement('a'); link.href = url; link.download = fileName; link.rel = 'noopener'; document.body.appendChild(link); link.click();
+    setTimeout(function () { link.remove(); URL.revokeObjectURL(url); }, 8000); say('Downloading ' + fileName); return true;
   }
-
-  function browserSave(blob, fileName) {
-    var file = null;
-    try { file = new File([blob], fileName, { type: 'application/pdf' }); } catch (e) { file = null; }
-    if (file && navigator.share) {
-      var shareable = true;
-      try { if (navigator.canShare) shareable = navigator.canShare({ files: [file] }); } catch (e) { shareable = false; }
-      if (shareable) {
-        try {
-          return Promise.resolve(navigator.share({ files: [file], title: fileName })).then(function () { return true; }).catch(function (error) {
-            if (error && error.name === 'AbortError') return true;
-            return anchorDownload(blob, fileName);
-          });
-        } catch (error) {
-          return Promise.resolve(anchorDownload(blob, fileName));
-        }
-      }
-    }
-    return Promise.resolve(anchorDownload(blob, fileName));
+  function browserSave(blob, fileName, action) {
+    if (action !== 'share') return Promise.resolve(anchorDownload(blob, fileName));
+    var file = new File([blob], fileName, { type: 'application/pdf' });
+    if (!navigator.share || navigator.canShare && !navigator.canShare({ files: [file] })) { say('PDF sharing is not available in this browser; downloading the PDF instead.'); return Promise.resolve(anchorDownload(blob, fileName)); }
+    return navigator.share({ files: [file], title: fileName }).then(function () { return true; }).catch(function (error) { if (error.name !== 'AbortError') alert('Could not share the PDF: ' + error.message); return false; });
   }
-
-  function savePdfBlob(blob, fileName) {
+  function savePdfBlob(blob, fileName, action) {
     if (!blob || !blob.size) { alert('The PDF could not be created. Please try again.'); return Promise.resolve(false); }
-    fileName = String(fileName || 'FinTrack-Report.pdf').replace(/[\\/:*?"<>|\x00-\x1F]/g, '_');
-    if (!/\.pdf$/i.test(fileName)) fileName += '.pdf';
-    var cap = window.Capacitor;
-    if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return browserSave(blob, fileName);
+    fileName = String(fileName || 'FinTrack-Report.pdf').replace(/[\\/:*?"<>|\x00-\x1F]/g, '_'); if (!/\.pdf$/i.test(fileName)) fileName += '.pdf';
+    action = action === 'share' ? 'share' : 'download'; var cap = window.Capacitor;
+    if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return browserSave(blob, fileName, action);
     var fs = window.ftCapacitorPlugin('Filesystem'), share = window.ftCapacitorPlugin('Share');
-    if (!fs) { alert('PDF export is unavailable in this Android build: the Filesystem plugin must be installed and synced.'); return Promise.resolve(false); }
-    if (savingPdf) return Promise.resolve(false);
-    savingPdf = true;
+    if (!fs) { alert('PDF export requires the Filesystem plugin in this Android build.'); return Promise.resolve(false); }
+    if (savingPdf) return Promise.resolve(false); savingPdf = true;
     var path = 'reports/' + fileName, stored = false;
     async function write(base64, directory) {
-      var result = await fs.writeFile({ path: path, data: base64, directory: directory, recursive: true });
-      var uri = result && result.uri;
+      var result = await fs.writeFile({ path: path, data: base64, directory: directory, recursive: true }), uri = result && result.uri;
       if (!uri) { var location = await fs.getUri({ path: path, directory: directory }); uri = location && location.uri; }
-      if (!uri) throw new Error('Android did not return the saved file location.');
-      return uri;
+      if (!uri) throw new Error('Android did not return the saved file location.'); return uri;
     }
     return toBase64(blob).then(async function (base64) {
       if (!base64) throw new Error('The generated PDF is empty.');
-      // DATA persists privately; CACHE is shareable by Android's default FileProvider.
-      await write(base64, 'DATA'); stored = true;
-      if (!share) throw new Error('The Share plugin must be installed and synced to export a copy outside FinTrack.');
-      var uri = await write(base64, 'CACHE');
-      window._ftInAppHandoffAt = Date.now();
-      await share.share({ files: [uri], title: fileName, dialogTitle: 'Save or share ' + fileName });
-      say('Share sheet completed. A copy is also saved inside FinTrack.');
-      return true;
+      if (action === 'download') {
+        try { await write(base64, 'DOCUMENTS'); say('Downloaded to Documents/' + path); return true; }
+        catch (saveError) { await write(base64, 'DATA'); stored = true; }
+      }
+      if (!share) throw new Error('The Share plugin must be installed and synced to export a PDF outside FinTrack.');
+      var uri = await write(base64, 'CACHE'); window._ftInAppHandoffAt = Date.now();
+      await share.share({ files: [uri], title: fileName, dialogTitle: (action === 'share' ? 'Share PDF: ' : 'Save PDF: ') + fileName }); return true;
     }).catch(function (error) {
       var message = String(error && error.message || error || 'Unknown error');
-      if (/cancel|dismiss/i.test(message)) { say('Save / share cancelled. The PDF remains saved inside FinTrack.'); return false; }
-      console.warn('FinTrack native PDF export failed', error);
-      alert((stored ? 'The PDF is saved inside FinTrack, but a copy could not be exported. ' : 'The PDF could not be saved. ') + message);
-      return false; // Never pretend a WebView blob download exported a file.
+      if (/cancel|dismiss/i.test(message)) { say(stored ? 'Export cancelled. A copy remains saved inside FinTrack.' : 'PDF sharing cancelled.'); return false; }
+      console.warn('FinTrack native PDF export failed', error); alert((stored ? 'The PDF is saved inside FinTrack, but could not be exported. ' : 'The PDF could not be exported. ') + message); return false;
     }).finally(function () { savingPdf = false; });
   }
-
-  function blobOf(doc) {
-    try { return doc.output('blob'); } catch (error) { return null; }
-  }
-
-  window.ftOpenPdfDocument = function (doc, fileName, title) {
-    var blob = blobOf(doc);
-    if (!blob || !blob.size || blob.size < 700) { alert('The PDF could not be created. Please try again.'); return false; }
-    showPdf(blob, fileName, title || fileName);
-    return true;
-  };
-
-  window.ftDownloadPdfDocument = function (doc, fileName) {
-    var blob = blobOf(doc);
-    if (!blob || !blob.size || blob.size < 700) { alert('The PDF could not be created. Please try again.'); return false; }
-    return savePdfBlob(blob, fileName);
-  };
-
-  window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
-    if (mode === 'view') return window.ftOpenPdfDocument(doc, fileName, title);
-    return window.ftDownloadPdfDocument(doc, fileName);
-  };
-
-  window.ftCapSavePdf = function (doc, fileName) {
-    return savePdfBlob(blobOf(doc), fileName);
-  };
+  function blobOf(doc) { try { return doc.output('blob'); } catch (error) { return null; } }
+  window.ftOpenPdfDocument = function (doc, fileName, title) { var blob = blobOf(doc); if (!blob || blob.size < 700) { alert('The PDF could not be created. Please try again.'); return false; } showPdf(blob, fileName, title || fileName); return true; };
+  window.ftDownloadPdfDocument = function (doc, fileName) { return savePdfBlob(blobOf(doc), fileName); };
+  window.ftShareOrSavePdf = function (doc, fileName, title, mode) { return mode === 'view' ? window.ftOpenPdfDocument(doc, fileName, title) : window.ftDownloadPdfDocument(doc, fileName); };
+  window.ftCapSavePdf = function (doc, fileName) { return savePdfBlob(blobOf(doc), fileName); };
   // Apply loading/error handling to the final report generators, not superseded ones.
   ['downloadHouseholdPDF', 'downloadCashbookPDF', 'downloadCashbookPDFByKey'].forEach(function (name) {
     var generate = window[name], busy = false;
