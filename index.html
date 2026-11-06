@@ -7248,7 +7248,7 @@ window.ftToggleHhMenu = function (e) {
   window.ftOpenProfileWindow = function () {
     if (!currentUser) return;
     var memberSince = currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString() : '';
-    var html = '<div class="ft-detail">' + row('Name', currentUser.name) + row('Email ID', currentUser.email) + row('Mobile number', currentUser.mobile ? (currentUser.countryCode || '') + ' ' + currentUser.mobile : '') + row('Account role', currentUser.role) + row('Member since', memberSince) + '</div>';
+    var html = '<div class="ft-detail">' + row('Name', currentUser.name) + row('Email ID', currentUser.email) + row('Mobile number', currentUser.mobile ? (currentUser.countryCode || '') + ' ' + currentUser.mobile : '') + row('Member since', memberSince) + '</div>';
     FT.openOverlay({ title: 'My profile', html: html, actions: [{ label: 'Close', secondary: true }] });
   };
   window.ftOpenNotifications = function () {
@@ -9223,7 +9223,36 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + '/* recipient-initiated settlement */'
     + '.ft-settle-btn{margin-left:6px;padding:4px 8px;border-radius:6px;border:1px solid #BFDBFE;background:#EFF6FF;'
     + 'color:#1E3A8A;font-weight:700;font-size:11px;line-height:1.2;cursor:pointer;white-space:nowrap;}'
-    + '.ft-settle-btn:active,.ft-settle-btn:hover{background:#DBEAFE;}';
+    + '.ft-settle-btn:active,.ft-settle-btn:hover{background:#DBEAFE;}'
+    + '/* ---------- round 2: hex content field, balance toggle, month bars, search, AI, PIN ---------- */'
+    + ":root{--fthexlight:url(\"data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%230047AB' stroke-opacity='.07' stroke-width='1.2'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E\");}"
+    + 'body main{background-color:#F3F7FE!important;background-image:var(--fthexlight)!important;background-size:56px 96px!important;background-attachment:local!important;}'
+    + 'body main .tab-content{background:transparent!important;}'
+    + 'body.ft-scroll-locked,html:has(body.ft-scroll-locked){overflow:hidden!important;}'
+    + '#ftHeroAccount #overviewCardBank{position:relative!important;padding-bottom:42px!important;}'
+    + '.ft-bal-toggle{position:absolute;right:14px;bottom:12px;display:flex;gap:6px;z-index:3;}'
+    + '.ft-bal-pill{border-radius:999px;padding:4px 11px;font-size:10.5px;font-weight:800;letter-spacing:.03em;border:1px solid rgba(255,255,255,.75);background:#FFFFFF;color:#1B326B;cursor:pointer;line-height:1.2;}'
+    + '.ft-bal-pill.active{background:#0B2E8C;color:#FFFFFF;border-color:#0B2E8C;}'
+    + '.ft-month-bar{display:inline-flex;align-items:center;gap:6px;}'
+    + 'select.ft-month-select{border:1px solid #E2E8F0!important;background:#FFFFFF!important;color:#1E3A8A!important;font-weight:800!important;border-radius:10px!important;padding:6px 10px!important;font-size:12px!important;}'
+    + '.ft-this-month{border:1px solid #C7D7F5!important;background:#F5F8FF!important;color:#1E3A8A!important;font-weight:800!important;border-radius:10px!important;padding:6px 10px!important;font-size:11px!important;cursor:pointer;}'
+    + '.ft-this-month:active{background:#E4EDFF!important;}'
+    + 'body .ft-search-panel{align-items:flex-start!important;justify-content:center!important;padding:68px 10px 10px!important;background:rgba(15,23,42,.35)!important;}'
+    + 'body .ft-search-box{width:100%!important;max-width:520px!important;max-height:64vh!important;}'
+    + '.finpin-box{transition:none!important;animation:none!important;transform:none!important;box-shadow:none!important;}'
+    + '.finpin-box:focus{box-shadow:0 0 0 3px #1e3a8a1a!important;border-color:#1E3A8A!important;outline:none!important;}'
+    + '#ftBalanceAdd{background:#FFFFFF!important;color:#0B2E8C!important;font-weight:800!important;border:1px solid rgba(255,255,255,.75)!important;}'
+    + '.ftai-head{background-image:var(--fthex),linear-gradient(135deg,#003399 0%,#3B82F6 100%)!important;background-size:56px 96px,100% 100%!important;background-position:0 0,center!important;}'
+    + '.ftai-head h2{color:#FFFFFF!important;gap:9px!important;}'
+    + '.ftai-head h2 .ftai-logo{width:26px;height:26px;border-radius:8px;background:#FFFFFF;object-fit:contain;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.18);}'
+    + '.ftai-head p{color:rgba(255,255,255,.92)!important;}'
+    + '.ftai-thinking{display:inline-block;position:relative;overflow:hidden;background:none!important;-webkit-text-fill-color:currentColor!important;color:#1E3A8A!important;font-weight:800;letter-spacing:.2px;animation:none!important;}'
+    + '.ftai-thinking::after{content:"";position:absolute;top:0;bottom:0;width:45%;left:-45%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.95),rgba(255,255,255,0));animation:ftaiSweepLine 1.25s linear infinite;}'
+    + '@keyframes ftaiSweepLine{0%{left:-45%}100%{left:105%}}'
+    + '.ftai-msg thead th{background:linear-gradient(135deg,#1E3A8A 0%,#2A74E8 100%)!important;color:#FFFFFF!important;}'
+    + '.ftai-msg tbody tr:nth-child(even) td{background:#F4F8FF!important;}'
+    + '.ftai-msg td{border-top:1px solid #E6EEFB!important;}'
+    + '.ftai-msg tbody tr:first-child td{border-top:0!important;}';
 
   function injectStyles() {
     if (document.getElementById('ftAiStyles')) return;
@@ -9410,16 +9439,11 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       '<div class="ft-section-head"><h2>FinTrack AI</h2></div>' +
       '<div class="ftai">' +
         '<div class="ftai-head">' +
-          '<h2><i class="fa-solid fa-wand-magic-sparkles"></i> FinTrack AI</h2>' +
+          '<h2><img class="ftai-logo" src="' + LOGO_URL + '" alt="FinTrack"><span>FinTrack AI</span></h2>' +
           '<p>Ask about your money, build a budget, plan a purchase or clear any financial doubt.</p>' +
         '</div>' +
         '<div class="ftai-log" id="ftAiLog"></div>' +
-        '<div class="ftai-chips" id="ftAiChips">' +
-          '<button type="button" class="ftai-chip" data-ask="How healthy is my budget this month?">How is my month going?</button>' +
-          '<button type="button" class="ftai-chip" data-ask="Where can I cut spending without hurting my savings?">Where can I save?</button>' +
-          '<button type="button" class="ftai-chip" data-ask="Help me plan a big purchase in the next year.">Plan a purchase</button>' +
-          '<button type="button" class="ftai-chip" data-ask="Give me a simple savings plan for the next 12 months.">Savings plan</button>' +
-        '</div>' +
+        '<div class="ftai-chips" id="ftAiChips"></div>' +
         '<form class="ftai-form" id="ftAiForm">' +
           '<input id="ftAiInput" type="text" placeholder="Ask FinTrack AI anything about your money" autocomplete="off" maxlength="800">' +
           '<button type="submit" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>' +
@@ -9435,9 +9459,15 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       input.value = '';
       ask(question);
     });
-    el.querySelectorAll('[data-ask]').forEach(function (chip) {
-      chip.onclick = function () { ask(chip.dataset.ask); };
-    });
+    var chipHost = el.querySelector('#ftAiChips');
+    if (chipHost) {
+      chipHost.addEventListener('click', function (event) {
+        var chip = event.target.closest ? event.target.closest('[data-ask]') : null;
+        if (!chip) return;
+        ask(chip.getAttribute('data-ask'));
+      });
+    }
+    renderChips();
     return el;
   }
 
@@ -9576,9 +9606,48 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return '';
   }
 
+  /* a wide pool of personal-budgeting openers, reshuffled for every person and
+     every visit so two accounts never see the same four suggestions */
+  var QUESTION_POOL = [
+    ['How much did I spend on food this month?', 'Food spend'],
+    ['Which category takes most of my budget?', 'Biggest category'],
+    ['How much can I safely save this month?', 'Safe to save'],
+    ['Show my top five expenses this month.', 'Top expenses'],
+    ['Am I on track to overspend this month?', 'Overspend risk'],
+    ['How does this month compare with last month?', 'Month vs month'],
+    ['Where can I cut back without touching essentials?', 'Cut back'],
+    ['Give me a weekly budget for the rest of the month.', 'Weekly budget'],
+    ['How long will my current cash last?', 'Cash runway'],
+    ['Suggest a simple 50/30/20 plan for my income.', '50/30/20 plan'],
+    ['Which of my accounts is draining fastest?', 'Fastest drain'],
+    ['Plan a three-month emergency fund for me.', 'Emergency fund'],
+    ['What is my average daily spend this month?', 'Daily average'],
+    ['How can I lower my monthly bills?', 'Lower bills'],
+    ['What should I do with my extra cash this month?', 'Extra cash'],
+    ['Show me a breakdown of my monthly expenses.', 'Expense breakdown']
+  ];
+
+  function renderChips() {
+    var host = document.getElementById('ftAiChips');
+    if (!host) return;
+    var seed = String((window.currentUser && window.currentUser.uid) || '') + '|' + Date.now() + '|' + Math.random();
+    var hash = 0;
+    for (var i = 0; i < seed.length; i++) { hash = (hash * 31 + seed.charCodeAt(i)) >>> 0; }
+    var pool = QUESTION_POOL.slice();
+    var picks = [];
+    for (var n = 0; n < 4 && pool.length; n++) {
+      hash = (hash * 1103515245 + 12345) >>> 0;
+      picks.push(pool.splice(hash % pool.length, 1)[0]);
+    }
+    host.innerHTML = picks.map(function (item) {
+      return '<button type="button" class="ftai-chip" data-ask="' + item[0].replace(/"/g, '&quot;') + '">' + item[1] + '</button>';
+    }).join('');
+  }
+
   function openAi() {
     var el = section();
     if (!el) return;
+    renderChips();
     var log = logEl();
     if (log && !log.children.length) {
       addMessage('ai', 'Hello ' + (personName() || 'there') + ', I am FinTrack AI. Ask me about your balances, spending, a budget you want to build or a goal you are saving for.');
@@ -9823,7 +9892,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return FT.person({ uid: key.indexOf('uid:') === 0 ? key.slice(4) : '', name: window.ftDisplayName ? window.ftDisplayName(key) : '' });
   }
 
-  function settle(key, currency, amount) {
+  function settle(key, currency, amount, extra) {
     FT.assertSession();
     var me = FT.person(FT.me());
     var payer = personOf(key);
@@ -9850,8 +9919,10 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         status: 'approved', ownerUid: me.uid, payerUid: payer.uid, payerName: payer.name,
         payeeUid: me.uid, payeeName: me.name, fromMember: payer.name, toMember: me.name,
         participants: [payer, me], amount: due / scale(code), currency: code,
-        date: now.slice(0, 10), createdAt: now, notes: 'Settled by recipient',
+        date: (extra && extra.date) || now.slice(0, 10), createdAt: now,
+        notes: (extra && extra.notes) || 'Settled by recipient',
         payerAccountId: '', payerAccountName: '', legacySource: '', direction: 'they_paid',
+        receiverAccountId: (extra && extra.accountId) || '',
         approvedByUid: me.uid, approvedAt: now, respondedAt: now, settledByRecipient: true
       };
       return window.ref(window.db, 'sharedSettlements/' + id)
@@ -9861,11 +9932,14 @@ body.ft-scroll-lock{overscroll-behavior:none;}
           var home = window.state;
           home.sharedSettlements = home.sharedSettlements || [];
           if (!home.sharedSettlements.some(function (x) { return String(x.id) === String(id); })) home.sharedSettlements.push(record);
+          if (record.receiverAccountId && typeof FT.applyEffects === 'function') {
+            try { FT.applyEffects(record); } catch (e) { /* the balance is refreshed on the next render */ }
+          }
           var noticeId = 'result_' + id;
           var notice = {
             id: noticeId, type: 'settlement_result', fromUid: me.uid, fromName: me.name,
             toUid: payer.uid, settlementId: id, createdAt: now, read: false,
-            message: 'Hi! ' + me.name + ' has marked your payment of ' + money(record.amount, code) + ' as settled. No confirmation is needed from you.'
+            message: 'Your friend ' + me.name + ' has marked your payment of ' + money(record.amount, code) + ' as settled. Thanks for using FinTrack.'
           };
           return window.set(window.ref(window.db, 'users/' + payer.uid + '/notifications/' + noticeId), notice)
             .catch(function (error) {
@@ -9878,6 +9952,9 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         });
     });
   }
+
+  /* the receiver is the authority: this is also used by the settlement form */
+  window.ftSettleAsReceiver = settle;
 
   function settleButton(key, currency, amount) {
     var button = document.createElement('button');
@@ -9964,6 +10041,336 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   else patch();
 })();
 
+/* ======================================================================
+   Round 2 — receiver-side settlement, liquid cash with a currency switch,
+   one month control everywhere, in-bar search, printable reports on the
+   device, and the visibility card removal.
+   ====================================================================== */
+(function () {
+  'use strict';
+  var FT = window.FTReview || {};
+  function $(id) { return document.getElementById(id); }
+  function field(id) { return FT.field ? FT.field(id) : (($(id) || {}).value || ''); }
+  function toast(message) { if (window.ftToast) window.ftToast(message); }
+
+  /* ---------- 1. the receiver settles the money they hold ---------- */
+  function outstandingMap(name) {
+    try { return (window.ftFriendNetBalanceByCurrency ? window.ftFriendNetBalanceByCurrency(name) : {}) || {}; }
+    catch (e) { return {}; }
+  }
+  function selectedFriendName() {
+    var sel = $('fsFriend');
+    var option = sel && sel.selectedOptions && sel.selectedOptions[0];
+    if (!option) return '';
+    var text = (option.dataset && option.dataset.name) || option.textContent || '';
+    return String(text).replace(/\s*\(.*\)\s*$/, '').trim();
+  }
+  function receiveAccount() {
+    var id = field('fsAccount');
+    return ((window.state && window.state.banks) || []).filter(function (b) { return String(b.id) === String(id); })[0] || null;
+  }
+  function fillDefaultAmount() {
+    if (field('fsType') !== 'they_paid') return;
+    var input = $('fsAmount');
+    if (!input) return;
+    var map = outstandingMap(selectedFriendName());
+    var account = receiveAccount();
+    var code = (account && account.currency) ||
+      Object.keys(map).filter(function (c) { return Number(map[c]) > 0; })
+        .sort(function (a, b) { return Number(map[b]) - Number(map[a]); })[0] ||
+      (window.getFirstCurrency ? window.getFirstCurrency() : 'INR');
+    var owed = Math.abs(Number(map[code] || 0));
+    input.value = owed > 0 ? (Math.round(owed * 100) / 100).toFixed(2) : '';
+    var hint = $('fsAccountHint');
+    if (hint) hint.innerText = 'The amount is added to this account. Lower it above if your friend paid only part of the total.';
+  }
+
+  window.updateFsPreview = function () {
+    var el = $('fsPreview');
+    if (!el) return;
+    el.textContent = field('fsType') === 'they_paid'
+      ? 'You are receiving, so this settles straight away: the amount is added to your account and your friend is notified. Lower the amount for a partial settlement.'
+      : 'Your friend confirms this claim before any balance changes. The amount stays outstanding until they accept it.';
+  };
+
+  function showFormError(form, message) {
+    if (!form) return;
+    var error = form.querySelector('[data-payment-error]');
+    if (!error) {
+      error = document.createElement('p');
+      error.setAttribute('data-payment-error', '1');
+      error.setAttribute('role', 'alert');
+      error.style.cssText = 'color:#b91c1c;font-size:13px';
+      form.appendChild(error);
+    }
+    error.textContent = message || '';
+  }
+
+  var hostSaveFriendSettlement = window.saveFriendSettlement;
+  window.saveFriendSettlement = async function (event) {
+    if (event && event.preventDefault) event.preventDefault();
+    if (field('fsType') !== 'they_paid') return hostSaveFriendSettlement.apply(this, arguments);
+    var form = $('friendSettlementForm');
+    if (form && form.dataset.saving) return;
+    if (form) { form.dataset.saving = '1'; showFormError(form, ''); }
+    var submit = form && form.querySelector('[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      var choice = field('fsFriend');
+      var key = String(choice).indexOf('c_') === 0 ? 'uid:' + String(choice).slice(2) : String(choice);
+      var account = receiveAccount();
+      if (!account) throw new Error('Select the account the money was received into.');
+      await window.ftSettleAsReceiver(key, account.currency, field('fsAmount'), {
+        accountId: account.id,
+        date: field('fsDate'),
+        notes: field('fsNotes') || 'Settled by recipient'
+      });
+      if (window.closeModal) window.closeModal('modalFriendSettlement');
+      if (window.renderAll) window.renderAll();
+    } catch (error) {
+      showFormError(form, (error && error.message) || 'The settlement could not be saved.');
+    } finally {
+      if (form) delete form.dataset.saving;
+      if (submit) submit.disabled = false;
+    }
+  };
+
+  var hostOpenFriendSettlement = window.openFriendSettlementModal;
+  window.openFriendSettlementModal = function () {
+    var result = hostOpenFriendSettlement.apply(this, arguments);
+    setTimeout(function () { window.updateFsPreview(); fillDefaultAmount(); }, 40);
+    return result;
+  };
+
+  document.addEventListener('change', function (event) {
+    var target = event.target;
+    if (!target || ['fsFriend', 'fsType', 'fsAccount'].indexOf(target.id) === -1) return;
+    setTimeout(function () { fillDefaultAmount(); window.updateFsPreview(); }, 40);
+  }, true);
+
+  /* ---------- 2. the visibility card is no longer needed ---------- */
+  function dropVisibilityCard() {
+    var heads = document.querySelectorAll('h3');
+    for (var i = 0; i < heads.length; i++) {
+      if (!/^\s*Visibility Settings\s*$/i.test(heads[i].textContent || '')) continue;
+      var card = heads[i].closest('.pastel-violet') || heads[i].closest('.rounded-2xl');
+      if (card) card.remove();
+    }
+  }
+
+  /* ---------- 3. liquid cash only, with a currency switch ---------- */
+  var balanceCurrency = '';
+  function currencies() {
+    var list = [window.getFirstCurrency ? window.getFirstCurrency() : 'INR'];
+    var second = window.getSecondCurrency ? window.getSecondCurrency() : '';
+    if (second && second !== list[0]) list.push(second);
+    return list;
+  }
+  function liquidTotal(code) {
+    return (((window.state && window.state.banks) || [])).filter(function (b) {
+      return Number(b.bankType) !== 3 && (b.currency || 'INR') === code;
+    }).reduce(function (sum, b) { return sum + Number(b.balance || 0); }, 0);
+  }
+  function paintBalance() {
+    var card = $('overviewCardBank');
+    var value = $('sumBankBalance');
+    if (!card || !value) return;
+    var list = currencies();
+    if (!balanceCurrency || list.indexOf(balanceCurrency) === -1) balanceCurrency = list[0];
+    var total = liquidTotal(balanceCurrency);
+    value.innerText = window.formatCurrency ? window.formatCurrency(total, balanceCurrency) : String(total) + ' ' + balanceCurrency;
+    var sub = $('sumBankBalanceSub');
+    if (sub) sub.innerText = 'Cash in hand + primary & secondary accounts';
+    var host = $('ftBalToggle');
+    if (!host) {
+      host = document.createElement('div');
+      host.id = 'ftBalToggle';
+      host.className = 'ft-bal-toggle';
+      card.appendChild(host);
+    }
+    var html = list.map(function (code) {
+      return '<button type="button" class="ft-bal-pill' + (code === balanceCurrency ? ' active' : '') + '" data-ft-bal="' + code + '">' + code + '</button>';
+    }).join('');
+    if (host.innerHTML !== html) host.innerHTML = html;
+    Array.prototype.forEach.call(host.children, function (button) {
+      button.onclick = function () {
+        balanceCurrency = button.getAttribute('data-ft-bal');
+        paintBalance();
+      };
+    });
+  }
+
+  /* ---------- 4. the same month control in every section ---------- */
+  var MONTH_IDS = ['incomeMonthSelect', 'cashbookMonthSelect', 'cashbookPdfMonthSelect', 'expenseMonthSelect', 'friendSplitMonthSelect', 'householdMonthSelect', 'debtMonthSelect', 'goldSipMonthSelect', 'transferMonthSelect'];
+  function monthLabel(value) {
+    var parts = String(value || '').split('-');
+    if (parts.length < 2) return value || '';
+    var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return names[Number(parts[1]) - 1] + ' ' + parts[0];
+  }
+  function styleMonthPickers() {
+    MONTH_IDS.forEach(function (id) {
+      var node = $(id);
+      if (!node) return;
+      var anchor = node.tagName === 'SELECT' ? node : $('navLabel_' + id);
+      if (!anchor || !anchor.parentNode) return;
+      var bar = anchor.closest('.ft-month-bar');
+      if (!bar) {
+        bar = document.createElement('span');
+        bar.className = 'ft-month-bar';
+        anchor.parentNode.insertBefore(bar, anchor);
+        bar.appendChild(anchor);
+      }
+      if (node.tagName === 'SELECT') node.classList.add('ft-month-select');
+      if (bar.querySelector('[data-ft-thismonth]')) return;
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'ft-this-month';
+      button.setAttribute('data-ft-thismonth', '1');
+      button.textContent = 'This month';
+      button.onclick = function () {
+        var month = window.currentMonthStr ? window.currentMonthStr() : '';
+        if (!month) return;
+        node.value = month;
+        var label = $('navLabel_' + id);
+        if (label) label.textContent = monthLabel(month);
+        try { node.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+        if (window.renderAll) window.renderAll();
+      };
+      bar.appendChild(button);
+    });
+  }
+
+  /* ---------- 5. search belongs in the top bar, page stays still ---------- */
+  function sortSearchRows() {
+    var box = $('ftSearchResults');
+    if (!box) return;
+    var rows = Array.prototype.filter.call(box.children, function (node) { return node.nodeType === 1; });
+    if (rows.length < 2) return;
+    rows.sort(function (a, b) {
+      return String(a.textContent || '').trim().toLowerCase().localeCompare(String(b.textContent || '').trim().toLowerCase());
+    });
+    rows.forEach(function (row) { box.appendChild(row); });
+  }
+  var hostSearchInput = window.ftSearchInput;
+  if (typeof hostSearchInput === 'function') {
+    window.ftSearchInput = function () {
+      var result = hostSearchInput.apply(this, arguments);
+      sortSearchRows();
+      return result;
+    };
+  }
+  var hostOpenSearch = window.ftOpenSearch;
+  if (typeof hostOpenSearch === 'function') {
+    window.ftOpenSearch = function () {
+      var result = hostOpenSearch.apply(this, arguments);
+      setTimeout(function () { sortSearchRows(); lockBackground(); }, 0);
+      return result;
+    };
+  }
+  function lockBackground() {
+    if (!document.body) return;
+    var open = !!$('ftSearchPanel');
+    if (!open) {
+      var modals = document.querySelectorAll('[id^="modal"]');
+      for (var i = 0; i < modals.length; i++) {
+        if (!modals[i].classList.contains('hidden')) { open = true; break; }
+      }
+    }
+    document.body.classList.toggle('ft-scroll-locked', open);
+  }
+
+  /* ---------- 6. reports really leave the phone ---------- */
+  function pdfBase64(doc) {
+    try { return String(doc.output('datauristring')).split(',')[1] || ''; } catch (e) { return ''; }
+  }
+  function saveOnDevice(doc, fileName, openAfter) {
+    var capacitor = window.Capacitor;
+    var plugins = (capacitor && capacitor.Plugins) || {};
+    if (!plugins.Filesystem) return Promise.resolve(false);
+    var directory = (plugins.Filesystem.Directory && (plugins.Filesystem.Directory.Documents || plugins.Filesystem.Directory.Data)) || 'DOCUMENTS';
+    return plugins.Filesystem.writeFile({ path: fileName, data: pdfBase64(doc), directory: directory, recursive: true })
+      .then(function (written) {
+        var uri = (written && written.uri) || '';
+        if (openAfter && plugins.FileOpener && uri) {
+          return plugins.FileOpener.open({ filePath: String(uri).replace('file://', ''), contentType: 'application/pdf' }).then(function () { return true; });
+        }
+        if (plugins.Share && uri) {
+          return plugins.Share.share({ title: fileName, url: uri, dialogTitle: 'FinTrack report' })
+            .then(function () { return true; })
+            .catch(function () { toast('Saved to Documents/' + fileName); return true; });
+        }
+        toast('Saved to Documents/' + fileName);
+        return true;
+      })
+      .catch(function () { return false; });
+  }
+
+  var hostShareOrSave = window.ftShareOrSavePdf;
+  window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
+    var args = arguments;
+    var capacitor = window.Capacitor;
+    if (capacitor && capacitor.Plugins && capacitor.Plugins.Filesystem) {
+      return saveOnDevice(doc, fileName, mode === 'view').then(function (ok) {
+        if (ok) return true;
+        return typeof hostShareOrSave === 'function' ? hostShareOrSave.apply(window, args) : false;
+      });
+    }
+    if (typeof hostShareOrSave === 'function') return hostShareOrSave.apply(window, args);
+    try { doc.save(fileName); return true; } catch (e) { return false; }
+  };
+
+  var hostDownloadPdf = window.ftDownloadPdfDocument;
+  window.ftDownloadPdfDocument = async function (doc, fileName) {
+    var capacitor = window.Capacitor;
+    if (capacitor && capacitor.Plugins && capacitor.Plugins.Filesystem) {
+      var saved = await saveOnDevice(doc, fileName, false);
+      if (saved) return true;
+    }
+    if (typeof hostDownloadPdf === 'function') return hostDownloadPdf.apply(this, arguments);
+    return false;
+  };
+
+  var hostOpenPdf = window.ftOpenPdfDocument;
+  window.ftOpenPdfDocument = function (doc, fileName, title) {
+    var capacitor = window.Capacitor;
+    var plugins = (capacitor && capacitor.Plugins) || {};
+    if (plugins.Filesystem) {
+      saveOnDevice(doc, fileName, true).then(function (ok) {
+        if (!ok && window.ftShowReport) window.ftShowReport(doc, fileName, title);
+      });
+      return true;
+    }
+    /* inside the app shell without a file plugin, the report opens in the
+       built-in viewer — the phone cannot render a PDF page inside a web view */
+    if (capacitor && window.ftShowReport) { window.ftShowReport(doc, fileName, title); return true; }
+    if (typeof hostOpenPdf === 'function') return hostOpenPdf.apply(this, arguments);
+    if (window.ftShowReport) { window.ftShowReport(doc, fileName, title); return true; }
+    return false;
+  };
+
+  /* ---------- 7. keep the page in sync ---------- */
+  var hostRenderAll = window.renderAll;
+  if (typeof hostRenderAll === 'function') {
+    window.renderAll = function () {
+      var result = hostRenderAll.apply(this, arguments);
+      try { paintBalance(); styleMonthPickers(); } catch (e) {}
+      return result;
+    };
+  }
+
+  function sweep() {
+    try { dropVisibilityCard(); } catch (e) {}
+    try { paintBalance(); } catch (e) {}
+    try { styleMonthPickers(); } catch (e) {}
+    try { lockBackground(); } catch (e) {}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sweep);
+  else sweep();
+  window.setInterval(sweep, 1500);
+})();
+
 </script>
 <script>
 /* FinTrack — device behaviour layer: offline notice, no native keyboard on the
@@ -9989,6 +10396,8 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     var html = document.documentElement;
     var body = document.body;
     if (html.classList.contains('ft-frozen')) html.classList.remove('ft-frozen');
+    /* an open box intentionally freezes the page behind it */
+    if (body && body.classList.contains('ft-scroll-locked')) return;
     if (html.style.overflow === 'hidden') html.style.overflow = '';
     if (body && body.style.overflow === 'hidden') body.style.overflow = '';
   }
@@ -10026,12 +10435,50 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     try { box.blur(); } catch (e) {}
   }, { passive: false });
 
-  /* any focus coming from elsewhere (autofocus, script) is released too */
+  /* the cursor always belongs to the first empty box — after a refresh, after the
+     splash screen and after every digit, never to a later box */
+  function lockGroup() {
+    return Array.prototype.slice.call(document.querySelectorAll('input[data-finpin-lock]'));
+  }
+  function firstEmptyBox(group) {
+    for (var i = 0; i < group.length; i++) { if (!group[i].dataset.finpinDigit) return group[i]; }
+    return group[group.length - 1];
+  }
+  function focusFirstEmpty() {
+    var group = lockGroup();
+    if (!group.length) return;
+    var target = firstEmptyBox(group);
+    if (target && document.activeElement !== target) {
+      try { target.focus({ preventScroll: true }); } catch (e) { try { target.focus(); } catch (err) {} }
+    }
+  }
+  window.ftFocusPinStart = focusFirstEmpty;
+
   document.addEventListener('focusin', function (event) {
     var box = event.target;
-    if (!TOUCH || !box || !box.classList || !box.classList.contains('finpin-box')) return;
-    setTimeout(function () { try { box.blur(); } catch (e) {} }, 0);
+    if (!box || !box.hasAttribute || !box.hasAttribute('data-finpin-lock')) return;
+    var group = lockGroup();
+    var target = firstEmptyBox(group);
+    if (target && target !== box) {
+      setTimeout(function () { try { target.focus({ preventScroll: true }); } catch (e) {} }, 0);
+    }
   }, true);
+
+  var lockWasHidden = true;
+  function watchLockScreen() {
+    var screen = document.getElementById('finpinLockScreen');
+    if (!screen) return;
+    var visible = !screen.classList.contains('hidden') && screen.classList.contains('active');
+    if (visible && lockWasHidden) setTimeout(focusFirstEmpty, 120);
+    lockWasHidden = !visible;
+  }
+  try {
+    var lockScreen = document.getElementById('finpinLockScreen');
+    if (lockScreen) new MutationObserver(watchLockScreen).observe(lockScreen, { attributes: true, attributeFilter: ['class', 'style'] });
+  } catch (e) {}
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(focusFirstEmpty, 400); setTimeout(focusFirstEmpty, 1200); });
+  window.addEventListener('load', function () { setTimeout(focusFirstEmpty, 300); setTimeout(focusFirstEmpty, 1500); });
+  setTimeout(focusFirstEmpty, 1500);
 
   markPinBoxes();
   document.addEventListener('DOMContentLoaded', markPinBoxes);
@@ -10113,18 +10560,29 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return el;
   }
 
+  /* a brief drop while switching apps must not shout at the user:
+     the notice only appears once the connection has stayed down five seconds */
+  var offlineTimer = 0;
   function showOffline() { if (document.body) offlineDialog().style.display = 'flex'; }
   function hideOffline() {
+    if (offlineTimer) { clearTimeout(offlineTimer); offlineTimer = 0; }
     var el = document.getElementById('ftOfflineNotice');
     if (el) el.style.display = 'none';
   }
+  function scheduleOffline() {
+    if (offlineTimer) clearTimeout(offlineTimer);
+    offlineTimer = setTimeout(function () {
+      offlineTimer = 0;
+      if (navigator.onLine === false) showOffline();
+    }, 5000);
+  }
 
-  window.addEventListener('offline', showOffline);
+  window.addEventListener('offline', scheduleOffline);
   window.addEventListener('online', hideOffline);
 
   if (navigator.onLine === false) {
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showOffline);
-    else showOffline();
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleOffline);
+    else scheduleOffline();
   }
 
   /* once online again, a logo that failed earlier is repainted */
