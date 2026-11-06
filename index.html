@@ -2,7 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#1E3A8A">
+  <style id="ftBootStyles">
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    html.ft-booting #authContainer, html.ft-booting #appContainer { visibility: hidden !important; }
+    #ftLaunchSplash { position: fixed; inset: 0; z-index: 2147483646; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; opacity: 1; transition: opacity .35s ease; pointer-events: none; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    #ftLaunchSplash .ft-splash-track { margin: 20px auto 0; width: 120px; height: 3px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
+    #ftLaunchSplash .ft-splash-bar { height: 100%; width: 40%; background: #1E3A8A; border-radius: 2px; animation: ftSplashSweep 1s ease-in-out infinite; }
+    @keyframes ftSplashSweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+  </style>
+  <script>
+    /* Splash first, login second: the auth screen stays invisible until the splash finishes. */
+    document.documentElement.className += ' ft-booting';
+    setTimeout(function () {
+      document.documentElement.classList.remove('ft-booting');
+      var boot = document.getElementById('ftLaunchSplash');
+      if (boot) { boot.style.opacity = '0'; setTimeout(function () { if (boot.parentNode) boot.remove(); }, 400); }
+    }, 2600);
+  </script>
   <title>FinTrack - Financial Planning Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -615,6 +633,13 @@ body.ft-dark main .ft-account-group+.ft-account-group{border-top-color:#2C313A;}
 </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col">
+  <div id="ftLaunchSplash" aria-hidden="true">
+    <div style="text-align:center;padding:24px;">
+      <img src="https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg" alt="FinTrack" style="width:88px;height:88px;object-fit:contain;border-radius:20px;margin:0 auto 20px;display:block;box-shadow:0 8px 24px rgba(15,23,42,.12);">
+      <div style="font-size:22px;font-weight:800;letter-spacing:.3px;color:#1e293b;">Welcome to FinTrack</div>
+      <div class="ft-splash-track"><div class="ft-splash-bar"></div></div>
+    </div>
+  </div>
 
   <!-- AUTH SCREENS -->
   <div id="authContainer" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -1268,13 +1293,13 @@ function ftSetupFinpinInputs(attr, onComplete) {
       inputs.forEach(function(other) { if (other !== input && other.dataset.finpinDigit) other.value = '●'; });
       if (digit) {
         this._finpinMaskTimer = setTimeout(function() { if (input.dataset.finpinDigit) input.value = '●'; }, 700);
-        if (idx < inputs.length - 1) inputs[idx + 1].focus();
+        if (idx < inputs.length - 1 && !window.ftPinTouchMode) inputs[idx + 1].focus();
         if (inputs.every(function(i) { return i.dataset.finpinDigit; }) && this._finpinComplete) this._finpinComplete();
       }
     });
     input.addEventListener('focus', function() { this.select(); });
     input.addEventListener('keydown', function(e) {
-      if (e.key === 'Backspace') { e.preventDefault(); var target = this.dataset.finpinDigit ? this : inputs[Math.max(0, idx - 1)]; clearTimeout(target._finpinMaskTimer); target.dataset.finpinDigit = ''; target.value = ''; target.focus(); }
+      if (e.key === 'Backspace') { e.preventDefault(); var target = this.dataset.finpinDigit ? this : inputs[Math.max(0, idx - 1)]; clearTimeout(target._finpinMaskTimer); target.dataset.finpinDigit = ''; target.value = ''; if (!window.ftPinTouchMode) target.focus(); }
       else if (e.key === 'Enter') { e.preventDefault(); if (this._finpinComplete) this._finpinComplete(); }
     });
   });
@@ -5093,69 +5118,12 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
       } catch (e) { reject(e); }
     });
   };
-  window.ftCapSavePdf = async function (doc, fileName, title, openShare) {
-    var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && (!window.Capacitor.isNativePlatform || window.Capacitor.isNativePlatform())) {
-      try {
-        var FS = window.Capacitor.Plugins.Filesystem;
-        var base64 = await window.ftPdfToBase64(doc);
-        var dir = (FS.Directory && (FS.Directory.Documents || FS.Directory.Data)) || 'DOCUMENTS';
-        await FS.writeFile({ path: fileName, data: base64, directory: dir, recursive: true });
-        var uriRes = await FS.getUri({ path: fileName, directory: dir });
-        var fileUri = uriRes && uriRes.uri ? uriRes.uri : '';
-        if (openShare && window.Capacitor.Plugins.Share && fileUri) {
-          try {
-            await window.Capacitor.Plugins.Share.share({ files: [fileUri], title: title || fileName, dialogTitle: title || fileName });
-            if (typeof ftToast === 'function') ftToast('Report saved — share sheet opened.');
-          } catch (shareErr) {
-            if (shareErr && (shareErr.message === 'cancel' || (shareErr.code && String(shareErr.code).indexOf('cancel') > -1))) {
-              if (typeof ftToast === 'function') ftToast('Report saved to device storage.');
-            } else {
-              console.error('Share failed', shareErr);
-              if (typeof ftToast === 'function') ftToast('Report saved to device storage.');
-            }
-          }
-        } else {
-          if (typeof ftToast === 'function') ftToast('Report saved to device storage.');
-        }
-        return true;
-      } catch (err) {
-        console.error('Capacitor PDF save failed', err);
-        if (typeof alert === 'function') alert('Could not save the PDF to the device: ' + (err && err.message ? err.message : err) + '. Falling back to download.');
-      }
-    }
-    var file = new File([doc.output('blob')], fileName, { type: 'application/pdf' });
-    if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: title || fileName }); return true; }
-      catch (e) { if (e && e.name !== 'AbortError') console.error('Web share failed', e); return false; }
-    }
-    try { return window.ftWebDownloadPdf(doc, fileName); }
-    catch (e) { console.error('PDF download failed', e); if (typeof alert === 'function') alert('Could not save the PDF. Please try again.'); return false; }
-  };
+  // The final shared PDF bridge handles all native saves.
   window.ftSaveActiveReport = async function () {
     if (!active) return; var report = active, status = document.getElementById('ftReportStatus');
     if (status) status.textContent = 'Preparing the PDF for save / share…';
     var ok = await window.ftCapSavePdf(report.doc, report.name, report.title, true);
     if (status) status.textContent = ok ? 'Report saved. Use the share sheet to save a copy or send it.' : 'Could not save the report. Please try again.';
-  };
-  // View opens the in-app preview; download saves straight to the device — no preview.
-  window.ftShareOrSavePdf = async function (doc, fileName, title, mode) {
-    if (mode === 'view') { ftShowReport(doc, fileName, title); return; }
-    window._ftInAppHandoffAt = Date.now();
-    var isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && (!window.Capacitor.isNativePlatform || window.Capacitor.isNativePlatform())) {
-      window.ftPdfHandoff = { uid: currentUser && currentUser.uid, kind: 'download', hidden: false };
-      try { await window.ftCapSavePdf(doc, fileName, title, true); }
-      finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
-      return;
-    }
-    var file = new File([doc.output('blob')], fileName, { type: 'application/pdf' });
-    if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-      window.ftPdfHandoff = { uid: currentUser && currentUser.uid, kind: 'download', hidden: false };
-      try { await navigator.share({ files: [file], title: title || fileName }); }
-      catch (error) {}
-      finally { if (window.ftPdfHandoff) { window.ftPdfHandoff.settled = true; if (document.visibilityState === 'visible' && !window.ftPdfHandoff.hidden) window.ftPdfHandoff = null; } }
-    } else { try { window.ftWebDownloadPdf(doc, fileName); } catch (e) { console.error('PDF download failed', e); } }
   };
   var logout = window.handleLogout; window.handleLogout = function () { ftCloseReport(); return logout.apply(this, arguments); };
 })();
@@ -5172,17 +5140,7 @@ window.ftLoadPublicFeedback = async function(){ var list=document.getElementById
     })().catch(function (error) { libraries = null; throw error; });
     return libraries;
   }
-  ['downloadHouseholdPDF', 'downloadCashbookPDF', 'downloadCashbookPDFByKey'].forEach(function (name) {
-    var original = window[name], busy = false;
-    window[name] = async function () {
-      if (busy) return; busy = true; var args = arguments;
-      var button = document.activeElement, label = button && button.tagName === 'BUTTON' ? button.innerHTML : null;
-      if (label !== null) { button.disabled = true; button.textContent = 'Preparing…'; }
-      try { await ensureLibraries(); return original.apply(window, args); }
-      catch (error) { alert('Could not open the PDF report: ' + error.message); }
-      finally { busy = false; if (label !== null) { button.disabled = false; button.innerHTML = label; } }
-    };
-  });
+  window.ftEnsurePdfLibraries = ensureLibraries;
 })();
 </script>
 <script>
@@ -5839,6 +5797,15 @@ window.ftToggleHhMenu = function (e) {
   /* ---------- Local notifications ---------- */
   var _ftNotifInitDone = false;
   window.ftInitLocalNotifications = async function () {
+    if (!isNative()) return;
+    var cap = window.Capacitor;
+    // Remote push owns Android's shared permission; never prompt twice on startup.
+    if (plugin('PushNotifications') || (cap.isPluginAvailable && cap.isPluginAvailable('PushNotifications'))) {
+      if (window.ftEnablePush) return window.ftEnablePush(false);
+      return;
+    }
+    var app = document.getElementById('appContainer');
+    if (!window.currentUser || !app || app.classList.contains('hidden')) return;
     if (_ftNotifInitDone) return;
     _ftNotifInitDone = true;
     try {
@@ -7130,7 +7097,7 @@ window.ftToggleHhMenu = function (e) {
     if (key === 'del') {
       var filled = inputs.filter(function (i) { return i.dataset.finpinDigit; });
       var last = filled[filled.length - 1];
-      if (last) { last.dataset.finpinDigit = ''; last.value = ''; last.focus(); }
+      if (last) { last.dataset.finpinDigit = ''; last.value = ''; }
       return;
     }
     if (key === 'return') {
@@ -8754,139 +8721,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return doc;
   }
 
-  /* ============================================================
-     5. OPEN / DOWNLOAD — works on web, Android and iOS
-     ============================================================ */
-  function blobToBase64(blob) {
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onloadend = function () {
-        try { resolve(String(reader.result || '').split(',')[1] || ''); } catch (e) { reject(e); }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  async function nativeSavePdf(blob, fileName, title, open) {
-    var plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
-    if (!plugins.Filesystem || !blob.size) return false;
-    var base64 = await blobToBase64(blob);
-    var dir = (plugins.Filesystem.Directory && (plugins.Filesystem.Directory.Documents || plugins.Filesystem.Directory.Data)) || 'DOCUMENTS';
-    await plugins.Filesystem.writeFile({ path: fileName, data: base64, directory: dir, recursive: true });
-    var uriRes = await plugins.Filesystem.getUri({ path: fileName, directory: dir });
-    var fileUri = uriRes && uriRes.uri;
-    if (open && plugins.FileOpener && fileUri) {
-      try { await plugins.FileOpener.open({ filePath: fileUri, contentType: 'application/pdf' }); return true; } catch (e) {}
-    }
-    if (plugins.Share && fileUri) {
-      try { await plugins.Share.share({ files: [fileUri], title: title || fileName, dialogTitle: title || fileName }); return true; } catch (e) {}
-    }
-    return true;
-  }
-
-  function showPdfOverlay(url, fileName, blob) {
-    var old = document.getElementById('ftPdfOverlay');
-    if (old) old.remove();
-    var wrap = document.createElement('div');
-    wrap.id = 'ftPdfOverlay';
-    var bar = document.createElement('div');
-    bar.className = 'ft-pdf-bar';
-    var title = document.createElement('h3');
-    title.textContent = fileName;
-    var saveBtn = document.createElement('button');
-    saveBtn.type = 'button';
-    saveBtn.className = 'px-3 py-2 bg-[#1E3A8A] text-white font-bold text-xs rounded-lg';
-    saveBtn.textContent = 'Download';
-    saveBtn.onclick = function () {
-      var a = document.createElement('a');
-      a.href = url; a.download = fileName;
-      document.body.appendChild(a); a.click();
-      setTimeout(function () { try { a.remove(); } catch (e) {} }, 1500);
-    };
-    var closeBtn = document.createElement('button');
-    closeBtn.type = 'button';
-    closeBtn.className = 'px-3 py-2 bg-slate-200 text-slate-800 font-bold text-xs rounded-lg';
-    closeBtn.textContent = 'Close';
-    closeBtn.onclick = function () { wrap.remove(); try { window.ftSyncScrollLock(); } catch (e) {} };
-    bar.appendChild(title); bar.appendChild(saveBtn); bar.appendChild(closeBtn);
-    var frame = document.createElement('iframe');
-    frame.src = url;
-    frame.title = fileName;
-    wrap.appendChild(bar); wrap.appendChild(frame);
-    document.body.appendChild(wrap);
-    try { window.ftSyncScrollLock(); } catch (e) {}
-  }
-
-  window.ftOpenPdfDocument = function (doc, fileName, title) {
-    var blob;
-    try { blob = doc.output('blob'); } catch (e) { blob = null; }
-    if (!blob || !blob.size || blob.size < 700) {
-      alert('The PDF could not be created. Please try again.');
-      return false;
-    }
-    if (NATIVE) {
-      nativeSavePdf(blob, fileName, title, true).catch(function (err) {
-        console.error('Native PDF open failed', err);
-        alert('Could not open the PDF on this device: ' + (err && err.message ? err.message : err));
-      });
-      return true;
-    }
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    var file = null;
-    try { file = new File([blob], fileName, { type: 'application/pdf' }); } catch (e) { file = null; }
-    if (isIOS && file && navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: title || fileName }).catch(function () {
-        showPdfOverlay(URL.createObjectURL(blob), fileName, blob);
-      });
-      return true;
-    }
-    var url = URL.createObjectURL(blob);
-    var win = null;
-    try { win = window.open(url, '_blank'); } catch (e) { win = null; }
-    if (!win) showPdfOverlay(url, fileName, blob);
-    setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 90000);
-    return true;
-  };
-
-  window.ftDownloadPdfDocument = async function (doc, fileName) {
-    var blob;
-    try { blob = doc.output('blob'); } catch (e) { blob = null; }
-    if (!blob || !blob.size || blob.size < 700) {
-      alert('The PDF could not be created. Please try again.');
-      return false;
-    }
-    if (NATIVE) {
-      try {
-        await nativeSavePdf(blob, fileName, fileName, false);
-        if (typeof window.ftToast === 'function') window.ftToast('Saved ' + fileName);
-        return true;
-      } catch (err) {
-        console.error('Native PDF save failed', err);
-      }
-    }
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    try {
-      var file = new File([blob], fileName, { type: 'application/pdf' });
-      if (isIOS && navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: fileName });
-        return true;
-      }
-    } catch (e) { /* fall through to a normal download */ }
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function () {
-      try { a.remove(); } catch (e) {}
-      try { URL.revokeObjectURL(url); } catch (e) {}
-    }, 5000);
-    if (typeof window.ftToast === 'function') window.ftToast('Downloading ' + fileName);
-    return true;
-  };
+  /* PDF open/download is provided by the final shared PDF bridge below. */
 
   /* ============================================================
      6. WIRE THE REPORTS INTO THE EXISTING BUTTONS
@@ -8911,8 +8746,8 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       return;
     }
     var fileName = 'FinTrack_Monthly_Cashbook_' + fileStamp(month) + '.pdf';
-    if (mode === 'view') window.ftOpenPdfDocument(doc, fileName, 'Monthly Cashbook ' + monthLabel(month));
-    else window.ftDownloadPdfDocument(doc, fileName);
+    if (mode === 'view') return window.ftOpenPdfDocument(doc, fileName, 'Monthly Cashbook ' + monthLabel(month));
+    return window.ftDownloadPdfDocument(doc, fileName);
   };
 
   window.downloadCashbookPDFByKey = function (key) {
@@ -8943,7 +8778,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     ]);
     finalizePdf(doc, 'Monthly Cashbook  \u2022  ' + monthLabel(month) + '  \u2022  ' + currency);
     var fileName = 'FinTrack_Monthly_Cashbook_' + fileStamp(month) + '.pdf';
-    window.ftDownloadPdfDocument(doc, fileName);
+    return window.ftDownloadPdfDocument(doc, fileName);
   };
 
   window.downloadHouseholdPDF = function () {
@@ -8959,7 +8794,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       alert('Could not generate the household PDF: ' + (err && err.message ? err.message : err));
       return;
     }
-    window.ftDownloadPdfDocument(doc, 'FinTrack_Household_Settlement_' + fileStamp(month) + '.pdf');
+    return window.ftDownloadPdfDocument(doc, 'FinTrack_Household_Settlement_' + fileStamp(month) + '.pdf');
   };
 
   window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
@@ -9061,6 +8896,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     requestAnimationFrame(function () { el.style.opacity = '1'; });
   }
   function launchSplashHide() {
+    document.documentElement.classList.remove('ft-booting');
     var el = document.getElementById('ftLaunchSplash');
     if (!el) return;
     el.style.opacity = '0';
@@ -10543,6 +10379,8 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     });
   }
 
+  window.ftPaintBalance = paintBalance;
+
   /* ---------- 4. the same month control in every section ---------- */
   var MONTH_IDS = ['incomeMonthSelect', 'cashbookMonthSelect', 'cashbookPdfMonthSelect', 'expenseMonthSelect', 'friendSplitMonthSelect', 'householdMonthSelect', 'debtMonthSelect', 'goldSipMonthSelect', 'transferMonthSelect'];
   function monthLabel(value) {
@@ -10565,22 +10403,9 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         bar.appendChild(anchor);
       }
       if (node.tagName === 'SELECT') node.classList.add('ft-month-select');
-      if (bar.querySelector('[data-ft-thismonth]')) return;
-      var button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'ft-this-month';
-      button.setAttribute('data-ft-thismonth', '1');
-      button.textContent = 'This month';
-      button.onclick = function () {
-        var month = window.currentMonthStr ? window.currentMonthStr() : '';
-        if (!month) return;
-        node.value = month;
-        var label = $('navLabel_' + id);
-        if (label) label.textContent = monthLabel(month);
-        try { node.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
-        if (window.renderAll) window.renderAll();
-      };
-      bar.appendChild(button);
+      /* the month is chosen straight from the calendar control, so no extra button */
+      var stale = bar.querySelector('[data-ft-thismonth]');
+      if (stale) stale.remove();
     });
   }
 
@@ -10623,74 +10448,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     document.body.classList.toggle('ft-scroll-locked', open);
   }
 
-  /* ---------- 6. reports really leave the phone ---------- */
-  function pdfBase64(doc) {
-    try { return String(doc.output('datauristring')).split(',')[1] || ''; } catch (e) { return ''; }
-  }
-  function saveOnDevice(doc, fileName, openAfter) {
-    var capacitor = window.Capacitor;
-    var plugins = (capacitor && capacitor.Plugins) || {};
-    if (!plugins.Filesystem) return Promise.resolve(false);
-    var directory = (plugins.Filesystem.Directory && (plugins.Filesystem.Directory.Documents || plugins.Filesystem.Directory.Data)) || 'DOCUMENTS';
-    return plugins.Filesystem.writeFile({ path: fileName, data: pdfBase64(doc), directory: directory, recursive: true })
-      .then(function (written) {
-        var uri = (written && written.uri) || '';
-        if (openAfter && plugins.FileOpener && uri) {
-          return plugins.FileOpener.open({ filePath: String(uri).replace('file://', ''), contentType: 'application/pdf' }).then(function () { return true; });
-        }
-        if (plugins.Share && uri) {
-          return plugins.Share.share({ title: fileName, url: uri, dialogTitle: 'FinTrack report' })
-            .then(function () { return true; })
-            .catch(function () { toast('Saved to Documents/' + fileName); return true; });
-        }
-        toast('Saved to Documents/' + fileName);
-        return true;
-      })
-      .catch(function () { return false; });
-  }
-
-  var hostShareOrSave = window.ftShareOrSavePdf;
-  window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
-    var args = arguments;
-    var capacitor = window.Capacitor;
-    if (capacitor && capacitor.Plugins && capacitor.Plugins.Filesystem) {
-      return saveOnDevice(doc, fileName, mode === 'view').then(function (ok) {
-        if (ok) return true;
-        return typeof hostShareOrSave === 'function' ? hostShareOrSave.apply(window, args) : false;
-      });
-    }
-    if (typeof hostShareOrSave === 'function') return hostShareOrSave.apply(window, args);
-    try { doc.save(fileName); return true; } catch (e) { return false; }
-  };
-
-  var hostDownloadPdf = window.ftDownloadPdfDocument;
-  window.ftDownloadPdfDocument = async function (doc, fileName) {
-    var capacitor = window.Capacitor;
-    if (capacitor && capacitor.Plugins && capacitor.Plugins.Filesystem) {
-      var saved = await saveOnDevice(doc, fileName, false);
-      if (saved) return true;
-    }
-    if (typeof hostDownloadPdf === 'function') return hostDownloadPdf.apply(this, arguments);
-    return false;
-  };
-
-  var hostOpenPdf = window.ftOpenPdfDocument;
-  window.ftOpenPdfDocument = function (doc, fileName, title) {
-    var capacitor = window.Capacitor;
-    var plugins = (capacitor && capacitor.Plugins) || {};
-    if (plugins.Filesystem) {
-      saveOnDevice(doc, fileName, true).then(function (ok) {
-        if (!ok && window.ftShowReport) window.ftShowReport(doc, fileName, title);
-      });
-      return true;
-    }
-    /* inside the app shell without a file plugin, the report opens in the
-       built-in viewer — the phone cannot render a PDF page inside a web view */
-    if (capacitor && window.ftShowReport) { window.ftShowReport(doc, fileName, title); return true; }
-    if (typeof hostOpenPdf === 'function') return hostOpenPdf.apply(this, arguments);
-    if (window.ftShowReport) { window.ftShowReport(doc, fileName, title); return true; }
-    return false;
-  };
+  /* PDF handling is centralized in the final shared PDF bridge. */
 
   /* ---------- 7. keep the page in sync ---------- */
   var hostRenderAll = window.renderAll;
@@ -10735,12 +10493,32 @@ body.ft-scroll-lock{overscroll-behavior:none;}
      Nothing may freeze the page: no scroll lock class, no inline
      overflow:hidden, no cancelled touch gestures.
      ============================================================ */
+  function overlayShowing() {
+    var nodes = document.querySelectorAll('.ft-overlay, [class*="ft-sheet"], #ftSearchPanel, #ftMonthPickerPopover, [id^="modal"]');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (!el || !el.isConnected) continue;
+      if (el.classList.contains('hidden')) continue;
+      if (!el.getClientRects().length) continue;
+      var cs = window.getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue;
+      return true;
+    }
+    return false;
+  }
+
   function freePageScroll() {
     var html = document.documentElement;
     var body = document.body;
-    if (html.classList.contains('ft-frozen')) html.classList.remove('ft-frozen');
+    var locked = html.classList.contains('ft-frozen') || !!(body && body.classList.contains('ft-scroll-locked'));
+    var inlineLocked = html.style.overflow === 'hidden' || !!(body && body.style.overflow === 'hidden');
+    /* writing to the scroll root mid-swipe is what kills the fling on Android,
+       so only touch it when a lock is genuinely stuck */
+    if (!locked && !inlineLocked) return;
     /* an open box intentionally freezes the page behind it */
-    if (body && body.classList.contains('ft-scroll-locked')) return;
+    if (overlayShowing()) return;
+    if (html.classList.contains('ft-frozen')) html.classList.remove('ft-frozen');
+    if (body && body.classList.contains('ft-scroll-locked')) body.classList.remove('ft-scroll-locked');
     if (html.style.overflow === 'hidden') html.style.overflow = '';
     if (body && body.style.overflow === 'hidden') body.style.overflow = '';
   }
@@ -10752,19 +10530,29 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   freePageScroll();
   document.addEventListener('DOMContentLoaded', freePageScroll);
   window.addEventListener('load', freePageScroll);
-  setInterval(freePageScroll, 250);
+  /* a closing box is the usual moment a lock is left behind */
+  document.addEventListener('touchend', function () { setTimeout(freePageScroll, 260); }, { passive: true });
+  document.addEventListener('click', function () { setTimeout(freePageScroll, 260); }, { passive: true });
+  setInterval(freePageScroll, 700);
 
   /* ============================================================
      2. FinPIN boxes never open the device keyboard
      ============================================================ */
   function markPinBoxes() {
-    var boxes = document.querySelectorAll('.finpin-box');
+    var boxes = document.querySelectorAll('input[data-finpin-lock]');
     for (var i = 0; i < boxes.length; i++) {
       var box = boxes[i];
       box.setAttribute('inputmode', 'none');
       box.setAttribute('autocomplete', 'off');
       box.setAttribute('autocorrect', 'off');
       box.setAttribute('spellcheck', 'false');
+      /* readonly is the one flag Android WebView always honours: a read-only
+         field never summons the system keyboard, while the in-app keypad still
+         writes every digit. Desktop keeps normal typing. */
+      if (window.ftPinTouchMode) {
+        if (box.getAttribute('readonly') !== 'readonly') box.setAttribute('readonly', 'readonly');
+        if (box.getAttribute('tabindex') !== '-1') box.setAttribute('tabindex', '-1');
+      }
     }
   }
 
@@ -10790,6 +10578,13 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   function focusFirstEmpty() {
     var group = lockGroup();
     if (!group.length) return;
+    /* a focused field is exactly what raises the Android keyboard, so on touch
+       the boxes are never focused: the in-app keypad owns entry */
+    if (window.ftPinTouchMode) {
+      for (var i = 0; i < group.length; i++) { try { group[i].blur(); } catch (e) {} }
+      if (document.activeElement && document.activeElement.blur) { try { document.activeElement.blur(); } catch (e) {} }
+      return;
+    }
     var target = firstEmptyBox(group);
     if (target && document.activeElement !== target) {
       try { target.focus({ preventScroll: true }); } catch (e) { try { target.focus(); } catch (err) {} }
@@ -11361,5 +11156,687 @@ body.ft-scroll-lock{overscroll-behavior:none;}
   }, 2500);
 })();
 
-</script></body>
+</script>
+<script data-ft-android="final-hardening">
+/* FinTrack - Android / WebView hardening layer.
+   Additive only: no stored value, layout or business rule is altered here. */
+(function () {
+  'use strict';
+
+  var NATIVE = false, COARSE = false;
+  try { NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); } catch (e) {}
+  try { COARSE = window.matchMedia('(pointer: coarse)').matches; } catch (e) {}
+  var TOUCH = NATIVE || COARSE;
+  window.ftPinTouchMode = TOUCH;
+
+  /* ---------- styles ---------- */
+  var css = document.createElement('style');
+  css.id = 'ftAndroidFixStyles';
+  css.textContent = [
+    '/* pan in both directions but never pinch: scrolling keeps its fast path */',
+    'html, body { touch-action: pan-x pan-y; }',
+    'html, body, main, .tab-content, .ft-scroll, .ft-tx-list, #ftSearchResults, [id^="modal"] { -webkit-overflow-scrolling: touch; }',
+    '/* a closed overlay must never keep swallowing taps */',
+    '.ft-overlay.hidden, .ft-overlay[hidden] { display: none !important; pointer-events: none !important; }',
+    '/* one compact month control in every module */',
+    '.ft-month-bar { display: inline-flex; align-items: center; gap: 4px; }',
+    '.ft-month-bar > div.inline-flex, .ft-month-bar > span.inline-flex { gap: 0 !important; padding: 1px 2px !important; border-radius: 9px !important; }',
+    '.ft-month-bar [id^="navLabel_"] { min-width: 72px !important; font-size: 11px !important; letter-spacing: 0 !important; }',
+    '.ft-month-bar button { padding: 3px 5px !important; }',
+    '.ft-this-month { display: none !important; }'
+  ].join('\n');
+  document.head.appendChild(css);
+
+  /* ---------- 1. no pinch zoom (iOS gesture events; Android uses touch-action) ---------- */
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+    document.addEventListener(type, function (event) { try { event.preventDefault(); } catch (e) {} }, { passive: false });
+  });
+
+  /* ---------- 2. a focused PIN box is what raises the keyboard: release it ---------- */
+  if (TOUCH) {
+    document.addEventListener('focusin', function (event) {
+      var box = event.target;
+      if (!box || !box.hasAttribute || !box.hasAttribute('data-finpin-lock')) return;
+      try { box.blur(); } catch (e) {}
+    }, true);
+    document.addEventListener('touchstart', function (event) {
+      var box = event.target && event.target.closest ? event.target.closest('input[data-finpin-lock]') : null;
+      if (!box) return;
+      try { event.preventDefault(); } catch (e) {}
+      try { box.blur(); } catch (e) {}
+    }, { passive: false });
+  }
+
+  /* ---------- 3. the running month is selected by default ---------- */
+  var MONTHS = ['incomeMonthSelect', 'cashbookMonthSelect', 'cashbookPdfMonthSelect', 'expenseMonthSelect', 'friendSplitMonthSelect', 'householdMonthSelect', 'debtMonthSelect', 'goldSipMonthSelect', 'transferMonthSelect', 'settlementMonthSelect', 'sharedSplitMonthSelect'];
+  function currentMonth() {
+    if (typeof window.currentMonthStr === 'function') return window.currentMonthStr();
+    var now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+  function monthPass() {
+    Array.prototype.forEach.call(document.querySelectorAll('.ft-this-month, [data-ft-thismonth]'), function (node) { node.remove(); });
+    var month = currentMonth();
+    if (!month) return;
+    MONTHS.forEach(function (id) {
+      var node = document.getElementById(id);
+      if (!node || node.value) return;
+      node.value = month;
+      try { if (typeof window.updateMonthNavLabel === 'function') window.updateMonthNavLabel(id); } catch (e) {}
+    });
+  }
+  monthPass();
+  document.addEventListener('DOMContentLoaded', monthPass);
+  window.addEventListener('load', monthPass);
+  document.addEventListener('click', function () { setTimeout(monthPass, 140); }, true);
+  setInterval(monthPass, 2500);
+
+  /* ---------- 4. the balance is never wrong, not even for one frame ---------- */
+  var lastBalance = '', lastUid = '', writingBalance = false;
+  function balanceNode() { return document.getElementById('sumBankBalance'); }
+  function repaintBalance() {
+    if (writingBalance) return;
+    var el = balanceNode();
+    if (!el || typeof window.ftPaintBalance !== 'function') return;
+    if (!window.state || !(window.state.banks || []).length) return;
+    if (String(el.textContent || '').trim() === lastBalance) return;
+    writingBalance = true;
+    try { window.ftPaintBalance(); } catch (e) {}
+    lastBalance = String(el.textContent || '').trim();
+    writingBalance = false;
+  }
+  function watchBalance() {
+    var el = balanceNode();
+    if (!el || el.dataset.ftBalWatch === '1') return;
+    el.dataset.ftBalWatch = '1';
+    try { new MutationObserver(repaintBalance).observe(el, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+  }
+  function balancePass() {
+    var uid = (window.currentUser && window.currentUser.uid) || '';
+    if (uid !== lastUid) { lastUid = uid; lastBalance = ''; }
+    watchBalance();
+    repaintBalance();
+  }
+  balancePass();
+  document.addEventListener('DOMContentLoaded', balancePass);
+  window.addEventListener('load', balancePass);
+  setInterval(balancePass, 600);
+
+  /* ---------- 5. a splash that outlives its boot never keeps the screen ---------- */
+  setTimeout(function () {
+    var splash = document.getElementById('ftLaunchSplash');
+    document.documentElement.classList.remove('ft-booting');
+    if (splash) { splash.style.opacity = '0'; setTimeout(function () { if (splash.parentNode) splash.remove(); }, 400); }
+  }, 2800);
+})();
+</script>
+<style data-ft-update="page-weave-and-month-box">
+/* the page keeps the hexagon weave: faint blue in light mode, translucent white in dark mode */
+:root{--ftpagehex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%231E3A8A' stroke-opacity='.06' stroke-width='1.3'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
+body.ft-dark{--ftpagehex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.10' stroke-width='1.3'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
+body #appContainer{background-color:var(--ftpage)!important;background-image:var(--ftpagehex)!important;background-repeat:repeat!important;background-size:56px 96px!important;background-position:0 0!important;background-attachment:scroll!important;}
+/* one compact month box, identical to Financial Insights */
+body input.ft-mbox{display:inline-block!important;width:auto!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:5px 8px!important;border:1px solid var(--ftline)!important;border-radius:10px!important;background:var(--ftsurface)!important;color:var(--ftb)!important;font-family:var(--font-body)!important;font-size:11.5px!important;font-weight:700!important;line-height:1.35!important;box-shadow:none!important;outline:none!important;}
+body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
+/* in-app PDF reader */
+#ftPdfOverlay .ft-pdf-pages{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 8px 26px;background:#525659;display:flex;flex-direction:column;align-items:center;gap:10px;}
+#ftPdfOverlay canvas.ft-pdf-page{display:block;width:100%!important;max-width:900px;height:auto!important;background:#fff;border-radius:2px;box-shadow:0 6px 20px #00000059;}
+#ftPdfOverlay .ft-pdf-msg{color:#E2E8F0;font-size:12px;font-weight:700;line-height:1.6;text-align:center;padding:22px 16px;max-width:520px;}
+#ftPdfOverlay .ft-pdf-bar{position:relative;z-index:2;}
+</style>
+<script data-ft-update="uniform-month-box-and-pdf">
+/* global currentUser */
+(function () {
+  'use strict';
+
+  function monthNow() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  }
+  function say(message) {
+    try { if (typeof window.ftToast === 'function') { window.ftToast(message); return; } } catch (e) {}
+  }
+
+  /* ---------- 1. one compact month box in every module ---------- */
+  function applyMonth(box, hidden, inputId, handler) {
+    var value = box.value || monthNow();
+    if (hidden) hidden.value = value;
+    try { if (typeof window.updateMonthNavLabel === 'function') window.updateMonthNavLabel(inputId); } catch (e) {}
+    var name = String(handler || '').replace(/\(\s*\)\s*$/, '').trim();
+    if (name && typeof window[name] === 'function') {
+      try { window[name](); } catch (error) { console.error('FinTrack month change failed', error); }
+    }
+  }
+
+  function makeMonthBox(inputId, handler) {
+    var hidden = document.getElementById(inputId);
+    var box = document.createElement('input');
+    box.type = 'month';
+    box.className = 'ft-mbox';
+    box.setAttribute('aria-label', 'Month');
+    box.value = (hidden && /^\d{4}-\d{2}$/.test(hidden.value || '')) ? hidden.value : monthNow();
+    if (hidden && !hidden.value) hidden.value = box.value;
+    box.onchange = function () { applyMonth(box, hidden, inputId, handler); };
+    return box;
+  }
+
+  function hideMonthLabel(wrap) {
+    var previous = wrap.previousElementSibling;
+    if (!previous || previous.tagName !== 'LABEL') return;
+    var text = String(previous.textContent || '').replace(/\s+/g, ' ').trim();
+    if (/^month\s*:?$/i.test(text)) previous.style.display = 'none';
+  }
+
+  function upgradeMonthPickers() {
+    var buttons = document.querySelectorAll('button[onclick^="navMonthPrev("]');
+    for (var i = 0; i < buttons.length; i++) {
+      var button = buttons[i];
+      var wrap = button.parentNode;
+      if (!wrap || wrap.nodeType !== 1 || !wrap.parentNode) continue;
+      var match = /navMonthPrev\(\s*'([^']+)'\s*,\s*'([^']*)'\s*\)/.exec(button.getAttribute('onclick') || '');
+      if (!match) continue;
+      var inputId = match[1];
+      var handler = match[2];
+      var hidden = document.getElementById(inputId);
+      var box = makeMonthBox(inputId, handler);
+      hideMonthLabel(wrap);
+      wrap.parentNode.insertBefore(box, wrap);
+      if (hidden && wrap.contains(hidden)) wrap.parentNode.insertBefore(hidden, wrap);
+      wrap.parentNode.removeChild(wrap);
+    }
+  }
+
+  function monthPass() { try { upgradeMonthPickers(); } catch (error) { console.error('FinTrack month pass error:', error); } }
+  monthPass();
+  document.addEventListener('DOMContentLoaded', monthPass);
+  window.addEventListener('load', monthPass);
+
+  var hostRenderAll = window.renderAll;
+  if (typeof hostRenderAll === 'function') {
+    window.renderAll = function () { var result = hostRenderAll.apply(this, arguments); setTimeout(monthPass, 40); return result; };
+  }
+  var hostSwitchTab = window.switchTab;
+  if (typeof hostSwitchTab === 'function') {
+    window.switchTab = function () { var result = hostSwitchTab.apply(this, arguments); setTimeout(monthPass, 90); return result; };
+  }
+  setInterval(monthPass, 2500);
+
+  /* ---------- 2. PDF: a real in-app reader plus a save that reaches the phone ---------- */
+  // The native shell must bundle the plugins; the browser never gets a native proxy.
+  window.ftCapacitorPlugin = function (name) {
+    var cap = window.Capacitor;
+    if (!cap || typeof cap.isNativePlatform !== 'function' || !cap.isNativePlatform()) return null;
+    if (typeof cap.isPluginAvailable === 'function' && !cap.isPluginAvailable(name)) return null;
+    return (cap.Plugins && cap.Plugins[name]) || (typeof cap.registerPlugin === 'function' ? cap.registerPlugin(name) : null);
+  };
+  var PDFJS_BASE = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/';
+  var pdfEngine = null, pdfSession = null, savingPdf = false;
+
+  function loadPdfEngine() {
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js';
+      return Promise.resolve(window.pdfjsLib);
+    }
+    if (pdfEngine) return pdfEngine;
+    pdfEngine = new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      script.src = PDFJS_BASE + 'pdf.min.js';
+      script.onload = function () {
+        var lib = window.pdfjsLib;
+        if (!lib) { reject(new Error('PDF reader unavailable')); return; }
+        lib.GlobalWorkerOptions.workerSrc = PDFJS_BASE + 'pdf.worker.min.js';
+        resolve(lib);
+      };
+      script.onerror = function () { script.remove(); reject(new Error('PDF reader could not be downloaded')); };
+      document.head.appendChild(script);
+    }).catch(function (error) { pdfEngine = null; throw error; });
+    return pdfEngine;
+  }
+
+  function closePdfViewer() {
+    if (pdfSession) {
+      pdfSession.closed = true;
+      if (pdfSession.task) Promise.resolve(pdfSession.task.destroy()).catch(function () {});
+      pdfSession = null;
+    }
+    var wrap = document.getElementById('ftPdfOverlay');
+    if (wrap && wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    try { if (typeof window.ftSyncScrollLock === 'function') window.ftSyncScrollLock(); } catch (e) {}
+  }
+
+  function buildPdfViewer(fileName, title) {
+    closePdfViewer();
+    var wrap = document.createElement('div');
+    wrap.id = 'ftPdfOverlay';
+    var bar = document.createElement('div');
+    bar.className = 'ft-pdf-bar';
+    var heading = document.createElement('h3');
+    heading.textContent = title || fileName;
+    var saveButton = document.createElement('button');
+    saveButton.type = 'button';
+    saveButton.className = 'px-3 py-2 bg-[#1E3A8A] text-white font-bold text-xs rounded-lg';
+    saveButton.textContent = 'Download';
+    var closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'px-3 py-2 bg-slate-200 text-slate-800 font-bold text-xs rounded-lg';
+    closeButton.textContent = 'Close';
+    var pages = document.createElement('div');
+    pages.className = 'ft-pdf-pages';
+    var note = document.createElement('p');
+    note.className = 'ft-pdf-msg';
+    note.textContent = 'Preparing the PDF\u2026';
+    pages.appendChild(note);
+    bar.appendChild(heading); bar.appendChild(saveButton); bar.appendChild(closeButton);
+    wrap.appendChild(bar); wrap.appendChild(pages);
+    document.body.appendChild(wrap);
+    closeButton.onclick = closePdfViewer;
+    try { if (typeof window.ftSyncScrollLock === 'function') window.ftSyncScrollLock(); } catch (e) {}
+    return { pages: pages, note: note, save: saveButton };
+  }
+
+  function showPdf(blob, fileName, title) {
+    var view = buildPdfViewer(fileName, title);
+    var session = pdfSession = { closed: false, task: null };
+    view.save.onclick = async function () {
+      view.save.disabled = true; view.save.textContent = 'Saving…';
+      try { return await savePdfBlob(blob, fileName); }
+      finally { view.save.disabled = false; view.save.textContent = 'Download'; }
+    };
+    var bytes = blob.arrayBuffer ? blob.arrayBuffer() : new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(reader.result); };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(blob);
+    });
+    var failed = function (error) {
+      if (session.closed) return;
+      console.warn('FinTrack PDF reader failed', error);
+      view.pages.innerHTML = '';
+      var message = document.createElement('p');
+      message.className = 'ft-pdf-msg';
+      message.textContent = 'The PDF preview could not be loaded. Tap Download to use Android’s save / share sheet, or download the file in a browser.';
+      view.pages.appendChild(message);
+    };
+    Promise.all([loadPdfEngine(), bytes]).then(function (results) {
+      if (session.closed) return null;
+      session.task = results[0].getDocument({ data: new Uint8Array(results[1]), isEvalSupported: false, disableStream: true, disableAutoFetch: true });
+      return session.task.promise;
+    }).then(function (pdf) {
+      if (!pdf || session.closed) return;
+      var available = (view.pages.clientWidth || window.innerWidth || 360) - 16;
+      var width = Math.max(240, Math.min(available, 900));
+      var ratio = Math.min(window.devicePixelRatio || 1, 2);
+      view.pages.innerHTML = '';
+      var queue = Promise.resolve();
+      for (var pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+        (function (number) {
+          queue = queue.then(function () {
+            if (session.closed) return;
+            return pdf.getPage(number).then(function (page) {
+              if (session.closed) return;
+              var base = page.getViewport({ scale: 1 });
+              var viewport = page.getViewport({ scale: (width / base.width) * ratio });
+              var canvas = document.createElement('canvas');
+              canvas.className = 'ft-pdf-page';
+              canvas.width = Math.floor(viewport.width);
+              canvas.height = Math.floor(viewport.height);
+              view.pages.appendChild(canvas);
+              return page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(function () { page.cleanup(); });
+            });
+          });
+        })(pageNumber);
+      }
+      return queue;
+    }).catch(failed);
+  }
+
+  function toBase64(blob) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result || '').split(',')[1] || ''); };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function anchorDownload(blob, fileName) {
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    try { link.click(); } catch (e) {}
+    setTimeout(function () {
+      try { if (link.parentNode) link.parentNode.removeChild(link); URL.revokeObjectURL(url); } catch (e) {}
+    }, 8000);
+    say('Downloading ' + fileName);
+    return true;
+  }
+
+  function browserSave(blob, fileName) {
+    var file = null;
+    try { file = new File([blob], fileName, { type: 'application/pdf' }); } catch (e) { file = null; }
+    if (file && navigator.share) {
+      var shareable = true;
+      try { if (navigator.canShare) shareable = navigator.canShare({ files: [file] }); } catch (e) { shareable = false; }
+      if (shareable) {
+        try {
+          return Promise.resolve(navigator.share({ files: [file], title: fileName })).then(function () { return true; }).catch(function (error) {
+            if (error && error.name === 'AbortError') return true;
+            return anchorDownload(blob, fileName);
+          });
+        } catch (error) {
+          return Promise.resolve(anchorDownload(blob, fileName));
+        }
+      }
+    }
+    return Promise.resolve(anchorDownload(blob, fileName));
+  }
+
+  function savePdfBlob(blob, fileName) {
+    if (!blob || !blob.size) { alert('The PDF could not be created. Please try again.'); return Promise.resolve(false); }
+    fileName = String(fileName || 'FinTrack-Report.pdf').replace(/[\\/:*?"<>|\x00-\x1F]/g, '_');
+    if (!/\.pdf$/i.test(fileName)) fileName += '.pdf';
+    var cap = window.Capacitor;
+    if (!cap || !cap.isNativePlatform || !cap.isNativePlatform()) return browserSave(blob, fileName);
+    var fs = window.ftCapacitorPlugin('Filesystem'), share = window.ftCapacitorPlugin('Share');
+    if (!fs) { alert('PDF export is unavailable in this Android build: the Filesystem plugin must be installed and synced.'); return Promise.resolve(false); }
+    if (savingPdf) return Promise.resolve(false);
+    savingPdf = true;
+    var path = 'reports/' + fileName, stored = false;
+    async function write(base64, directory) {
+      var result = await fs.writeFile({ path: path, data: base64, directory: directory, recursive: true });
+      var uri = result && result.uri;
+      if (!uri) { var location = await fs.getUri({ path: path, directory: directory }); uri = location && location.uri; }
+      if (!uri) throw new Error('Android did not return the saved file location.');
+      return uri;
+    }
+    return toBase64(blob).then(async function (base64) {
+      if (!base64) throw new Error('The generated PDF is empty.');
+      // DATA persists privately; CACHE is shareable by Android's default FileProvider.
+      await write(base64, 'DATA'); stored = true;
+      if (!share) throw new Error('The Share plugin must be installed and synced to export a copy outside FinTrack.');
+      var uri = await write(base64, 'CACHE');
+      window._ftInAppHandoffAt = Date.now();
+      await share.share({ files: [uri], title: fileName, dialogTitle: 'Save or share ' + fileName });
+      say('Share sheet completed. A copy is also saved inside FinTrack.');
+      return true;
+    }).catch(function (error) {
+      var message = String(error && error.message || error || 'Unknown error');
+      if (/cancel|dismiss/i.test(message)) { say('Save / share cancelled. The PDF remains saved inside FinTrack.'); return false; }
+      console.warn('FinTrack native PDF export failed', error);
+      alert((stored ? 'The PDF is saved inside FinTrack, but a copy could not be exported. ' : 'The PDF could not be saved. ') + message);
+      return false; // Never pretend a WebView blob download exported a file.
+    }).finally(function () { savingPdf = false; });
+  }
+
+  function blobOf(doc) {
+    try { return doc.output('blob'); } catch (error) { return null; }
+  }
+
+  window.ftOpenPdfDocument = function (doc, fileName, title) {
+    var blob = blobOf(doc);
+    if (!blob || !blob.size || blob.size < 700) { alert('The PDF could not be created. Please try again.'); return false; }
+    showPdf(blob, fileName, title || fileName);
+    return true;
+  };
+
+  window.ftDownloadPdfDocument = function (doc, fileName) {
+    var blob = blobOf(doc);
+    if (!blob || !blob.size || blob.size < 700) { alert('The PDF could not be created. Please try again.'); return false; }
+    return savePdfBlob(blob, fileName);
+  };
+
+  window.ftShareOrSavePdf = function (doc, fileName, title, mode) {
+    if (mode === 'view') return window.ftOpenPdfDocument(doc, fileName, title);
+    return window.ftDownloadPdfDocument(doc, fileName);
+  };
+
+  window.ftCapSavePdf = function (doc, fileName) {
+    return savePdfBlob(blobOf(doc), fileName);
+  };
+  // Apply loading/error handling to the final report generators, not superseded ones.
+  ['downloadHouseholdPDF', 'downloadCashbookPDF', 'downloadCashbookPDFByKey'].forEach(function (name) {
+    var generate = window[name], busy = false;
+    window[name] = async function () {
+      if (busy) return false;
+      busy = true;
+      var button = document.activeElement, label = button && button.tagName === 'BUTTON' ? button.innerHTML : null;
+      if (label !== null) { button.disabled = true; button.textContent = 'Preparing…'; }
+      try { await window.ftEnsurePdfLibraries(); return await generate.apply(this, arguments); }
+      catch (error) { alert('Could not prepare the PDF: ' + (error.message || error)); return false; }
+      finally { busy = false; if (label !== null) { button.disabled = false; button.innerHTML = label; } }
+    };
+  });
+  var logoutWithReport = window.handleLogout;
+  window.handleLogout = function () { closePdfViewer(); return logoutWithReport.apply(this, arguments); };
+})();
+</script>
+<script data-ft-layer="push">
+/* Native shell prerequisites (not installable from HTML):
+   - Bundle @capacitor/filesystem, @capacitor/push-notifications, @capacitor/share,
+     and @capacitor/app matching the shell's Capacitor major, then sync Android.
+   - Add the matching Firebase google-services.json to android/app.
+   - Merge plugins.PushNotifications.presentationOptions: [] in Capacitor config
+     and sync/rebuild, so foreground messages NEVER create a system tray entry.
+   - The trusted FCM sender must send notification+data messages for background/
+     terminated delivery, with data.toUid, notificationId, type and channel_id
+     fintrack_alerts. HTML cannot send FCM or run while terminated. Force-stopped
+     apps resume delivery only after manual launch. No web push is installed. */
+(function () {
+  'use strict';
+  var Push = window.ftCapacitorPlugin('PushNotifications');
+  if (!Push) return;
+  var App = window.ftCapacitorPlugin('App'), cap = window.Capacitor;
+  var ASKED_KEY = 'ftPushAsked', inForeground = !document.hidden;
+  var token = '', synced = '', syncing = null, registeredUid = '', checkedUid = '', authUid = '';
+  var permissionWork = null, listenersReady = null, pending = [], seen = new Set();
+  var scheduled = false, draining = false, signingOut = false;
+  function errorState(error) {
+    window.ftPushStatus = 'error';
+    window.ftPushError = String(error && (error.message || error.error) || error || 'Push setup failed');
+    console.warn('FinTrack push setup failed', window.ftPushError);
+  }
+  function storageGet(key) { try { return localStorage.getItem(key) || ''; } catch (e) { return ''; } }
+  function storageSet(key, value) { try { if (value) localStorage.setItem(key, value); else localStorage.removeItem(key); } catch (e) {} }
+  function uidNow() { return window.auth && window.auth.currentUser && window.auth.currentUser.uid || ''; }
+  function ready() {
+    var app = document.getElementById('appContainer'), login = document.getElementById('authContainer');
+    return !signingOut && !document.hidden && inForeground && uidNow() && window.currentUser && window.currentUser.uid === uidNow() &&
+      !window._ftFinpinPendingUser && typeof dataLoaded !== 'undefined' && dataLoaded && app && !app.classList.contains('hidden') && login && login.classList.contains('hidden');
+  }
+  function clearTray() {
+    if (document.hidden || !inForeground) return;
+    Promise.resolve().then(function () { return Push.removeAllDeliveredNotifications(); }).catch(errorState);
+  }
+  async function syncToken() {
+    if (!token || !ready() || !window.db) return;
+    var uid = uidNow(), key = uid + '|' + token, value = token, written = false;
+    if (synced === key) return;
+    if (syncing) return syncing;
+    syncing = window.db.ref('users/' + uid + '/pushToken').set({ token: value, platform: cap.getPlatform ? cap.getPlatform() : 'android', updatedAt: new Date().toISOString() })
+      .then(function () { written = true; if (uidNow() === uid && token === value) synced = key; })
+      .catch(errorState).finally(function () { syncing = null; if (written && ready() && synced !== uidNow() + '|' + token) schedule(); });
+    return syncing;
+  }
+  function rememberToken(result) {
+    if (signingOut || !result || typeof result.value !== 'string' || !result.value) return;
+    token = result.value; window.ftPushToken = token; storageSet('ftPushToken', token);
+    window.ftPushStatus = 'registered'; window.ftPushError = '';
+    syncToken().catch(errorState);
+  }
+  function queueNotification(notification, tapped) {
+    var n = notification || {}, data = n.data || {};
+    if (String(data.silent) === 'true') return;
+    var uid = String(data.toUid || data.recipientUid || uidNow() || '');
+    if (uidNow() && uid && uid !== uidNow()) return;
+    var id = String(data.notificationId || data.noticeId || data.id || n.id || '');
+    var key = uid + '|' + (id || String(n.title || data.title || '') + '|' + String(n.body || data.message || ''));
+    var waiting = pending.find(function (item) { return item.key === key; });
+    if (waiting) { waiting.tapped = waiting.tapped || tapped; return; }
+    if (!tapped && seen.has(key)) return;
+    pending.push({ n: n, data: data, uid: uid, id: id, key: key, tapped: tapped });
+    while (pending.length > 20) { var dropAt = pending.findIndex(function (item) { return !item.tapped; }); pending.splice(dropAt === -1 ? 0 : dropAt, 1); }
+    if (!document.hidden && inForeground) clearTray();
+    schedule();
+  }
+  function openTarget(data) {
+    if (!ready()) return;
+    var kind = String(data.tab || data.target || data.type || '').toLowerCase();
+    var tab = ({ settlement: 'settlements', settlements: 'settlements', settlement_request: 'settlements', receipt: 'settlements', split: 'friends', friendsplit: 'friends', friend: 'friends', friends: 'friends', reminder: 'friends', household: 'household', expense: 'expenses', expenses: 'expenses' })[kind];
+    if (tab && typeof window.switchTab === 'function') window.switchTab(tab);
+    else if (typeof window.ftOpenNotifications === 'function') window.ftOpenNotifications();
+  }
+  async function drain() {
+    if (draining || !ready()) return;
+    draining = true;
+    try {
+      while (pending.length && ready()) {
+        var item = pending[0], uid = uidNow();
+        if (item.uid && item.uid !== uid) { pending.shift(); continue; }
+        var notice = (window._ftNotifData || []).find(function (n) { return item.uid && String(n.id) === item.id; });
+        var noticeId = item.data.notificationId || item.data.noticeId || item.data.id;
+        if (!notice && item.uid && noticeId && !/[.#$\[\]\/]/.test(String(noticeId))) {
+          var snapshot = await window.db.ref('users/' + uid + '/notifications/' + noticeId).once('value');
+          if (snapshot.exists()) notice = Object.assign({}, snapshot.val(), { id: String(noticeId) });
+        }
+        if (!ready() || uidNow() !== uid) return;
+        pending.shift(); seen.add(item.key);
+        if (seen.size > 100) seen.delete(seen.values().next().value);
+        if (item.tapped) openTarget(item.uid ? item.data : {});
+        if (notice && window.ftEnqueueNotification) window.ftEnqueueNotification(notice, item.tapped);
+        else if (window.FTReview && window.FTReview.enqueue) window.FTReview.enqueue({
+          key: 'push|' + uid + '|' + item.key + (item.tapped ? '|tap' : ''),
+          title: item.uid ? String(item.n.title || item.data.title || 'FinTrack') : 'FinTrack',
+          message: item.uid ? String(item.n.body || item.data.message || item.data.body || 'You have a new FinTrack notification.') : 'You have a new notification. Open Notifications for details.',
+          requiresLogin: true, actions: [{ label: 'OK', value: true }]
+        });
+      }
+    } catch (error) { errorState(error); }
+    finally { draining = false; }
+  }
+  function addListeners() {
+    if (listenersReady) return listenersReady;
+    var handles = [];
+    listenersReady = (async function () {
+      for (var entry of [
+        ['registration', rememberToken],
+        ['registrationError', function (error) { registeredUid = ''; errorState(error); }],
+        ['pushNotificationReceived', function (n) { queueNotification(n, false); }],
+        ['pushNotificationActionPerformed', function (action) { queueNotification(action && action.notification, true); }]
+      ]) handles.push(await Push.addListener(entry[0], entry[1]));
+    })().catch(async function (error) {
+      await Promise.all(handles.map(function (h) { return Promise.resolve().then(function () { return h.remove(); }).catch(function () {}); }));
+      listenersReady = null; throw error;
+    });
+    return listenersReady;
+  }
+  async function enable(force) {
+    if (!ready()) return false;
+    if (permissionWork) return permissionWork;
+    var uid = uidNow();
+    if (!force && checkedUid === uid) { await syncToken(); return window.ftPushStatus === 'registered'; }
+    permissionWork = (async function () {
+      await addListeners();
+      var permissions = await Push.checkPermissions();
+      if (!ready() || uidNow() !== uid) return false;
+      checkedUid = uid;
+      var state = permissions && permissions.receive || 'prompt';
+      window.ftPushStatus = state;
+      if ((state === 'prompt' || state === 'prompt-with-rationale') && (force || storageGet(ASKED_KEY) !== '1')) {
+        storageSet(ASKED_KEY, '1');
+        permissions = await Push.requestPermissions();
+        state = permissions && permissions.receive || 'denied'; window.ftPushStatus = state;
+      }
+      if (state !== 'granted') return false;
+      if (!ready() || uidNow() !== uid) { checkedUid = ''; return false; }
+      await Push.createChannel({ id: 'fintrack_alerts', name: 'FinTrack alerts', description: 'Household, split and settlement updates', importance: 5, visibility: 0, lights: true, vibration: true });
+      if (!ready() || uidNow() !== uid) { checkedUid = ''; return false; }
+      if (registeredUid !== uid) { registeredUid = uid; await Push.register(); }
+      await syncToken();
+      return true;
+    })().catch(function (error) { registeredUid = ''; errorState(error); return false; }).finally(function () { permissionWork = null; });
+    return permissionWork;
+  }
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    Promise.resolve().then(function () { scheduled = false; if (ready()) { enable(false).catch(errorState); drain(); } });
+  }
+  window.ftEnablePush = function (force) { return enable(force !== false); };
+  function resume(active) {
+    inForeground = active;
+    if (active) { checkedUid = ''; clearTray(); schedule(); }
+  }
+  document.addEventListener('visibilitychange', function () { resume(!document.hidden); });
+  window.addEventListener('online', function () { checkedUid = ''; schedule(); });
+  if (App) {
+    Promise.resolve().then(function () { return App.addListener('appStateChange', function (state) { resume(!!state.isActive); }); }).catch(errorState);
+    Promise.resolve().then(function () { return App.getState(); }).then(function (state) { resume(!!state.isActive); }).catch(errorState);
+  }
+  var observer = new MutationObserver(schedule);
+  ['appContainer', 'authContainer'].forEach(function (id) { var el = document.getElementById(id); if (el) observer.observe(el, { attributes: true, attributeFilter: ['class'] }); });
+  var render = window.renderAll;
+  if (typeof render === 'function') window.renderAll = function () { var result = render.apply(this, arguments); schedule(); return result; };
+  if (window.auth && window.auth.onAuthStateChanged) window.auth.onAuthStateChanged(function (user) {
+    checkedUid = ''; synced = ''; registeredUid = '';
+    if (!user && authUid) { pending = []; seen.clear(); token = ''; window.ftPushToken = ''; storageSet('ftPushToken', ''); }
+    authUid = user && user.uid || ''; schedule();
+  });
+  // Actual sign-out revokes this device's token, without changing PIN-only locking.
+  var signOut = window.signOut;
+  if (typeof signOut === 'function') window.signOut = async function () {
+    signingOut = true;
+    try {
+      if (syncing) await Promise.race([syncing, new Promise(function (resolve) { setTimeout(resolve, 1500); })]);
+      var uid = uidNow(), value = token || storageGet('ftPushToken');
+      if (uid && value && window.db) await Promise.race([window.db.ref('users/' + uid + '/pushToken').transaction(function (stored) { if (!stored || stored.token === value) return null; }), new Promise(function (resolve) { setTimeout(resolve, 1500); })]);
+    } catch (error) { errorState(error); }
+    try { await Push.unregister(); } catch (error) { errorState(error); }
+    token = ''; synced = ''; registeredUid = ''; checkedUid = ''; pending = []; seen.clear();
+    window.ftPushToken = ''; storageSet('ftPushToken', '');
+    try { return await signOut.apply(this, arguments); }
+    finally { signingOut = false; }
+  };
+  addListeners().then(schedule).catch(errorState);
+  schedule();
+})();
+</script>
+<script data-ft-layer="table-align">
+/* FinTrack — money tables: date as DD/MM/YYYY, fixed columns, one line, no sideways drift */
+(function () {
+  'use strict';
+  var CFG = { expensesTable: '19,13,14,18,11,17,8', hhExpensesTable: '19,21,14,13,17,8,8', friendSplitsTable: '19,19,13,16,15,10,8' };
+  var css = document.createElement('style');
+  css.textContent = '.ft-fit{table-layout:fixed!important;width:100%!important}.ft-fit th,.ft-fit td{padding:6px 4px!important;font-size:10px!important;line-height:1.3!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;vertical-align:middle!important}.ft-fit th{font-size:9px!important;letter-spacing:0!important}.ft-fit td>span{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}.ft-fit td button{margin:0 2px!important}';
+  document.head.appendChild(css);
+  function dmy(t) { var s = String(t || '').trim(), m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return m[3] + '/' + m[2] + '/' + m[1]; m = s.match(/^(\d{4})-(\d{2})$/); return m ? m[2] + '/' + m[1] : s; }
+  function tidy(tbody) {
+    var table = tbody.closest('table'); if (!table) return;
+    var head = table.tHead && table.tHead.rows[0], cols = head ? head.cells.length : 0;
+    for (var i = 0; i < tbody.rows.length; i++) {
+      var row = tbody.rows[i];
+      if (!row.cells.length || (row.cells.length === 1 && row.cells[0].colSpan > 1)) continue;
+      while (cols && row.cells.length < cols) row.insertCell(row.cells.length - 1);
+      var first = row.cells[0], shown = dmy(first.textContent);
+      if (shown !== first.textContent.trim()) first.textContent = shown;
+    }
+  }
+  function prep(tbody, widths) {
+    var table = tbody.closest('table'); if (!table) return;
+    var parts = widths.split(','), colgroup = document.createElement('colgroup');
+    parts.forEach(function (w) { var col = document.createElement('col'); col.style.width = w + '%'; colgroup.appendChild(col); });
+    if (table.tHead && table.tHead.rows[0] && table.tHead.rows[0].cells.length === parts.length) table.insertBefore(colgroup, table.firstChild);
+    table.classList.add('ft-fit');
+    var box = table.parentElement;
+    while (box && box !== document.body && !box.classList.contains('overflow-x-auto') && !box.classList.contains('ft-scroll')) box = box.parentElement;
+    if (box && box !== document.body) box.style.setProperty('overflow-x', 'hidden', 'important');
+    tidy(tbody);
+    new MutationObserver(function () { tidy(tbody); }).observe(tbody, { childList: true, subtree: true });
+  }
+  Object.keys(CFG).forEach(function (id) { var tb = document.getElementById(id); if (tb) prep(tb, CFG[id]); });
+})();
+</script>
+</body>
 </html>
