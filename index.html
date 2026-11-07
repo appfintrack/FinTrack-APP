@@ -11813,7 +11813,7 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 <script>
 (function () {
   'use strict';
-  var OVERLAYS = '[id^="modal"], .ft-overlay, .ft-sheet, .ft-search-panel';
+  var OVERLAYS = '[id^="modal"], [id$="Modal"], [id$="Panel"], [id="ftDialogOverlay"], .ft-overlay, .ft-sheet, .ft-search-panel';
 
   function isOpen(el) {
     if (!el || !el.classList) return false;
@@ -11887,27 +11887,68 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 })();
 </script>
 
-<style data-ft-update="pure-white-pages">
-/* every screen sits on the same solid white field as its content box; no weave anywhere except Home */
-html, body { background-color:#FFFFFF !important; background-image:none !important; }
-#appContainer, #appContainer main, body main, .tab-content,
-body main section[id^="sec-"]:not(#sec-overview),
-body main .module-section, body main .module-wrap {
-  background-color:#FFFFFF !important;
-  background-image:none !important;
-  background-size:auto !important;
-  background-repeat:repeat !important;
+
+
+<style data-ft-update="app-shell-bars-fixed">
+/* the top bar and the bottom bar stay put; only the pane between them scrolls */
+html.ft-app-mode { height:100% !important; overflow:hidden !important; }
+body.ft-app-mode {
+  height:100dvh !important; min-height:0 !important; max-height:100dvh !important;
+  overflow:hidden !important; overscroll-behavior:none !important;
 }
-body.ft-dark, body.ft-dark main, body.ft-dark #appContainer { background-image:none !important; }
-body.ft-dark main { background-color:#0F1115 !important; }
-/* Home alone keeps the soft hexagon weave */
-#sec-overview, body #sec-overview, body.ft-dark #sec-overview {
-  background-image:var(--ftpagehex) !important;
-  background-size:56px 96px !important;
-  background-position:0 0 !important;
+body.ft-app-mode #appContainer {
+  height:100dvh !important; max-height:100dvh !important; min-height:0 !important;
+  display:flex !important; flex-direction:column !important; overflow:hidden !important;
 }
-body #sec-overview { background-color:var(--ftpage) !important; }
-body.ft-dark #sec-overview { background-color:#0B1220 !important; }
+body.ft-app-mode #appContainer > header {
+  position:relative !important; top:auto !important; bottom:auto !important;
+  flex:0 0 auto !important; z-index:30 !important;
+}
+body.ft-app-mode #appContainer > main,
+body.ft-app-mode #appContainer main,
+body.ft-app-mode main {
+  flex:1 1 auto !important;
+  display:block !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  -webkit-overflow-scrolling:touch !important;
+  overscroll-behavior-y:contain !important;
+  touch-action:pan-y !important;
+  padding-bottom:calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.ft-app-mode #mobileBottomNav {
+  position:fixed !important; left:0 !important; right:0 !important; bottom:0 !important; top:auto !important;
+  z-index:40 !important; flex:0 0 auto !important;
+}
+/* an open popup freezes the whole page: neither the pane nor the bars move behind it */
+body.ft-locked,
+body.ft-locked main,
+body.ft-locked #appContainer,
+body.ft-locked #appContainer main { overflow:hidden !important; }
+body.ft-locked main { touch-action:none !important; }
 </style>
+
+<script data-ft-update="app-shell-mode">
+(function () {
+  function apply() {
+    var app = document.getElementById('appContainer');
+    var on = !!(app && app.getClientRects().length);
+    var html = document.documentElement, body = document.body;
+    if (html.classList.contains('ft-app-mode') !== on) html.classList.toggle('ft-app-mode', on);
+    if (body.classList.contains('ft-app-mode') !== on) body.classList.toggle('ft-app-mode', on);
+  }
+  window.ftSyncShell = apply;
+  ['load', 'resize', 'orientationchange', 'visibilitychange', 'hashchange'].forEach(function (ev) {
+    window.addEventListener(ev, function () { setTimeout(apply, 40); }, { passive: true });
+  });
+  document.addEventListener('click', function () { setTimeout(apply, 60); }, true);
+  document.addEventListener('touchstart', function () { setTimeout(apply, 60); }, { passive: true, capture: true });
+  try { new MutationObserver(apply).observe(document.body, { attributes: true, attributeFilter: ['class', 'style', 'hidden'], subtree: true, childList: true }); } catch (e) {}
+  apply();
+})();
+</script>
 </body>
 </html>
