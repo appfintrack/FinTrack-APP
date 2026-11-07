@@ -4,7 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#1E3A8A">
-  <style id="ftBootStyles">
+  <script>
+(function () {
+  var KEY = 'ftAppSessionV1';
+  var sameSession = false;
+  try { sameSession = sessionStorage.getItem(KEY) === '1'; if (!sameSession) sessionStorage.setItem(KEY, '1'); } catch (e) {}
+  window.ftShouldBlockSessionRestore = function () { return !sameSession; };
+})();
+</script>
+<style id="ftBootStyles">
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     html.ft-booting #authContainer, html.ft-booting #appContainer { visibility: hidden !important; } html.ft-data-pending #appContainer { visibility: hidden !important; }
     #ftLaunchSplash { position: fixed; inset: 0; z-index: 2147483646; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; opacity: 1; transition: opacity .35s ease; pointer-events: none; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
@@ -145,9 +153,9 @@
 #ppPersonalData > div, #ppFriends > div, #ppHelp > div, #ppRatings > div { background-color: #ffffff !important; }
 #modalProfilePanel .sticky { background-color: #ffffff !important; }
 /* ===== SAFE AREA + TOUCH TARGETS (notch & camera cutout support) ===== */ header.sticky { padding-top: env(safe-area-inset-top, 0px); } #mobileBottomNav { padding-bottom: env(safe-area-inset-bottom, 0px); } #mobileBottomNav .ftbn { min-height: 52px; padding-top: 0.65rem; padding-bottom: 0.65rem; } /* ===== FINTRACK MOBILE DASHBOARD THEME ===== */
-body { font-family:'Inter','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif !important; background:#F8FAFC !important; }
+body { font-family:'Inter','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif !important; background:#FFFFFF !important; }
 html,body { overflow-x:hidden !important; }
-#appContainer { background:#F8FAFC !important; }
+#appContainer { background:#FFFFFF !important; }
 #sec-overview { max-width:430px; margin-left:auto; margin-right:auto; width:100%; }
 @media (min-width:768px){ #sec-overview { max-width:100%; } }
 #sec-overview div:has(> #sumNetPosition) { background:#1E3A8A !important; color:#fff !important; border:none !important; box-shadow:0 12px 30px rgba(11,70,50,0.28) !important; grid-column:1/-1; }
@@ -417,8 +425,8 @@ body #mobileBottomNav .ftbn.active i{color:var(--ftb);}
 .ft-theme-toggle button.active{border-color:var(--ftb);background:var(--ftsoft);}
 /* ---------- overlays: centered windows that freeze the page ---------- */
 /* page freeze removed: a stale lock stopped Android from scrolling */
-@media(max-width:1023px){body:has(#sidebar:not(.hidden)){overflow:hidden!important;}}
-body:has(div[id^="modal"]:not(.hidden)){overflow:hidden!important;}
+@media(max-width:1023px){body.ft-sidebar-open{overflow:hidden!important;}}
+body.ft-locked{overflow:hidden!important;}
 .ft-overlay{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:#0f172ab8;backdrop-filter:blur(3px);}
 .ft-overlay-card{width:100%;max-width:440px;max-height:86dvh;display:flex;flex-direction:column;background:var(--ftsurface);border-radius:20px;box-shadow:0 24px 70px #0f172a45;overflow:hidden;}
 .ft-overlay-wide .ft-overlay-card{max-width:560px;}
@@ -941,7 +949,7 @@ function setPersistence(auth, p) { return auth.setPersistence(p); }
 const browserLocalPersistence = firebase.auth.Auth.Persistence.LOCAL;
 const browserSessionPersistence = firebase.auth.Auth.Persistence.SESSION;
 const firebaseConfig = { apiKey: "AIzaSyArwYOwIlBWV1GlvH-51_mfntMmfwRL408", authDomain: "fintrack-d7618.firebaseapp.com", databaseURL: "https://fintrack-d7618-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "fintrack-d7618", storageBucket: "fintrack-d7618.firebasestorage.app", messagingSenderId: "942185672616", appId: "1:942185672616:web:f52b7c4592772810b1b79d", measurementId: "G-NYV8F7ZSB2" };
-const app = initializeApp(firebaseConfig); const analytics = getAnalytics(app); const db = getDatabase(app); window.db = db; const auth = getAuth(app); window.auth = auth;
+const app = initializeApp(firebaseConfig); const analytics = getAnalytics(app); const db = getDatabase(app); window.db = db; const auth = getAuth(app); window.auth = auth; try { auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch (e) {}
 try { const storage = getStorage(app); window.firebaseStorage = storage; } catch(e) { window.firebaseStorage = null; }
 const CURRENCIES = { INR: { symbol: '₹', name: 'Indian Rupee', country: 'India' }, SAR: { symbol: 'SAR', name: 'Saudi Riyal', country: 'Saudi Arabia' }, AED: { symbol: 'AED', name: 'UAE Dirham', country: 'UAE' }, OMR: { symbol: 'OMR', name: 'Omani Rial', country: 'Oman' }, QAR: { symbol: 'QAR', name: 'Qatari Riyal', country: 'Qatar' }, BHD: { symbol: 'BHD', name: 'Bahraini Dinar', country: 'Bahrain' }, KWD: { symbol: 'KWD', name: 'Kuwaiti Dinar', country: 'Kuwait' }, USD: { symbol: '$', name: 'US Dollar', country: 'United States' }, GBP: { symbol: '£', name: 'British Pound', country: 'United Kingdom' }, CAD: { symbol: '$', name: 'Canadian Dollar', country: 'Canada' }, EUR: { symbol: '€', name: 'Euro', country: 'Europe' }, AUD: { symbol: '$', name: 'Australian Dollar', country: 'Australia' }, SGD: { symbol: 'S$', name: 'Singapore Dollar', country: 'Singapore' }, NZD: { symbol: 'NZ$', name: 'New Zealand Dollar', country: 'New Zealand' }, CHF: { symbol: 'CHF', name: 'Swiss Franc', country: 'Switzerland' }, HKD: { symbol: 'HK$', name: 'Hong Kong Dollar', country: 'Hong Kong' }, CNY: { symbol: '¥', name: 'Chinese Yuan', country: 'China' }, ZAR: { symbol: 'R', name: 'South African Rand', country: 'South Africa' }, MYR: { symbol: 'RM', name: 'Malaysian Ringgit', country: 'Malaysia' }, UZS: { symbol: 'UZS', name: 'Uzbekistani Som', country: 'Uzbekistan' } };
 window.CURRENCIES = CURRENCIES;
@@ -990,7 +998,7 @@ function dateMonth(dateStr) { if (!dateStr) return ''; return dateStr.slice(0, 7
 window.dateMonth = dateMonth;
   function ftLocalDateStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   window.ftLocalDateStr=ftLocalDateStr;
-  window.ftHhDateBounds=function(){var d=new Date();var m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-60);return {min:m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0'),max:ftLocalDateStr()};};
+  window.ftHhDateBounds=function(){var d=new Date();var m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-3650);return {min:m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0'),max:ftLocalDateStr()};};
   function ftHhInMonth(e, month){ if(!e)return false; if(dateMonth(e.date)===month)return true; if(!e.date && month===currentMonthStr())return true; if(month===currentMonthStr() && e.updatedAt){ var u=new Date(e.updatedAt); var lm=u.getFullYear()+'-'+String(u.getMonth()+1).padStart(2,'0'); if(lm===month && (!e.date||dateMonth(e.date)!==month))return true; } return false; }
   window.ftHhInMonth=ftHhInMonth;
 function sortByDateDesc(arr) { return (arr || []).slice().sort((a, b) => { const da = String(a && a.date || ''), db = String(b && b.date || ''); if (db !== da) return db.localeCompare(da); return (Number(b && b.id) || 0) - (Number(a && a.id) || 0); }); }
@@ -1731,7 +1739,7 @@ window.ftRestoreSession = async function (fbUser) {
   }
 };
 window.ftResumePendingSessionRestore = function () { if (window._ftPendingSessionRestoreUser && !currentUser) { var _ftRestoreUser = window._ftPendingSessionRestoreUser; window._ftPendingSessionRestoreUser = null; window.ftRestoreSession(_ftRestoreUser); } };
-onAuthStateChanged(auth, async (fbUser) => { window._ftAuthStateKnown = true; if (typeof window.ftWatchPaidSubscriptions === 'function') window.ftWatchPaidSubscriptions();  if (fbUser && !currentUser && !window._ftManualLogin) window.ftRestoreSession(fbUser); });
+onAuthStateChanged(auth, async (fbUser) => { window._ftAuthStateKnown = true; if (typeof window.ftWatchPaidSubscriptions === 'function') window.ftWatchPaidSubscriptions();  if (fbUser && !currentUser && !window._ftManualLogin) { if (typeof window.ftShouldBlockSessionRestore === 'function' && window.ftShouldBlockSessionRestore()) { try { await signOut(auth); } catch (_ftSOE) {} return; } window.ftRestoreSession(fbUser); } });
 
 async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { if(!currentUser||currentUser.loginId!==loginId)return; const wasFirstLoad=isFirstLoad; dataLoaded = true; const val = snapshot.val(); if (val) {
     normalizeState(val); if (typeof window.ftApplyRetention === 'function') { try { window.ftApplyRetention(); } catch (_ftRetErr) { console.error('Retention pass error:', _ftRetErr); } } if (typeof window.ftCleanupClosedLoans === 'function') { try { window.ftCleanupClosedLoans(); } catch (_ftLoanErr) { console.error('Closed loan cleanup error:', _ftLoanErr); } }
@@ -1753,10 +1761,10 @@ window.saveData = function() { if (typeof window.renderAll === 'function') windo
 window.updateExchangeRate = function(val) { const c = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; state.rates[c] = parseFloat(val) || DEFAULT_RATES[c] || 1; saveData(); };
 window.changeDisplayCurrency = function(curr) { state.displayCurrency = curr; saveData(); };
 window.fetchLiveRates = async function(silent) { try { const res = await fetch('https://api.exchangerate-api.com/v4/latest/INR'); const data = await res.json(); if (data && data.rates) { for (const curr of Object.keys(CURRENCIES)) { if (curr === 'INR') { state.rates.INR = 1; continue; } if (data.rates[curr]) state.rates[curr] = 1 / data.rates[curr]; } const liveRateInput = document.getElementById('liveRateInput'); if (liveRateInput) { const sc = window.getSecondCurrency ? window.getSecondCurrency() : 'SAR'; liveRateInput.value = (state.rates[sc] || DEFAULT_RATES[sc] || 1).toFixed(2); } saveData(); if (!silent) alert("Live rates fetched successfully!"); if (typeof window.renderAll === 'function') window.renderAll(); } } catch(e) { console.warn("Live rate API error, retaining current rates.", e); if (!silent) alert("Unable to fetch live rates. You can enter rates manually in Settings."); } finally { if (typeof window.ftRatesSettled === 'function') window.ftRatesSettled(); } };
-window.toggleSidebar = function() { const sb = document.getElementById('sidebar'); const bd = document.getElementById('sidebarBackdrop'); sb.classList.toggle('hidden'); const isMobile = window.innerWidth < 1024; if (bd) { if (isMobile) bd.classList.toggle('active', !sb.classList.contains('hidden')); else bd.classList.remove('active'); } };
+window.toggleSidebar = function() { const sb = document.getElementById('sidebar'); const bd = document.getElementById('sidebarBackdrop'); sb.classList.toggle('hidden'); if (document.body) document.body.classList.toggle('ft-sidebar-open', !sb.classList.contains('hidden')); const isMobile = window.innerWidth < 1024; if (bd) { if (isMobile) bd.classList.toggle('active', !sb.classList.contains('hidden')); else bd.classList.remove('active'); } };
 window.switchTab = function(tabId) { var _ftTabFeatureMap = { 'friends': 'friendsSplit', 'settlements': 'settlements', 'gold-sip': 'goldSip', 'liabilities': 'liabilities', 'transfers': 'transfers', 'household': 'household' }; if (_ftTabFeatureMap[tabId] && typeof window.ftCheckFeatureAccess === 'function' && !window.ftCheckFeatureAccess(_ftTabFeatureMap[tabId])) return; document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden')); document.querySelectorAll('#sidebar nav button[id^="side-tab-"]').forEach(btn => { btn.className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 flex items-center space-x-3 transition"; }); document.querySelectorAll('.topnav-btn').forEach(btn => { btn.className = "topnav-btn px-3 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition"; }); const section = document.getElementById(`sec-${tabId}`); if (section) section.classList.remove('hidden'); if (tabId === 'settings' && typeof window.ftUpdateFinpinStatus === 'function') { setTimeout(window.ftUpdateFinpinStatus, 200); } const sideBtn = document.getElementById(`side-tab-${tabId}`); if (sideBtn) sideBtn.className = "w-full text-left px-3 py-2.5 rounded-lg text-xs font-bold bg-indigo-600 text-white flex items-center space-x-3 transition"; const topBtn = document.getElementById(`top-tab-${tabId}`); if (topBtn) topBtn.className = "topnav-btn px-3 py-1.5 rounded text-xs font-bold bg-indigo-600 text-white transition"; if (tabId === 'premium-settings' && typeof window.ftLoadPremiumSettings === 'function') window.ftLoadPremiumSettings(); if (tabId === 'profile' && typeof window.loadProfileNotifications === 'function') { window.loadProfileNotifications(); } document.getElementById("sidebar").classList.add("hidden"); const sbd = document.getElementById('sidebarBackdrop'); if (sbd) sbd.classList.remove('active'); applyVisibilitySettings(); if (typeof window.ftUpdateBottomNav === 'function') window.ftUpdateBottomNav(); };
 window.saveVisibilitySettings = function() { if (!state.settings) state.settings = {}; state.settings.showSecondaryAccount = document.getElementById('settingShowSecondaryAccount').checked; state.settings.showLiabilities = document.getElementById('settingShowLiabilities').checked; state.settings.showGoldSip = document.getElementById('settingShowGoldSip').checked; state.settings.showTransfers = document.getElementById('settingShowTransfers').checked; state.settings.showCreditCard = document.getElementById('settingShowCreditCard').checked; state.settings.showPendingPayments = document.getElementById('settingShowPendingPayments').checked; state.settings.showIndividualSummary = document.getElementById('settingShowIndividualSummary').checked; state.settings.showTotalLiabilities = document.getElementById('settingShowTotalLiabilities').checked; state.settings.showTotalSavingsGold = document.getElementById('settingShowTotalSavingsGold').checked; state.settings.showMonthlyCashbook = document.getElementById('settingShowMonthlyCashbook').checked; state.settings.showOptionalQuickLinks = document.getElementById('settingShowOptionalQuickLinks').checked; state.settings.showHousehold = document.getElementById('settingShowHousehold').checked; applyVisibilitySettings(); saveData(); alert('Visibility settings saved successfully!'); };
-function applyVisibilitySettings() { const showSecondary = getSetting('showSecondaryAccount', true); const showLiabilities = getSetting('showLiabilities', false); const showGoldSip = getSetting('showGoldSip', true); const showTransfers = getSetting('showTransfers', false); const showCreditCard = getSetting('showCreditCard', true); const showPendingPayments = getSetting('showPendingPayments', true); const showIndividualSummary = getSetting('showIndividualSummary', true); const ccSection = document.getElementById('creditCardSection'); if (ccSection) ccSection.style.display = showCreditCard ? '' : 'none'; const ccSpendCard = document.getElementById('creditCardSpendCard'); if (ccSpendCard) ccSpendCard.style.display = showCreditCard ? '' : 'none'; const secondaryBlock = document.getElementById('secondaryAccountBlock'); if (secondaryBlock) secondaryBlock.style.display = 'none'; const _secSameCur = (window.getSecondCurrency ? window.getSecondCurrency() : 'INR') === (window.getFirstCurrency ? window.getFirstCurrency() : 'INR'); document.querySelectorAll('.secondary-spend-card').forEach(el => el.style.display = (showSecondary && !_secSameCur) ? '' : 'none'); ['liabilities','gold-sip','transfers'].forEach(function(k){var vis=k==='liabilities'?showLiabilities:(k==='gold-sip'?showGoldSip:showTransfers);var sb=document.getElementById('side-tab-'+k),tb=document.getElementById('top-tab-'+k);if(sb)sb.style.display=vis?'':'none';if(tb)tb.style.display=vis?'':'none';}); document.querySelectorAll('.module-section-liabilities').forEach(el => el.style.display = showLiabilities ? '' : 'none'); document.querySelectorAll('.module-section-goldsip').forEach(el => el.style.display = showGoldSip ? '' : 'none'); document.querySelectorAll('.module-section-transfers').forEach(el => el.style.display = showTransfers ? '' : 'none'); const showHousehold = getSetting('showHousehold', true); ['household'].forEach(function(k){var sb=document.getElementById('side-tab-'+k),tb=document.getElementById('top-tab-'+k);if(sb)sb.style.display=showHousehold?'':'none';if(tb)tb.style.display=showHousehold?'':'none';}); document.querySelectorAll('.module-section-household').forEach(el => el.style.display = showHousehold ? '' : 'none'); const sSecondary = document.getElementById('settingShowSecondaryAccount'); const sLiab = document.getElementById('settingShowLiabilities'); const sGold = document.getElementById('settingShowGoldSip'); const sTrans = document.getElementById('settingShowTransfers'); const sCC = document.getElementById('settingShowCreditCard'); if (sCC) sCC.checked = showCreditCard; if (sSecondary) sSecondary.checked = showSecondary; if (sLiab) sLiab.checked = showLiabilities; if (sGold) sGold.checked = showGoldSip; if (sTrans) sTrans.checked = showTransfers; const sPP = document.getElementById("settingShowPendingPayments"); const sIS = document.getElementById("settingShowIndividualSummary"); if (sPP) sPP.checked = showPendingPayments; if (sIS) sIS.checked = showIndividualSummary; const ppSec = document.getElementById("pendingPaymentsSection"); if (ppSec) ppSec.style.display = showPendingPayments ? '' : 'none'; const isSec = document.getElementById("individualSummarySection"); if (isSec) isSec.style.display = showIndividualSummary ? '' : 'none'; const showTL = getSetting('showTotalLiabilities', false); const showSG = getSetting('showTotalSavingsGold', false); const showNet = showTL || showSG; const cLiab = document.getElementById('overviewCardLiabilities'); const cGold = document.getElementById('overviewCardGold'); const cNet = document.getElementById('overviewCardNet'); if (cLiab) cLiab.style.display = showTL ? '' : 'none'; if (cGold) cGold.style.display = showSG ? '' : 'none'; if (cNet) cNet.style.display = showNet ? '' : 'none'; const sTL = document.getElementById('settingShowTotalLiabilities'); const sSG = document.getElementById('settingShowTotalSavingsGold'); const sMC = document.getElementById('settingShowMonthlyCashbook'); if (sTL) sTL.checked = showTL; if (sSG) sSG.checked = showSG; const showMonthlyCashbook = getSetting('showMonthlyCashbook', true); if (sMC) sMC.checked = showMonthlyCashbook; const cashbookSec = document.getElementById('monthlyCashbookSection'); if (cashbookSec) cashbookSec.style.display = showMonthlyCashbook ? '' : 'none'; const showOptQL = getSetting('showOptionalQuickLinks', false); document.querySelectorAll('.ft-qa-opt').forEach(el => el.style.display = showOptQL ? '' : 'none'); const sOQL = document.getElementById('settingShowOptionalQuickLinks'); if (sOQL) sOQL.checked = showOptQL; const sHH = document.getElementById('settingShowHousehold'); if (sHH) sHH.checked = showHousehold; }
+function applyVisibilitySettings() { const showSecondary = getSetting('showSecondaryAccount', true); const showLiabilities = getSetting('showLiabilities', false); const showGoldSip = getSetting('showGoldSip', true); const showTransfers = getSetting('showTransfers', false); const showCreditCard = getSetting('showCreditCard', true); const showPendingPayments = getSetting('showPendingPayments', true); const showIndividualSummary = getSetting('showIndividualSummary', true); const ccSection = document.getElementById('creditCardSection'); if (ccSection) ccSection.style.display = showCreditCard ? '' : 'none'; const ccSpendCard = document.getElementById('creditCardSpendCard'); if (ccSpendCard) ccSpendCard.style.display = showCreditCard ? '' : 'none'; const secondaryBlock = document.getElementById('secondaryAccountBlock'); if (secondaryBlock) secondaryBlock.style.display = 'none'; const _secSameCur = (window.getSecondCurrency ? window.getSecondCurrency() : 'INR') === (window.getFirstCurrency ? window.getFirstCurrency() : 'INR'); document.querySelectorAll('.secondary-spend-card').forEach(el => el.style.display = (showSecondary && !_secSameCur) ? '' : 'none'); ['liabilities','gold-sip','transfers'].forEach(function(k){var vis=k==='liabilities'?true:(k==='gold-sip'?showGoldSip:showTransfers);var sb=document.getElementById('side-tab-'+k),tb=document.getElementById('top-tab-'+k);if(sb)sb.style.display=vis?'':'none';if(tb)tb.style.display=vis?'':'none';}); document.querySelectorAll('.module-section-liabilities').forEach(el => el.style.display = ''); document.querySelectorAll('.module-section-goldsip').forEach(el => el.style.display = showGoldSip ? '' : 'none'); document.querySelectorAll('.module-section-transfers').forEach(el => el.style.display = showTransfers ? '' : 'none'); const showHousehold = getSetting('showHousehold', true); ['household'].forEach(function(k){var sb=document.getElementById('side-tab-'+k),tb=document.getElementById('top-tab-'+k);if(sb)sb.style.display=showHousehold?'':'none';if(tb)tb.style.display=showHousehold?'':'none';}); document.querySelectorAll('.module-section-household').forEach(el => el.style.display = showHousehold ? '' : 'none'); const sSecondary = document.getElementById('settingShowSecondaryAccount'); const sLiab = document.getElementById('settingShowLiabilities'); const sGold = document.getElementById('settingShowGoldSip'); const sTrans = document.getElementById('settingShowTransfers'); const sCC = document.getElementById('settingShowCreditCard'); if (sCC) sCC.checked = showCreditCard; if (sSecondary) sSecondary.checked = showSecondary; if (sLiab) sLiab.checked = showLiabilities; if (sGold) sGold.checked = showGoldSip; if (sTrans) sTrans.checked = showTransfers; const sPP = document.getElementById("settingShowPendingPayments"); const sIS = document.getElementById("settingShowIndividualSummary"); if (sPP) sPP.checked = showPendingPayments; if (sIS) sIS.checked = showIndividualSummary; const ppSec = document.getElementById("pendingPaymentsSection"); if (ppSec) ppSec.style.display = showPendingPayments ? '' : 'none'; const isSec = document.getElementById("individualSummarySection"); if (isSec) isSec.style.display = showIndividualSummary ? '' : 'none'; const showTL = getSetting('showTotalLiabilities', false); const showSG = getSetting('showTotalSavingsGold', false); const showNet = showTL || showSG; const cLiab = document.getElementById('overviewCardLiabilities'); const cGold = document.getElementById('overviewCardGold'); const cNet = document.getElementById('overviewCardNet'); if (cLiab) cLiab.style.display = showTL ? '' : 'none'; if (cGold) cGold.style.display = showSG ? '' : 'none'; if (cNet) cNet.style.display = showNet ? '' : 'none'; const sTL = document.getElementById('settingShowTotalLiabilities'); const sSG = document.getElementById('settingShowTotalSavingsGold'); const sMC = document.getElementById('settingShowMonthlyCashbook'); if (sTL) sTL.checked = showTL; if (sSG) sSG.checked = showSG; const showMonthlyCashbook = getSetting('showMonthlyCashbook', true); if (sMC) sMC.checked = showMonthlyCashbook; const cashbookSec = document.getElementById('monthlyCashbookSection'); if (cashbookSec) cashbookSec.style.display = showMonthlyCashbook ? '' : 'none'; const showOptQL = getSetting('showOptionalQuickLinks', false); document.querySelectorAll('.ft-qa-opt').forEach(el => el.style.display = showOptQL ? '' : 'none'); const sOQL = document.getElementById('settingShowOptionalQuickLinks'); if (sOQL) sOQL.checked = showOptQL; const sHH = document.getElementById('settingShowHousehold'); if (sHH) sHH.checked = showHousehold; }
 window.applyVisibilitySettings = applyVisibilitySettings;
 window.handleLogoUpload = async function(event) { const file = event.target.files[0]; if (!file) return; const ftype = (file.type || "").toLowerCase(); if (ftype !== "image/jpeg" && ftype !== "image/jpg" && ftype !== "image/png") { alert("Please upload a JPG, JPEG or PNG image."); return; } if (file.size > 2 * 1024 * 1024) { alert("Logo file too large. Please use a file under 2MB."); return; } try { let logoUrl = ''; if (window.firebaseStorage && currentUser) { try { const logoRef = storageRef(window.firebaseStorage, `logos/branding/${Date.now()}_${file.name}`); await uploadBytes(logoRef, file); logoUrl = await getDownloadURL(logoRef); } catch(storageErr) { console.warn("Firebase Storage upload failed, using data URL fallback.", storageErr); logoUrl = await fileToDataURL(file); } } else { logoUrl = await fileToDataURL(file); } if (!state.settings) state.settings = {}; state.settings.adminLogo = logoUrl; saveData(); try { await update(ref(db, 'userData/US'), { 'settings/adminLogo': logoUrl }); } catch(e) { console.error(e); } try { await set(ref(db, 'appBranding'), { logo: logoUrl, updatedAt: Date.now() }); } catch(e) { console.error(e); } window.activeLogoUrl = logoUrl; try { localStorage.setItem('ft_active_logo', logoUrl); } catch(le) {} if (typeof window.applyActiveLogo === 'function') window.applyActiveLogo(); if (typeof applyAdminBranding === 'function') applyAdminBranding(); alert("Logo uploaded successfully! It will appear for all users."); } catch(err) { console.error("Logo upload error:", err); alert("Could not upload logo. Please try again."); } };
 function fileToDataURL(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); }); }
@@ -3235,7 +3243,7 @@ window.renderSettlements = function() {
   }
 };
 function renderDebts() {
-  const container = document.getElementById('debtsContainer'); container.innerHTML = '';
+  const container = document.getElementById('debtsContainer'); if (!container) return; container.innerHTML = '';
   if (!window.state.debts || window.state.debts.length === 0) { container.innerHTML = `<div class="p-6 text-center text-slate-400 italic col-span-2">No loans logged.</div>`; var _dtA = document.getElementById('debtsTotals'); if (_dtA) _dtA.innerHTML = ''; return; }
   const allDebts = window.state.debts.filter(d => isCurrencyAllowed(d.currency || 'INR')); if (allDebts.length === 0) { container.innerHTML = `<div class="p-6 text-center text-slate-400 italic col-span-2">No loans logged.</div>`; var _dtB = document.getElementById('debtsTotals'); if (_dtB) _dtB.innerHTML = ''; return; }
   if (window.renderDebtTotals) window.renderDebtTotals(allDebts);
@@ -4457,7 +4465,7 @@ window.ftUpdateFooterStatus = function() {
 
   window.saveHouseholdExpense=async function(e){
     e.preventDefault();var form=document.getElementById('householdExpenseForm');if(window._ftHhSaveBusy||form.dataset.ftSaved==='1')return;window._ftHhSaveBusy=true;var buttons=Array.from(form.querySelectorAll('button[type="submit"]'));if(e.submitter&&buttons.indexOf(e.submitter)<0)buttons.push(e.submitter);buttons.forEach(function(b){b.disabled=true;});var oldAdjusted=false,newAdjusted=false,old=null,entry=null,operation='';
-    try{var amount=Number(document.getElementById('hhExpAmount').value),paidBy=document.getElementById('hhExpPaidBy').value,pm=document.getElementById('hhExpPaymentMethod').value,currency=document.getElementById('hhExpCurrency').value,accountId=document.getElementById('hhExpAccount').value,splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){return cb.value;})));if(!Number.isFinite(amount)||amount<=0||!paidBy||!splitAmong.length||!pm||!accountId)throw new Error('Enter an amount, payer, participants, payment method and account.');var date=document.getElementById('hhExpDate').value||ftLocalDateStr();var _b=window.ftHhDateBounds();if(date>_b.max)throw new Error('You cannot add an expense with a future date.');if(date<_b.min&&date!==document.getElementById('hhExpDate').dataset.orig)throw new Error('You can only add expenses from the last 60 days (from '+_b.min+' to today).');var description=document.getElementById('hhExpDesc').value,category=document.getElementById('hhExpCategory').value,splitAmongUids=splitAmong.map(function(name){var identity=window.ftFinancialIdentity(name);return identity.indexOf('uid:')===0?identity.slice(4):'';});ftToast('Household expense ' + (document.getElementById('hhExpId').value ? 'updated' : 'added'));closeModal('modalHouseholdExpense');var id=document.getElementById('hhExpId').value||ref(db,'households').push().key;document.getElementById('hhExpId').value=id;operation=form.dataset.ftPaymentKey||ref(db,'households').push().key;form.dataset.ftPaymentKey=operation;var payer=await window.ftHhPayerAccounts(paidBy),hid=payer.hid,expenseRef=ref(db,'households/'+hid+'/expenses/'+id);old=(await get(expenseRef)).val();if(old&&old.paymentOperation===operation){form.dataset.ftSaved='1';closeModal('modalHouseholdExpense');return;}entry={id:id,date:date,description:description,category:category,amount:amount,currency:currency,paidBy:paidBy,paidByUid:payer.uid,splitAmong:splitAmong,splitAmongUids:splitAmongUids,paymentMethod:pm,accountId:accountId,deductAmount:amount,paymentOperation:operation,createdByUid:_uid(),updatedAt:new Date().toISOString()};if(old&&old.accountId&&old.deductAmount){await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old');oldAdjusted=true;}await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm,operation+'_new');newAdjusted=true;if(state.householdId!==hid)throw new Error('The household changed before saving.');await set(expenseRef,entry);form.dataset.ftSaved='1';newAdjusted=false;oldAdjusted=false;if(window._ftHhSnapshot&&window._ftHhSnapshot.hid===hid&&window._ftHhSnapshot.data){try{var _ftMerged=JSON.parse(JSON.stringify(window._ftHhSnapshot.data));if(!_ftMerged.expenses)_ftMerged.expenses={};_ftMerged.expenses[id]=entry;}catch(_ftMergeErr){}}window.ftHhApplySharedState();get(ref(db,'households/'+hid)).then(function(fresh){window._ftHhSnapshot={uid:_uid(),hid:hid,data:fresh.val()||{}};window.ftHhApplySharedState();}).catch(function(){});saveData();window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(description||'')+' — '+formatCurrency(amount,currency),'household');renderHouseholdSettlement();renderExpenses();window.renderOverview();}
+    try{var amount=Number(document.getElementById('hhExpAmount').value),paidBy=document.getElementById('hhExpPaidBy').value,pm=document.getElementById('hhExpPaymentMethod').value,currency=document.getElementById('hhExpCurrency').value,accountId=document.getElementById('hhExpAccount').value,splitAmong=Array.from(new Set(Array.from(document.querySelectorAll('#hhExpSplitAmong input:checked')).map(function(cb){return cb.value;})));if(!Number.isFinite(amount)||amount<=0||!paidBy||!splitAmong.length||!pm||!accountId)throw new Error('Enter an amount, payer, participants, payment method and account.');var date=document.getElementById('hhExpDate').value||ftLocalDateStr();var _b=window.ftHhDateBounds();if(date>_b.max)throw new Error('You cannot add an expense with a future date.');if(date<_b.min&&date!==document.getElementById('hhExpDate').dataset.orig)throw new Error('You can only add expenses from the last 10 years (from '+_b.min+' to today).');var description=document.getElementById('hhExpDesc').value,category=document.getElementById('hhExpCategory').value,splitAmongUids=splitAmong.map(function(name){var identity=window.ftFinancialIdentity(name);return identity.indexOf('uid:')===0?identity.slice(4):'';});ftToast('Household expense ' + (document.getElementById('hhExpId').value ? 'updated' : 'added'));closeModal('modalHouseholdExpense');var id=document.getElementById('hhExpId').value||ref(db,'households').push().key;document.getElementById('hhExpId').value=id;operation=form.dataset.ftPaymentKey||ref(db,'households').push().key;form.dataset.ftPaymentKey=operation;var payer=await window.ftHhPayerAccounts(paidBy),hid=payer.hid,expenseRef=ref(db,'households/'+hid+'/expenses/'+id);old=(await get(expenseRef)).val();if(old&&old.paymentOperation===operation){form.dataset.ftSaved='1';closeModal('modalHouseholdExpense');return;}entry={id:id,date:date,description:description,category:category,amount:amount,currency:currency,paidBy:paidBy,paidByUid:payer.uid,splitAmong:splitAmong,splitAmongUids:splitAmongUids,paymentMethod:pm,accountId:accountId,deductAmount:amount,paymentOperation:operation,createdByUid:_uid(),updatedAt:new Date().toISOString()};if(old&&old.accountId&&old.deductAmount){await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old');oldAdjusted=true;}await window.ftHhAdjustPayerAccount(paidBy,accountId,-amount,currency,pm,operation+'_new');newAdjusted=true;if(state.householdId!==hid)throw new Error('The household changed before saving.');await set(expenseRef,entry);form.dataset.ftSaved='1';newAdjusted=false;oldAdjusted=false;if(window._ftHhSnapshot&&window._ftHhSnapshot.hid===hid&&window._ftHhSnapshot.data){try{var _ftMerged=JSON.parse(JSON.stringify(window._ftHhSnapshot.data));if(!_ftMerged.expenses)_ftMerged.expenses={};_ftMerged.expenses[id]=entry;}catch(_ftMergeErr){}}window.ftHhApplySharedState();get(ref(db,'households/'+hid)).then(function(fresh){window._ftHhSnapshot={uid:_uid(),hid:hid,data:fresh.val()||{}};window.ftHhApplySharedState();}).catch(function(){});saveData();window.ftHhNotifyOthers('Household expense '+(old?'updated':'added')+': '+(description||'')+' — '+formatCurrency(amount,currency),'household');renderHouseholdSettlement();renderExpenses();window.renderOverview();}
     catch(err){var reversalError=null;if(newAdjusted&&entry)try{await window.ftHhAdjustPayerAccount(entry.paidBy,entry.accountId,entry.amount,entry.currency,entry.paymentMethod,operation+'_new',true);}catch(undo){reversalError=undo;}if(oldAdjusted&&old)try{await window.ftHhAdjustPayerAccount(old.paidBy,old.accountId,-Number(old.deductAmount),old.currency,old.paymentMethod,operation+'_old',true);}catch(undo){reversalError=undo;}console.error(err);alert('Could not complete household expense: '+err.message+(reversalError?' The account reversal also needs attention: '+reversalError.message+' Do not submit a new payment.':''));}finally{window._ftHhSaveBusy=false;buttons.forEach(function(b){b.disabled=false;});}
   };
 
@@ -4768,7 +4776,7 @@ window.ftUpdateFooterStatus = function() {
 (function(){
   var IDS=['tripSplitDate','expenseDate','transferDate','addMoneyDate','stlDate','payDate','friendSplitDate','fsDate','hhSetDate','ssDate','sseDate'];
   function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-  function bounds(){var n=new Date();return {min:fmt(new Date(n.getFullYear(),n.getMonth(),n.getDate()-60)),max:fmt(n)};}
+  function bounds(){var n=new Date();return {min:fmt(new Date(n.getFullYear(),n.getMonth(),n.getDate()-3650)),max:fmt(n)};}
   function isTracked(el){return el&&el.tagName==='INPUT'&&IDS.indexOf(el.id)>-1;}
   function applyAttrs(el){var b=bounds();el.max=b.max;if(!el.value||el.value>=b.min)el.min=b.min;else el.removeAttribute('min');}
   document.addEventListener('focusin',function(e){if(isTracked(e.target))applyAttrs(e.target);},true);
@@ -4781,7 +4789,7 @@ window.ftUpdateFooterStatus = function() {
       if(el.dataset.userVal!==el.value)continue;
       var msg='';
       if(el.value>b.max)msg='You cannot enter a future date.';
-      else if(el.value<b.min)msg='You can only enter dates from the last 60 days (from '+b.min+' to today).';
+      else if(el.value<b.min)msg='You can only enter dates from the last 10 years (from '+b.min+' to today).';
       if(msg){e.preventDefault();e.stopImmediatePropagation();alert(msg);return;}
     }
   },true);
@@ -10474,6 +10482,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
      overflow:hidden, no cancelled touch gestures.
      ============================================================ */
   function freePageScroll() {
+    if (typeof window.ftSyncScrollLock === 'function') { try { window.ftSyncScrollLock(); } catch (e) {} return; }
     var html = document.documentElement;
     var body = document.body;
     var locked = html.classList.contains('ft-frozen') || !!(body && body.classList.contains('ft-scroll-locked'));
@@ -11239,7 +11248,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 /* the page keeps the hexagon weave: faint blue in light mode, translucent white in dark mode */
 :root{--ftpagehex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%231E3A8A' stroke-opacity='.06' stroke-width='1.3'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
 body.ft-dark{--ftpagehex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.10' stroke-width='1.3'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");}
-body #appContainer{background-color:var(--ftpage)!important;background-image:var(--ftpagehex)!important;background-repeat:repeat!important;background-size:56px 96px!important;background-position:0 0!important;background-attachment:scroll!important;}
+body #appContainer{background-color:#FFFFFF!important;background-image:none!important;}
 /* one compact month box, identical to Financial Insights */
 body input.ft-mbox{display:inline-block!important;width:auto!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:5px 8px!important;border:1px solid var(--ftline)!important;border-radius:10px!important;background:var(--ftsurface)!important;color:var(--ftb)!important;font-family:var(--font-body)!important;font-size:11.5px!important;font-weight:700!important;line-height:1.35!important;box-shadow:none!important;outline:none!important;}
 body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
@@ -11774,5 +11783,103 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
 })();
 </script>
 
+
+<style id="ftShellAndScrollFix">
+  /* page scrolls like a normal mobile app; bars stay put */
+  html, body { height:auto !important; min-height:100% !important; overflow-y:auto !important; overflow-x:hidden !important; -webkit-overflow-scrolling:touch; touch-action:pan-y; overscroll-behavior-y:auto; }
+  body.ft-locked { overflow:hidden !important; }
+  #appContainer { display:flex !important; flex-direction:column !important; min-height:100dvh !important; background-color:#FFFFFF !important; background-image:none !important; }
+  #appContainer > header { position:sticky !important; top:0 !important; z-index:30 !important; flex:0 0 auto !important; }
+  #appContainer main { flex:1 1 auto !important; width:100% !important; min-height:0 !important; }
+  #sidebarBackdrop:not(.active) { pointer-events:none !important; }
+  @media (max-width:1023px) {
+    body main { padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
+    #mobileBottomNav { padding-bottom:env(safe-area-inset-bottom, 0px) !important; }
+  }
+  /* the hexagon backdrop belongs to Home only */
+  body.ft-home #appContainer { background-color:var(--ftpage) !important; background-image:var(--ftpagehex) !important; background-repeat:repeat !important; background-size:56px 96px !important; background-position:0 0 !important; }
+  /* home rhythm */
+  body main { padding-top:0 !important; }
+  #ftHero { margin-top:-4px !important; }
+  .ft-greet { padding-top:0 !important; }
+  .ft-greet-hi { line-height:1.2 !important; margin:0 !important; }
+  .ft-hero-name { margin-top:2px !important; }
+  body #ftQuickLinks { margin-top:14px !important; margin-bottom:0 !important; }
+</style>
+<script>
+(function () {
+  'use strict';
+  var OVERLAYS = '[id^="modal"], .ft-overlay, .ft-sheet, .ft-search-panel';
+
+  function isOpen(el) {
+    if (!el || !el.classList) return false;
+    if (el.classList.contains('hidden') || el.hasAttribute('hidden')) return false;
+    var cs = window.getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    if (parseFloat(cs.opacity || '1') === 0) return false;
+    return el.offsetWidth > 2 && el.offsetHeight > 2;
+  }
+  function overlayOpen() {
+    var list = document.querySelectorAll(OVERLAYS);
+    for (var i = 0; i < list.length; i++) { if (isOpen(list[i])) return true; }
+    return false;
+  }
+  /* one place decides whether the page may scroll, so a lock can never stick
+     and an open popup always freezes what is behind it */
+  function syncLock() {
+    var open = overlayOpen();
+    document.body.classList.toggle('ft-locked', open);
+    if (open) {
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.classList.add('ft-frozen');
+      document.body.classList.add('ft-scroll-locked');
+    } else {
+      if (document.documentElement.style.overflow === 'hidden') document.documentElement.style.overflow = '';
+      if (document.body.style.overflow === 'hidden') document.body.style.overflow = '';
+      document.documentElement.classList.remove('ft-frozen');
+      document.body.classList.remove('ft-scroll-locked');
+      var sb = document.getElementById('sidebar');
+      if (sb && sb.classList.contains('hidden')) {
+        var bd = document.getElementById('sidebarBackdrop');
+        if (bd) bd.classList.remove('active');
+        document.body.classList.remove('ft-sidebar-open');
+      }
+    }
+  }
+  window.ftSyncScrollLock = syncLock;
+
+  var queued = false;
+  function queue() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; try { syncLock(); } catch (e) {} });
+  }
+  try { new MutationObserver(queue).observe(document.body, { attributes: true, attributeFilter: ['class', 'style', 'hidden'], subtree: true, childList: true }); } catch (e) {}
+  document.addEventListener('click', function () { setTimeout(queue, 30); }, true);
+  document.addEventListener('touchstart', function () { queue(); }, { passive: true });
+  document.addEventListener('visibilitychange', queue);
+  window.addEventListener('load', queue);
+  /* release a leftover lock, but only ever look while something is locked */
+  setInterval(function () { if (document.body.classList.contains('ft-locked')) queue(); }, 3000);
+
+  /* Home is the only screen allowed the hexagon backdrop */
+  function syncHome() {
+    var home = document.getElementById('sec-overview');
+    document.body.classList.toggle('ft-home', !!home && !home.classList.contains('hidden'));
+  }
+  window.ftSyncHomeBackground = syncHome;
+  var originalSwitch = window.switchTab;
+  if (typeof originalSwitch === 'function') {
+    window.switchTab = function (tab) {
+      var out = originalSwitch.apply(this, arguments);
+      try { syncHome(); } catch (e) {}
+      try { syncLock(); } catch (e) {}
+      return out;
+    };
+  }
+  document.addEventListener('click', function () { setTimeout(syncHome, 60); }, true);
+  try { syncHome(); syncLock(); } catch (e) {}
+})();
+</script>
 </body>
 </html>
