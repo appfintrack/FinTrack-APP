@@ -11796,8 +11796,12 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
     body main { padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
     #mobileBottomNav { padding-bottom:env(safe-area-inset-bottom, 0px) !important; }
   }
-  /* the hexagon backdrop belongs to Home only */
-  body.ft-home #appContainer { background-color:var(--ftpage) !important; background-image:var(--ftpagehex) !important; background-repeat:repeat !important; background-size:56px 96px !important; background-position:0 0 !important; }
+  /* plain white page everywhere; the hexagon weave is painted on the Home screen only */
+  #appContainer { background-color:#FFFFFF !important; background-image:none !important; }
+  #sec-overview { background-color:var(--ftpage) !important; background-image:var(--ftpagehex) !important; background-repeat:repeat !important; background-size:56px 96px !important; background-position:0 0 !important; }
+  body.ft-dark #sec-overview { background-color:#0B1220 !important; }
+  /* nothing may clip a long list: the document itself scrolls */
+  #appContainer, body main, .tab-content { overflow:visible !important; max-height:none !important; }
   /* home rhythm */
   body main { padding-top:0 !important; }
   #ftHero { margin-top:-4px !important; }
@@ -11814,6 +11818,7 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
   function isOpen(el) {
     if (!el || !el.classList) return false;
     if (el.classList.contains('hidden') || el.hasAttribute('hidden')) return false;
+    if (!el.getClientRects().length) return false; /* hidden by a parent: not really open */
     var cs = window.getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden') return false;
     if (parseFloat(cs.opacity || '1') === 0) return false;
@@ -11839,7 +11844,7 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
       document.documentElement.classList.remove('ft-frozen');
       document.body.classList.remove('ft-scroll-locked');
       var sb = document.getElementById('sidebar');
-      if (sb && sb.classList.contains('hidden')) {
+      if (!sb || !sb.getClientRects().length || sb.classList.contains('hidden')) {
         var bd = document.getElementById('sidebarBackdrop');
         if (bd) bd.classList.remove('active');
         document.body.classList.remove('ft-sidebar-open');
