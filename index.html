@@ -1734,7 +1734,7 @@ window.ftResumePendingSessionRestore = function () { if (window._ftPendingSessio
 onAuthStateChanged(auth, async (fbUser) => { window._ftAuthStateKnown = true; if (typeof window.ftWatchPaidSubscriptions === 'function') window.ftWatchPaidSubscriptions();  if (fbUser && !currentUser && !window._ftManualLogin) window.ftRestoreSession(fbUser); });
 
 async function initUserData(loginId) { if (dataUnsubscribe) dataUnsubscribe(); dataLoaded = false; const userRef = ref(db, `userData/${loginId}`); let isFirstLoad = true; dataUnsubscribe = onValue(userRef, async (snapshot) => { if(!currentUser||currentUser.loginId!==loginId)return; const wasFirstLoad=isFirstLoad; dataLoaded = true; const val = snapshot.val(); if (val) {
-    normalizeState(val); if (typeof window.ftApplyRetention === 'function') { try { window.ftApplyRetention(); } catch (_ftRetErr) { console.error('Retention pass error:', _ftRetErr); } }
+    normalizeState(val); if (typeof window.ftApplyRetention === 'function') { try { window.ftApplyRetention(); } catch (_ftRetErr) { console.error('Retention pass error:', _ftRetErr); } } if (typeof window.ftCleanupClosedLoans === 'function') { try { window.ftCleanupClosedLoans(); } catch (_ftLoanErr) { console.error('Closed loan cleanup error:', _ftLoanErr); } }
     if (!state.householdOwnerUid && currentUser && currentUser.uid) {
       try {
         var hhProfile = (await get(ref(db, 'publicProfiles/' + currentUser.uid + '/householdConnections'))).val() || {};
@@ -1815,7 +1815,7 @@ window.saveSettlement = function(e) { e.preventDefault(); const month = document
 window.deleteSettlement = function(month, id) { if (!window.__ftok) { ftConfirm('Delete this settlement log?', function() { window.__ftok = 1; deleteSettlement(month, id); }); return; } var __go = window.__ftok; window.__ftok = 0; if (__go) { if (!state.settlements[month]) state.settlements[month] = []; state.settlements[month] = state.settlements[month].filter(x => String(x.id) !== String(id)); saveData(); } };
 window.openPayDebtModal = function(debtId) { document.getElementById('debtPayForm').reset(); document.getElementById('payParentId').value = debtId; document.getElementById('payId').value = ''; document.getElementById('payDate').value = ftLocalDateStr(); const debt = state.debts.find(d => String(d.id) === String(debtId)); const payCurrencySel = document.getElementById('payCurrency'); if (debt && debt.currency && debt.currency !== 'INR') { payCurrencySel.innerHTML = `<option value="">${debt.currency} (Original Loan Currency)</option><option value="INR">INR (Convert)</option>`; } else { payCurrencySel.innerHTML = `<option value="">INR (Original Loan Currency)</option>`; } document.getElementById('modalDebtPay').classList.remove('hidden'); };
 window.editDebtPayment = function(debtId, payId) { const debt = state.debts.find(d => String(d.id) === String(debtId)); if (!debt || !debt.payments) return; const pay = debt.payments.find(p => String(p.id) === String(payId)); if (!pay) return; document.getElementById('payParentId').value = debtId; document.getElementById('payId').value = payId; document.getElementById('payDate').value = pay.date; document.getElementById('payAmount').value = pay.amount; document.getElementById('payNotes').value = pay.notes; document.getElementById('modalDebtPay').classList.remove('hidden'); };
-window.saveDebtPayment = function(e) { e.preventDefault(); const debtId = parseInt(document.getElementById('payParentId').value); const payIdStr = document.getElementById('payId').value; const debt = state.debts.find(d => String(d.id) === String(debtId)); const payCurrency = document.getElementById('payCurrency').value; if (debt) { if (!debt.payments) debt.payments = []; let payAmount = parseFloat(document.getElementById('payAmount').value) || 0; let payCurrencyStored = debt.currency || 'INR'; let payAmountInDebtCurrency = payAmount; if (payCurrency === 'INR' && debt.currency && debt.currency !== 'INR') { payAmountInDebtCurrency = convertFromINR(payAmount, debt.currency); payCurrencyStored = 'INR'; } else if (!payCurrency) { payCurrencyStored = debt.currency || 'INR'; } else { payCurrencyStored = payCurrency; } const payData = { id: payIdStr ? parseInt(payIdStr) : Date.now(), date: document.getElementById('payDate').value, amount: payAmountInDebtCurrency, originalAmount: payCurrency === 'INR' && debt.currency !== 'INR' ? payAmount : payAmountInDebtCurrency, currency: payCurrencyStored, notes: document.getElementById('payNotes').value }; if (payIdStr) { const idx = debt.payments.findIndex(p => String(p.id) === String(payData.id)); if (idx > -1) debt.payments[idx] = payData; } else { debt.payments.push(payData); } } ftToast('Payment logged'); closeModal('modalDebtPay'); saveData(); };
+window.saveDebtPayment = function(e) { e.preventDefault(); const debtId = parseInt(document.getElementById('payParentId').value); const payIdStr = document.getElementById('payId').value; const debt = state.debts.find(d => String(d.id) === String(debtId)); const payCurrency = document.getElementById('payCurrency').value; if (debt) { if (!debt.payments) debt.payments = []; let payAmount = parseFloat(document.getElementById('payAmount').value) || 0; let payCurrencyStored = debt.currency || 'INR'; let payAmountInDebtCurrency = payAmount; if (payCurrency === 'INR' && debt.currency && debt.currency !== 'INR') { payAmountInDebtCurrency = convertFromINR(payAmount, debt.currency); payCurrencyStored = 'INR'; } else if (!payCurrency) { payCurrencyStored = debt.currency || 'INR'; } else { payCurrencyStored = payCurrency; } const payData = { id: payIdStr ? parseInt(payIdStr) : Date.now(), date: document.getElementById('payDate').value, amount: payAmountInDebtCurrency, originalAmount: payCurrency === 'INR' && debt.currency !== 'INR' ? payAmount : payAmountInDebtCurrency, currency: payCurrencyStored, notes: document.getElementById('payNotes').value }; if (payIdStr) { const idx = debt.payments.findIndex(p => String(p.id) === String(payData.id)); if (idx > -1) debt.payments[idx] = payData; } else { debt.payments.push(payData); } } ftToast('Payment logged'); closeModal('modalDebtPay'); saveData(); if (typeof window.ftCleanupClosedLoans === 'function') { try { window.ftCleanupClosedLoans(); } catch (_e) {} } };
 window.deleteDebtPayment = function(debtId, payId) { if (!window.__ftok) { ftConfirm('Delete this payment log?', function() { window.__ftok = 1; deleteDebtPayment(debtId, payId); }); return; } var __go = window.__ftok; window.__ftok = 0; if (__go) { const debt = state.debts.find(d => String(d.id) === String(debtId)); if (debt && debt.payments) debt.payments = debt.payments.filter(p => String(p.id) !== String(payId)); saveData(); } };
 window.setCommonGoldPurity = function(purity) { activeCommonPurity = purity; window.activeCommonPurity = purity; ['24K', '22K', '18K'].forEach(p => { const btn = document.getElementById(`commonPurity${p}`); if (btn) { btn.className = p === purity ? "px-3 py-1 text-xs font-bold rounded-md bg-amber-500 text-white transition" : "px-3 py-1 text-xs font-bold rounded-md text-amber-900 hover:bg-amber-100 transition"; } }); const label = document.getElementById('currentCommonPurityLabel'); if (label) label.innerText = `(${purity})`; const matchingGold = (state.gold || []).find(g => g.purity === purity); const input = document.getElementById('commonTodayRateInput'); if (input) input.value = matchingGold ? matchingGold.todayRate : ''; };
 window.applyCommonGoldRate = function() { const rateInput = document.getElementById('commonTodayRateInput'); const newRate = parseFloat(rateInput.value); if (isNaN(newRate)) { alert("Please enter a valid today's gold rate."); return; } let updatedCount = 0; (state.gold || []).forEach(g => { if (g.purity === activeCommonPurity) { g.todayRate = newRate; updatedCount++; } }); if (updatedCount === 0) alert(`No gold purchase entries found with purity ${activeCommonPurity}.`); else alert(`Successfully updated today's rate to ₹${newRate.toLocaleString()} for ${updatedCount} entry/entries of purity ${activeCommonPurity}.`); saveData(); };
@@ -3237,7 +3237,7 @@ window.renderSettlements = function() {
 function renderDebts() {
   const container = document.getElementById('debtsContainer'); container.innerHTML = '';
   if (!window.state.debts || window.state.debts.length === 0) { container.innerHTML = `<div class="p-6 text-center text-slate-400 italic col-span-2">No loans logged.</div>`; var _dtA = document.getElementById('debtsTotals'); if (_dtA) _dtA.innerHTML = ''; return; }
-  const debtMonth = (document.getElementById('debtMonthSelect') || {}).value || ''; const allDebts = window.state.debts.filter(d => { if (!isCurrencyAllowed(d.currency || 'INR')) return false; if (debtMonth) { const dMonth = dateMonth(d.date); const hasPaymentInMonth = (d.payments || []).some(p => dateMonth(p.date) === debtMonth); if (dMonth !== debtMonth && !hasPaymentInMonth) return false; } return true; }); if (allDebts.length === 0) { container.innerHTML = `<div class="p-6 text-center text-slate-400 italic col-span-2">No loans for this month.</div>`; var _dtB = document.getElementById('debtsTotals'); if (_dtB) _dtB.innerHTML = ''; return; }
+  const allDebts = window.state.debts.filter(d => isCurrencyAllowed(d.currency || 'INR')); if (allDebts.length === 0) { container.innerHTML = `<div class="p-6 text-center text-slate-400 italic col-span-2">No loans logged.</div>`; var _dtB = document.getElementById('debtsTotals'); if (_dtB) _dtB.innerHTML = ''; return; }
   if (window.renderDebtTotals) window.renderDebtTotals(allDebts);
     const limitedDebts = allDebts.slice(0, getDisplayLimit('debts'));
   limitedDebts.forEach(d => {
@@ -11709,5 +11709,70 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
   }
 })();
 </script>
+<script>
+/* Closed loans are kept for 14 days after the loan is fully paid, then removed automatically
+   (day boundary counted in Indian Standard Time), with a notification to the user. */
+(function () {
+  'use strict';
+  var IST_MS = 5.5 * 60 * 60 * 1000;
+  var KEEP_DAYS = 14;
+  function istDayIndex(ms) { return Math.floor((ms + IST_MS) / 86400000); }
+  function paidTotal(d) { return (d.payments || []).reduce(function (s, p) { return s + (Number(p.amount) || 0); }, 0); }
+  function remainingOf(d) { return Math.max(0, (Number(d.total) || 0) - paidTotal(d)); }
+  function fmtMoney(amount, code) {
+    try { if (typeof window.formatCurrency === 'function') return window.formatCurrency(amount, code); } catch (e) {}
+    return (code || 'INR') + ' ' + amount;
+  }
+  function sendNotice(name, currency, principal) {
+    try {
+      var u = window.currentUser;
+      if (!u || !u.uid || !window.db || !window.ref || !window.set) return;
+      var id = 'loan_closed_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      var msg = 'Your closed loan "' + name + '" (' + fmtMoney(principal, currency) + ') was removed from your loans after being closed for 14 days.';
+      window.set(window.ref(window.db, 'users/' + u.uid + '/notifications/' + id), {
+        id: id,
+        type: 'loan',
+        fromName: 'FinTrack',
+        message: msg,
+        createdAt: new Date().toISOString(),
+        read: false
+      }).catch(function () {});
+    } catch (e) { console.warn('Loan removal notification failed:', e); }
+  }
+  window.ftCleanupClosedLoans = function () {
+    var st = window.state;
+    if (!st || !Array.isArray(st.debts)) return;
+    var now = Date.now(), changed = false, removed = [], keep = [];
+    st.debts.forEach(function (d) {
+      if (!d || typeof d !== 'object') { keep.push(d); return; }
+      if (remainingOf(d) > 0.009) {
+        if (d.closedAt) { delete d.closedAt; changed = true; }
+        keep.push(d);
+        return;
+      }
+      var closedMs = d.closedAt ? new Date(d.closedAt).getTime() : NaN;
+      if (!d.closedAt || isNaN(closedMs)) {
+        closedMs = now;
+        d.closedAt = new Date(now).toISOString();
+        changed = true;
+      }
+      if (istDayIndex(now) - istDayIndex(closedMs) >= KEEP_DAYS) {
+        removed.push({ name: d.name || 'Loan', currency: d.currency || 'INR', total: Number(d.total) || 0 });
+        changed = true;
+        return;
+      }
+      keep.push(d);
+    });
+    if (!changed) return;
+    st.debts = keep;
+    try { if (typeof window.saveData === 'function') window.saveData(); } catch (e) { console.error('Closed loan save error:', e); }
+    removed.forEach(function (r) { sendNotice(r.name, r.currency, r.total); });
+    if (removed.length && typeof window.renderDebts === 'function') {
+      try { window.renderDebts(); } catch (e) {}
+    }
+  };
+})();
+</script>
+
 </body>
 </html>
