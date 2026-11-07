@@ -11886,5 +11886,28 @@ body.ft-dark input.ft-mbox{color:var(--ftink)!important;}
   try { syncHome(); syncLock(); } catch (e) {}
 })();
 </script>
+
+<style data-ft-update="pure-white-pages">
+/* every screen sits on the same solid white field as its content box; no weave anywhere except Home */
+html, body { background-color:#FFFFFF !important; background-image:none !important; }
+#appContainer, #appContainer main, body main, .tab-content,
+body main section[id^="sec-"]:not(#sec-overview),
+body main .module-section, body main .module-wrap {
+  background-color:#FFFFFF !important;
+  background-image:none !important;
+  background-size:auto !important;
+  background-repeat:repeat !important;
+}
+body.ft-dark, body.ft-dark main, body.ft-dark #appContainer { background-image:none !important; }
+body.ft-dark main { background-color:#0F1115 !important; }
+/* Home alone keeps the soft hexagon weave */
+#sec-overview, body #sec-overview, body.ft-dark #sec-overview {
+  background-image:var(--ftpagehex) !important;
+  background-size:56px 96px !important;
+  background-position:0 0 !important;
+}
+body #sec-overview { background-color:var(--ftpage) !important; }
+body.ft-dark #sec-overview { background-color:#0B1220 !important; }
+</style>
 </body>
 </html>
