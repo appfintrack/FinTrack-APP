@@ -3617,7 +3617,7 @@ window._cashbookRowHtml = function(e) {
   const isNeg = (e.type === 'Expense' || e.type === 'Charge');
   const typeBadge = isPos ? '<span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-emerald-100 text-emerald-700">'+e.type+'</span>' : (isNeg ? '<span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-red-100 text-red-700">'+e.type+'</span>' : '<span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">Transfer</span>');
   const typeClass = isPos ? 'money-income' : (isNeg ? 'money-expense' : 'money-neutral');
-  const amtSign = isPos ? '+' : (isNeg ? '-' : '');
+  const amtSign = '';
   return '<tr class="border-b border-slate-100"><td class="p-3 whitespace-nowrap">'+e.date+'</td><td class="p-3 font-semibold">'+(e.desc||'')+'</td><td class="p-3 text-center"><span class="px-2 py-0.5 rounded font-bold text-[10px] uppercase bg-slate-100 text-slate-600">'+(e.category||'-')+'</span></td><td class="p-3 text-center">'+typeBadge+'</td><td class="p-3 text-right font-bold '+typeClass+'">'+amtSign+formatCurrency(e.amount, e.currency)+'</td><td class="p-3 text-center text-[11px] text-slate-500">'+e.mode+'</td><td class="p-3 text-[11px] text-slate-500">'+e.account+'</td><td class="p-3 text-right font-bold">'+formatCurrency(e.running, e.currency)+'</td></tr>';
 };
 window._renderCashbookTable = function(key, title, subtitle, entries, currency) {
@@ -8532,7 +8532,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         cleanCell(e.desc),
         cleanCell(e.category) || 'Other',
         cleanCell(e.type),
-        (isPos ? '+' : (isNeg ? '\u2013' : '')) + pdfMoney(amt, e.currency || currency),
+        pdfMoney(amt, e.currency || currency),
         cleanCell(e.mode),
         cleanCell(e.account),
         cumExpense > 0 ? pdfMoney(cumExpense, currency) : ''
@@ -9572,6 +9572,27 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         if (Object.keys(month).length) out.month = month;
       }
     } catch (e) { /* keep whatever was collected */ }
+        try {
+      var rows = [], ex = state.expenses;
+      var addRow = function (e) {
+        if (!e) return;
+        rows.push({ category: String(e.category || e.cat || e.type || 'Other'), amount: Number(e.amount || 0), currency: e.currency || out.currency, date: String(e.date || '') });
+      };
+      if (Array.isArray(ex)) ex.forEach(addRow);
+      else if (ex && typeof ex === 'object') Object.keys(ex).forEach(function (k) { var v = ex[k]; if (Array.isArray(v)) v.forEach(addRow); else addRow(v); });
+      var mk = (window.currentMonthStr ? window.currentMonthStr() : new Date().toISOString().slice(0, 7));
+      var byCat = {};
+      rows.forEach(function (r) {
+        if (!r.date || String(r.date).slice(0, 7) !== mk || !r.amount) return;
+        var key = r.category + '|' + r.currency;
+        byCat[key] = (byCat[key] || 0) + r.amount;
+      });
+      var cats = Object.keys(byCat).map(function (k) {
+        var parts = k.split('|');
+        return { category: parts[0], currency: parts[1], amount: Math.round(byCat[k] * 100) / 100 };
+      }).sort(function (x, y) { return y.amount - x.amount; }).slice(0, 12);
+      if (cats.length) out.spendingByCategory = cats;
+    } catch (e2) { /* categories stay out when the shape is unexpected */ }
     return JSON.stringify(out);
   }
 
@@ -9583,10 +9604,13 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
   var API_ORIGIN = 'https://base44.app';
 
-  function askServer(question) {
+  function askOnce(question) {
+    var headers = { 'Content-Type': 'application/json' };
+    var token = accessToken();
+    if (token) headers.Authorization = 'Bearer ' + token;
     return fetch(API_ORIGIN + '/api/apps/' + APP_ID + '/functions/fintrackAI', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify({ question: question, snapshot: snapshot(), history: history.slice(-6) })
     }).then(function (res) {
       return res.text().then(function (raw) {
@@ -9595,6 +9619,17 @@ body.ft-scroll-lock{overscroll-behavior:none;}
         if (res.ok && data && data.answer) return data.answer;
         if (data && data.error) throw new Error(data.error);
         throw new Error('FinTrack AI could not be reached. Check your connection and try again.');
+      });
+    });
+  }
+
+  /* one hiccup must not end the conversation: try once more before giving up */
+  function askServer(question, attempt) {
+    var tries = attempt || 0;
+    return askOnce(question).catch(function (error) {
+      if (tries >= 1) throw error;
+      return new Promise(function (resolve) { setTimeout(resolve, 800); }).then(function () {
+        return askServer(question, tries + 1);
       });
     });
   }
@@ -11972,6 +12007,146 @@ body.ft-locked main { touch-action:none !important; }
   }
   try { new MutationObserver(schedule).observe(document.body, { attributes: true, attributeFilter: ['class', 'style', 'hidden'], childList: true }); } catch (e) {}
   apply();
+})();
+</script>
+
+<style data-ft-update="finetuning-pass">
+/* ---- long tables: show every row and let the page scroll, not a five-row box ---- */
+#sec-expenses .ft-scroll, #sec-household .ft-scroll, #sec-friends .ft-scroll,
+#sec-settlements .ft-scroll, #sec-gold-sip .ft-scroll, #sec-liabilities .ft-scroll,
+#sec-transfers .ft-scroll, #ftTrackerList, #currencyRestrictionContainer {
+  max-height:none !important; overflow-y:visible !important;
+}
+/* the currency cards already read "(Primary)" / "(Secondary)": the extra chips are noise */
+.ft-cur-badge { display:none !important; }
+
+/* ---- no black band or stretched weave while a page is pulled ---- */
+html { background:#F8FAFF !important; overscroll-behavior:none !important; }
+body { background-color:var(--ftpage,#F8FAFF) !important; overscroll-behavior:none !important; }
+body.ft-app-mode main { overscroll-behavior-y:none !important; background-attachment:scroll !important; }
+#sec-overview { background-attachment:scroll !important; background-repeat:repeat !important; background-size:56px 96px !important; }
+
+/* ---- FinTrack AI replies: type and emoji share one size ---- */
+.ftai-msg, .ftai-msg p, .ftai-msg li, .ftai-msg td, .ftai-msg th { font-size:13.5px !important; line-height:1.62 !important; }
+
+/* ---- dark theme: black page, ash surfaces, white type, pale-gold weave ---- */
+body.ft-dark{
+  --ftpage:#000000; --ftsurface:#161719; --ftline:#2C2E33; --ftink:#FFFFFF; --ftmuted:#B6B9C0; --ftsoft:#1F2126;
+  --ftb:#FFFFFF; --ftb2:#D2D5DA;
+  --ftpagehex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23E0BE72' stroke-opacity='.32' stroke-width='1.2'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");
+  --fthex:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='96' viewBox='0 0 56 96'%3E%3Cg fill='none' stroke='%23E3C182' stroke-opacity='.36' stroke-width='1.4'%3E%3Cpath d='M28 0 56 16v32L28 64 0 48V16z'/%3E%3Cpath d='M28 96 0 80V48'/%3E%3Cpath d='M28 96l28-16V48'/%3E%3C/g%3E%3C/svg%3E");
+  background:#000000 !important;
+}
+html:has(body.ft-dark){ background:#000000 !important; }
+body.ft-dark #appContainer, body.ft-dark main, body.ft-dark .tab-content { background-color:#000000 !important; }
+body.ft-dark #sec-overview { background-color:#000000 !important; }
+body.ft-dark #sec-overview, body.ft-dark main { background-attachment:scroll !important; }
+body.ft-dark #appContainer > header, body.ft-dark #mobileBottomNav { background-color:#0A0B0C !important; border-color:#2C2E33 !important; }
+body.ft-dark .tab-content .bg-white, body.ft-dark .tab-content [class*="pastel-"],
+body.ft-dark .tab-content .bg-slate-50, body.ft-dark .tab-content .bg-slate-100,
+body.ft-dark .ft-card, body.ft-dark .ft-action, body.ft-dark .ft-quick,
+body.ft-dark #currencyRestrictionContainer label { background-color:#161719 !important; border-color:#2C2E33 !important; color:#FFFFFF !important; }
+body.ft-dark .tab-content h1, body.ft-dark .tab-content h2, body.ft-dark .tab-content h3,
+body.ft-dark .tab-content h4, body.ft-dark .tab-content .text-slate-900,
+body.ft-dark .tab-content .text-slate-800, body.ft-dark .tab-content .text-slate-700,
+body.ft-dark .tab-content strong, body.ft-dark #currencyRestrictionContainer span { color:#FFFFFF !important; }
+body.ft-dark .tab-content .text-slate-600, body.ft-dark .tab-content .text-slate-500,
+body.ft-dark .tab-content .text-slate-400 { color:#B6B9C0 !important; }
+body.ft-dark .tab-content .border-slate-200, body.ft-dark .tab-content .border-slate-100,
+body.ft-dark .tab-content .border-amber-200, body.ft-dark .tab-content .border-violet-200,
+body.ft-dark .tab-content .border-indigo-200 { border-color:#2C2E33 !important; }
+body.ft-dark input:not([type="checkbox"]), body.ft-dark select, body.ft-dark textarea {
+  background-color:#1B1D21 !important; color:#FFFFFF !important; border-color:#2C2E33 !important;
+}
+body.ft-dark .ftai-msg.ai { background-color:#1B1D21 !important; color:#FFFFFF !important; }
+</style>
+
+<script data-ft-update="finetuning-pass">
+(function () {
+  /* ---- FinPIN setup: the lock-screen touch guard used to swallow every tap on a PIN box ---- */
+  document.addEventListener('touchstart', function (event) {
+    var box = event.target && event.target.closest ? event.target.closest('.finpin-box') : null;
+    if (!box || box.closest('#finpinLockScreen')) return;
+    setTimeout(function () {
+      try { box.focus({ preventScroll: true }); } catch (e) { try { box.focus(); } catch (err) {} }
+    }, 0);
+  }, { passive: true, capture: true });
+
+  function focusSetup() {
+    var modal = document.getElementById('modalFinpinSetup');
+    if (!modal) return;
+    var active = document.activeElement;
+    if (active && modal.contains(active) && active.classList && active.classList.contains('finpin-box')) return;
+    var step2 = document.getElementById('finpinStep2');
+    var step3 = document.getElementById('finpinStep3');
+    var step = (step2 && !step2.classList.contains('hidden')) ? step2
+      : ((step3 && !step3.classList.contains('hidden')) ? step3 : null);
+    if (!step) return;
+    var box = step.querySelector('input.finpin-box');
+    if (box) { try { box.focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  /* a way back out of steps 2 and 3 - before, only step 1 could be cancelled */
+  function addCancel() {
+    ['finpinStep2', 'finpinStep3'].forEach(function (id) {
+      var step = document.getElementById(id);
+      if (!step || step.querySelector('[data-ft-pin-cancel]')) return;
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('data-ft-pin-cancel', '1');
+      button.className = 'w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm transition-all';
+      button.textContent = 'Cancel';
+      button.onclick = function () { if (typeof window.ftCloseFinpinSetup === 'function') window.ftCloseFinpinSetup(); };
+      step.appendChild(button);
+    });
+  }
+
+  var pinTicking = false;
+  function watchPin() {
+    addCancel();
+    if (pinTicking) return;
+    pinTicking = true;
+    setTimeout(function () { pinTicking = false; focusSetup(); }, 140);
+  }
+
+  try {
+    var modal = document.getElementById('modalFinpinSetup');
+    if (modal) new MutationObserver(watchPin).observe(modal, { attributes: true, attributeFilter: ['class'], subtree: true });
+  } catch (e) {}
+  document.addEventListener('click', function () { setTimeout(watchPin, 80); }, true);
+  document.addEventListener('DOMContentLoaded', watchPin);
+  watchPin();
+})();
+</script>
+
+
+<script data-ft-update="finetuning-tables">
+(function () {
+  /* tables used to be clamped to the height of five rows with their own scrollbar;
+     every row now flows and the page itself scrolls */
+  function unclamp() {
+    var nodes = document.querySelectorAll('.ft-scroll');
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].style.maxHeight = 'none';
+      nodes[i].style.overflowY = 'visible';
+      nodes[i].style.overflowX = 'auto';
+    }
+  }
+  function patch() {
+    var FT = window.FTReview;
+    if (!FT || typeof FT.scroll !== 'function' || FT.scroll.__ftUnclamped) return !!(FT && FT.scroll && FT.scroll.__ftUnclamped);
+    var wrapped = function () { unclamp(); };
+    wrapped.__ftUnclamped = true;
+    FT.scroll = wrapped;
+    unclamp();
+    return true;
+  }
+  var tries = 0;
+  if (!patch()) {
+    var timer = setInterval(function () { if (patch() || ++tries > 60) clearInterval(timer); }, 250);
+  }
+  document.addEventListener('click', function () { setTimeout(unclamp, 140); }, true);
+  window.addEventListener('load', function () { unclamp(); });
 })();
 </script>
 </body>
