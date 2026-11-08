@@ -9286,7 +9286,10 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 (function () {
   'use strict';
 
-  var APP_ID = '6aec6c61f12d3ca5f640607c';
+  var APP_ID = (function () {
+    var fromPath = String(window.location.pathname || '').match(/\/api\/apps\/([^\/]+)\//);
+    return (fromPath && fromPath[1]) || '6aef3b23967e44f1a00f3264';
+  })();
   var LOGO_URL = 'https://base44.app/api/apps/6ae79d668414d2b0426f2d1d/files/mp/public/6ae79d668414d2b0426f2d1d/83db639bc_fintrack-logo.jpg';
 
   /* ---------------- styles ---------------- */
@@ -9606,8 +9609,6 @@ body.ft-scroll-lock{overscroll-behavior:none;}
 
   function askOnce(question) {
     var headers = { 'Content-Type': 'application/json' };
-    var token = accessToken();
-    if (token) headers.Authorization = 'Bearer ' + token;
     return fetch(API_ORIGIN + '/api/apps/' + APP_ID + '/functions/fintrackAI', {
       method: 'POST',
       headers: headers,
@@ -12149,5 +12150,125 @@ body.ft-dark .ftai-msg.ai { background-color:#1B1D21 !important; color:#FFFFFF !
   window.addEventListener('load', function () { unclamp(); });
 })();
 </script>
+
+<style data-ft-update="dark-ash-weave-final">
+/* ---------------- dark theme: final layer ---------------- */
+html body.ft-dark,
+html body.ft-dark #appContainer {
+  background-color:#131417 !important;
+  background-image:var(--ftpagehex) !important;
+  background-repeat:repeat !important;
+  background-size:66px 114px !important;
+  background-attachment:scroll !important;
+}
+html:has(body.ft-dark) { background-color:#131417 !important; }
+html body.ft-dark main,
+html body.ft-dark .tab-content,
+html body.ft-dark section[id^="sec-"] {
+  background-color:transparent !important;
+  background-image:none !important;
+}
+/* white and pale surfaces become ash, type stays white */
+html body.ft-dark .bg-white,
+html body.ft-dark [class*="bg-white"],
+html body.ft-dark .bg-slate-50,
+html body.ft-dark .bg-slate-100,
+html body.ft-dark .bg-slate-200,
+html body.ft-dark .bg-gray-50,
+html body.ft-dark .bg-gray-100,
+html body.ft-dark .bg-gray-200,
+html body.ft-dark [class*="pastel-"],
+html body.ft-dark .ft-card,
+html body.ft-dark .ft-overlay-card,
+html body.ft-dark .ft-sheet-inner,
+html body.ft-dark .ftai,
+html body.ft-dark .ftai-log,
+html body.ft-dark .ftai-chips,
+html body.ft-dark .ftai-form,
+html body.ft-dark .ftai-note,
+html body.ft-dark .tab-content .bg-white,
+html body.ft-dark .tab-content [class*="bg-white"],
+html body.ft-dark .tab-content [class*="pastel-"],
+html body.ft-dark .tab-content .bg-slate-50,
+html body.ft-dark .tab-content .bg-slate-100,
+html body.ft-dark .tab-content .bg-slate-200,
+html body.ft-dark .tab-content .ft-card,
+html body.ft-dark .tab-content .ft-overlay-card,
+html body.ft-dark .tab-content .ft-sheet-inner,
+html body.ft-dark .tab-content #currencyRestrictionContainer label {
+  background-color:#2A2C31 !important;
+  background-image:none !important;
+  border-color:#3D4046 !important;
+  color:#FFFFFF !important;
+}
+html body.ft-dark [style*="background:#fff"],
+html body.ft-dark [style*="background: #fff"],
+html body.ft-dark [style*="background-color:#fff"],
+html body.ft-dark [style*="background-color: #fff"],
+html body.ft-dark [style*="background:#FFFFFF"],
+html body.ft-dark [style*="background: #FFFFFF"],
+html body.ft-dark [style*="background:white"] {
+  background-color:#2A2C31 !important;
+  color:#FFFFFF !important;
+}
+/* fields, month pickers and their wrappers */
+html body.ft-dark input:not([type="checkbox"]):not([type="radio"]),
+html body.ft-dark select,
+html body.ft-dark textarea,
+html body.ft-dark .ft-monthnav,
+html body.ft-dark .ft-monthnav select,
+html body.ft-dark .ft-monthnav input,
+html body.ft-dark .ft-monthnav button {
+  background-color:#33363C !important;
+  background-image:none !important;
+  color:#FFFFFF !important;
+  border-color:#4A4E56 !important;
+  color-scheme:dark;
+}
+html body.ft-dark input::placeholder,
+html body.ft-dark textarea::placeholder { color:#A7ACB4 !important; }
+html body.ft-dark option { background-color:#2A2C31 !important; color:#FFFFFF !important; }
+/* tables are part of the ash card, never a white slab */
+html body.ft-dark table,
+html body.ft-dark thead,
+html body.ft-dark tbody,
+html body.ft-dark tr,
+html body.ft-dark th,
+html body.ft-dark td,
+html body.ft-dark .tab-content table,
+html body.ft-dark .tab-content thead,
+html body.ft-dark .tab-content tbody,
+html body.ft-dark .tab-content tr,
+html body.ft-dark .tab-content th,
+html body.ft-dark .tab-content td {
+  background-color:transparent !important;
+  background-image:none !important;
+  border-color:#3D4046 !important;
+  color:#FFFFFF !important;
+}
+html body.ft-dark thead th,
+html body.ft-dark .tab-content thead th { background-color:#33363C !important; color:#FFFFFF !important; }
+html body.ft-dark tbody tr:nth-child(even) td { background-color:rgba(255,255,255,.045) !important; }
+/* small white buttons */
+html body.ft-dark button.bg-white,
+html body.ft-dark a.bg-white,
+html body.ft-dark .tab-content button.bg-white {
+  background-color:#33363C !important;
+  color:#FFFFFF !important;
+  border-color:#4A4E56 !important;
+}
+/* AI replies */
+html body.ft-dark .ftai-msg.ai { background-color:#33363C !important; color:#FFFFFF !important; border-color:#4A4E56 !important; }
+html body.ft-dark .ftai-msg strong,
+html body.ft-dark .ftai-msg h3,
+html body.ft-dark .ftai-msg h4,
+html body.ft-dark .ftai-msg h5 { color:#FFFFFF !important; }
+html body.ft-dark .ftai-msg code,
+html body.ft-dark .ftai-msg table,
+html body.ft-dark .ftai-table-wrap { background-color:#26282D !important; color:#FFFFFF !important; }
+html body.ft-dark .ftai-msg thead th { background-color:#3A3D44 !important; color:#FFFFFF !important; }
+html body.ft-dark .ftai-msg td { color:#FFFFFF !important; border-color:#3D4046 !important; }
+html body.ft-dark .ftai-form input { background-color:#1E2024 !important; color:#FFFFFF !important; }
+</style>
 </body>
 </html>
