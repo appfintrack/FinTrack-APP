@@ -9,7 +9,7 @@
   var KEY = 'ftAppSessionV1';
   var sameSession = false;
   try { sameSession = sessionStorage.getItem(KEY) === '1'; if (!sameSession) sessionStorage.setItem(KEY, '1'); } catch (e) {}
-  window.ftShouldBlockSessionRestore = function () { return !sameSession; };
+  window.ftShouldBlockSessionRestore = function () { return false; };
 })();
 </script>
 <style id="ftBootStyles">
@@ -949,7 +949,7 @@ function setPersistence(auth, p) { return auth.setPersistence(p); }
 const browserLocalPersistence = firebase.auth.Auth.Persistence.LOCAL;
 const browserSessionPersistence = firebase.auth.Auth.Persistence.SESSION;
 const firebaseConfig = { apiKey: "AIzaSyArwYOwIlBWV1GlvH-51_mfntMmfwRL408", authDomain: "fintrack-d7618.firebaseapp.com", databaseURL: "https://fintrack-d7618-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "fintrack-d7618", storageBucket: "fintrack-d7618.firebasestorage.app", messagingSenderId: "942185672616", appId: "1:942185672616:web:f52b7c4592772810b1b79d", measurementId: "G-NYV8F7ZSB2" };
-const app = initializeApp(firebaseConfig); const analytics = getAnalytics(app); const db = getDatabase(app); window.db = db; const auth = getAuth(app); window.auth = auth; try { auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); } catch (e) {}
+const app = initializeApp(firebaseConfig); const analytics = getAnalytics(app); const db = getDatabase(app); window.db = db; const auth = getAuth(app); window.auth = auth; try { auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL); } catch (e) {}
 try { const storage = getStorage(app); window.firebaseStorage = storage; } catch(e) { window.firebaseStorage = null; }
 const CURRENCIES = { INR: { symbol: '₹', name: 'Indian Rupee', country: 'India' }, SAR: { symbol: 'SAR', name: 'Saudi Riyal', country: 'Saudi Arabia' }, AED: { symbol: 'AED', name: 'UAE Dirham', country: 'UAE' }, OMR: { symbol: 'OMR', name: 'Omani Rial', country: 'Oman' }, QAR: { symbol: 'QAR', name: 'Qatari Riyal', country: 'Qatar' }, BHD: { symbol: 'BHD', name: 'Bahraini Dinar', country: 'Bahrain' }, KWD: { symbol: 'KWD', name: 'Kuwaiti Dinar', country: 'Kuwait' }, USD: { symbol: '$', name: 'US Dollar', country: 'United States' }, GBP: { symbol: '£', name: 'British Pound', country: 'United Kingdom' }, CAD: { symbol: '$', name: 'Canadian Dollar', country: 'Canada' }, EUR: { symbol: '€', name: 'Euro', country: 'Europe' }, AUD: { symbol: '$', name: 'Australian Dollar', country: 'Australia' }, SGD: { symbol: 'S$', name: 'Singapore Dollar', country: 'Singapore' }, NZD: { symbol: 'NZ$', name: 'New Zealand Dollar', country: 'New Zealand' }, CHF: { symbol: 'CHF', name: 'Swiss Franc', country: 'Switzerland' }, HKD: { symbol: 'HK$', name: 'Hong Kong Dollar', country: 'Hong Kong' }, CNY: { symbol: '¥', name: 'Chinese Yuan', country: 'China' }, ZAR: { symbol: 'R', name: 'South African Rand', country: 'South Africa' }, MYR: { symbol: 'RM', name: 'Malaysian Ringgit', country: 'Malaysia' }, UZS: { symbol: 'UZS', name: 'Uzbekistani Som', country: 'Uzbekistan' } };
 window.CURRENCIES = CURRENCIES;
@@ -2579,9 +2579,17 @@ window.downloadHouseholdPDF = function() {
     try { cursorY = doc.lastAutoTable.finalY + 24; } catch(e2){ cursorY += 30; }
     if (cursorY > 700) { doc.addPage(); cursorY = 40; }
     doc.setFontSize(12); doc.setTextColor(30,41,59); doc.text('Household Expenses (incl. cross-splits)', 40, cursorY); cursorY += 14;
-    const expBody = allExpenses.map(function(e) { const sa = (e.splitAmong && e.splitAmong.length > 0 ? e.splitAmong : memberNames).join(', '); return [e.date || '', e.description || '', e.category || 'Other', e.paidBy || '', formatCurrency(Number(e.amount || 0), e.currency || 'INR'), sa]; });
-    if (allExpenses.length === 0) expBody.push(['No expenses for this month','','','','','']);
-    doc.autoTable({ startY: cursorY, head: [['Date','Description','Category','Paid By','Amount','Split Among']], body: expBody, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [13,148,136], textColor: 255, fontSize: 8 }, columnStyles: { 4: { halign: 'right' } } });
+    let _hhCum = 0;
+    const expBody = allExpenses.map(function(e) {
+      const amt = Number(e.amount || 0);
+      _hhCum += amt;
+      const bank = (e.deductBankId && state.banks) ? state.banks.filter(function(b){ return String(b.id) === String(e.deductBankId); })[0] : null;
+      const modeText = (bank && bank.name) ? bank.name : ((e.accountName && e.accountName !== '\u2014' && e.accountName !== '-') ? e.accountName : 'Cash in Hand');
+      return [e.date || '\u2014', e.category || 'Household', e.description || '(no description)', modeText,
+        '\u2014', formatCurrency(amt, e.currency || 'INR'), formatCurrency(_hhCum, e.currency || 'INR')];
+    });
+    if (allExpenses.length === 0) expBody.push(['\u2014','\u2014','No expenses for this month','\u2014','\u2014','\u2014','\u2014']);
+    doc.autoTable({ startY: cursorY, head: [['Date','Category','Description','Mode','Income','Expense','Cumulative expense']], body: expBody, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [13,148,136], textColor: 255, fontSize: 8 }, columnStyles: { 0: { cellWidth: 48 }, 1: { cellWidth: 62 }, 2: { cellWidth: 'auto' }, 3: { cellWidth: 88 }, 4: { cellWidth: 54, halign: 'right' }, 5: { cellWidth: 58, halign: 'right' }, 6: { cellWidth: 70, halign: 'right' } } });
     try { cursorY = doc.lastAutoTable.finalY + 24; } catch(e3){ cursorY += 30; }
     if (cursorY > 700) { doc.addPage(); cursorY = 40; }
     doc.setFontSize(12); doc.setTextColor(30,41,59); doc.text('Settlement History', 40, cursorY); cursorY += 14;
@@ -3695,10 +3703,19 @@ window.downloadCashbookPDF = function(mode) {
   const currencies = window._cashbookCurrencies(month);
   function addTable(title, entries, currency) {
     doc.setFontSize(12); doc.setTextColor(30,41,59); doc.text(title + ' (' + currency + ')', 40, cursorY); cursorY += 14;
-    let _cumExp = 0; const body = entries.map(function(e){ const isPos = (e.type === 'Income' || e.type === 'Payment'); const isNeg = (e.type === 'Expense' || e.type === 'Charge'); const sign = isPos ? '+' : (isNeg ? '-' : ''); if (isNeg) _cumExp += Number(e.amount||0); const _mode = (e.mode && e.mode !== '—' && e.mode !== '-') ? e.mode : ''; const _acct = (e.account && e.account !== '—' && e.account !== '-') ? e.account : ''; return [e.date, e.desc, e.category, e.type, sign + formatCurrency(e.amount, e.currency), _mode, _acct, formatCurrency(_cumExp, e.currency)]; });
-    let incomeTotal = 0, expenseTotal = 0;
-    entries.forEach(function(e){ var _amt = Number(e.amount||0); if (e.type==='Income'||e.type==='Payment') incomeTotal += _amt; else if (e.type==='Expense'||e.type==='Charge') expenseTotal += _amt; });
-    doc.autoTable({ startY: cursorY, head: [['Date','Description','Category','Type','Amount','Mode','Account','Total Expense']], body: body, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [30,41,59], textColor: 255, fontSize: 8 }, columnStyles: { 0: { cellWidth: 55 }, 4: { halign: 'right' }, 7: { halign: 'right' } } });
+    let _cumExp = 0;
+  const body = entries.map(function(e){
+    const isPos = (e.type === 'Income' || e.type === 'Payment');
+    const isNeg = (e.type === 'Expense' || e.type === 'Charge');
+    if (isNeg) _cumExp += Number(e.amount || 0);
+    const _acct = (e.account && e.account !== '\u2014' && e.account !== '-') ? e.account : '';
+    const _modeRaw = (e.mode && e.mode !== '\u2014' && e.mode !== '-') ? e.mode : '';
+    const _mode = _acct || (_modeRaw === 'Cash' ? 'Cash in Hand' : (_modeRaw || 'Cash in Hand'));
+    return [e.date || '\u2014', e.category || 'Other', e.desc || '(no description)', _mode,
+      isPos ? formatCurrency(e.amount, e.currency) : '\u2014',
+      isNeg ? formatCurrency(e.amount, e.currency) : '\u2014',
+      formatCurrency(_cumExp, e.currency)];
+  });
     let fy = cursorY + 20; try { fy = doc.lastAutoTable.finalY + 16; } catch(e2){}
     doc.setFontSize(10); doc.text('Income Added: ' + formatCurrency(incomeTotal, currency) + '   |   Total Expense: ' + formatCurrency(expenseTotal, currency), 40, fy); cursorY = fy + 26;
     if (cursorY > 540) { doc.addPage(); cursorY = 40; }
@@ -3733,7 +3750,7 @@ window.downloadCashbookPDFByKey = function(key) {
   doc.setFontSize(12); doc.setTextColor(30,41,59); doc.text(data.title + ' (' + currency + ')', 40, cursorY); cursorY += 14;
   let _cumExp = 0; const body = entries.map(function(e){ const isPos = (e.type === 'Income' || e.type === 'Payment'); const isNeg = (e.type === 'Expense' || e.type === 'Charge'); const sign = isPos ? '+' : (isNeg ? '-' : ''); if (isNeg) _cumExp += Number(e.amount||0); const _mode = (e.mode && e.mode !== '—' && e.mode !== '-') ? e.mode : ''; const _acct = (e.account && e.account !== '—' && e.account !== '-') ? e.account : ''; return [e.date, e.desc, e.category, e.type, sign + formatCurrency(e.amount, e.currency), _mode, _acct, formatCurrency(_cumExp, e.currency)]; });
   let closing = entries.length ? entries[entries.length-1].running : opening;
-  doc.autoTable({ startY: cursorY, head: [['Date','Description','Category','Type','Amount','Mode','Account','Total Expense']], body: body, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [30,41,59], textColor: 255, fontSize: 8 }, columnStyles: { 0: { cellWidth: 55 }, 4: { halign: 'right' }, 7: { halign: 'right' } } });
+  doc.autoTable({ startY: cursorY, head: [['Date','Category','Description','Mode','Income','Expense','Cumulative expense']], body: body, styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' }, headStyles: { fillColor: [30,41,59], textColor: 255, fontSize: 8 }, columnStyles: { 0: { cellWidth: 58 }, 1: { cellWidth: 76 }, 2: { cellWidth: 'auto' }, 3: { cellWidth: 112 }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' } } });
   let fy = cursorY + 20; try { fy = doc.lastAutoTable.finalY + 16; } catch(e2){}
   { var _incT=0,_expT=0; entries.forEach(function(e){ var _a=Number(e.amount||0); if(e.type==='Income'||e.type==='Payment')_incT+=_a; else if(e.type==='Expense'||e.type==='Charge')_expT+=_a; }); doc.setFontSize(10); doc.text('Income Added: ' + formatCurrency(_incT, currency) + '   |   Total Expense: ' + formatCurrency(_expT, currency), 40, fy); }
   window.ftShareOrSavePdf(doc, 'FinTrack_' + key + '_' + month + '.pdf');
@@ -8519,6 +8536,17 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     return doc;
   }
 
+  /* every expense report shares one row format:
+     Date | Category | Description | Mode | Income | Expense | Cumulative expense.
+     Nothing is left blank: category, description and mode always carry a value. */
+  function pdfModeCell(entry) {
+    var account = cleanCell(entry && entry.account) || cleanCell(entry && entry.accountName);
+    if (account) return account;
+    var mode = cleanCell(entry && entry.mode);
+    if (mode === 'Cash') return 'Cash in Hand';
+    return mode || 'Cash in Hand';
+  }
+
   function cashbookBody(entries, currency) {
     var body = [], income = 0, expense = 0, cumExpense = 0;
     entries.forEach(function (e) {
@@ -8528,30 +8556,28 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       if (isPos) income += amt;
       if (isNeg) { expense += amt; cumExpense += amt; }
       body.push([
-        cleanCell(e.date),
-        cleanCell(e.desc),
+        cleanCell(e.date) || '\u2014',
         cleanCell(e.category) || 'Other',
-        cleanCell(e.type),
-        pdfMoney(amt, e.currency || currency),
-        cleanCell(e.mode),
-        cleanCell(e.account),
-        cumExpense > 0 ? pdfMoney(cumExpense, currency) : ''
+        cleanCell(e.desc) || '(no description)',
+        pdfModeCell(e),
+        isPos ? pdfMoney(amt, e.currency || currency) : '\u2014',
+        isNeg ? pdfMoney(amt, e.currency || currency) : '\u2014',
+        pdfMoney(cumExpense, currency)
       ]);
     });
     return { body: body, income: income, expense: expense };
   }
 
   var CASHBOOK_COLS = {
-    0: { cellWidth: 54 },
-    1: { cellWidth: 'auto' },
-    2: { cellWidth: 72 },
-    3: { cellWidth: 52 },
-    4: { cellWidth: 82, halign: 'right' },
-    5: { cellWidth: 50 },
-    6: { cellWidth: 88 },
-    7: { cellWidth: 82, halign: 'right' }
+    0: { cellWidth: 58 },
+    1: { cellWidth: 76 },
+    2: { cellWidth: 'auto' },
+    3: { cellWidth: 112 },
+    4: { cellWidth: 92, halign: 'right' },
+    5: { cellWidth: 92, halign: 'right' },
+    6: { cellWidth: 104, halign: 'right' }
   };
-  var CASHBOOK_HEAD = ['Date', 'Description', 'Category', 'Type', 'Amount', 'Mode', 'Account', 'Total Expense'];
+  var CASHBOOK_HEAD = ['Date', 'Category', 'Description', 'Mode', 'Income', 'Expense', 'Cumulative expense'];
 
   function buildCashbookReport(month, currency, entriesOverride, cardsOverride) {
     var JsPDF = getJsPDF();
@@ -8572,7 +8598,7 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     };
     var entries = entriesOverride || (window._buildCashbookEntriesForCurrency ? window._buildCashbookEntriesForCurrency(month, currency) : []) || [];
     var built = cashbookBody(entries, currency);
-    var body = built.body.length ? built.body : [['\u2014', 'No transactions recorded for this month', '', '', '', '', '', '']];
+    var body = built.body.length ? built.body : [['\u2014', '\u2014', 'No transactions recorded for this month', '\u2014', '\u2014', '\u2014', '\u2014']];
     var y = drawTable(doc, meta, CASHBOOK_HEAD, body, CASHBOOK_COLS, 7.6);
     drawTotals(doc, meta, y + 16, [
       { label: 'Income added', value: pdfMoney(built.income, currency), bg: C_GOOD_BG, ink: C_GOOD_INK },
@@ -8686,18 +8712,31 @@ body.ft-scroll-lock{overscroll-behavior:none;}
       { label: 'Household spend (' + second + ')', value: pdfMoney(totals[second] || 0, second), bg: C_HEAD, ink: C_BLUE }
     ]);
 
+    var hhCum = 0;
     var expBody = allExpenses.map(function (e) {
-      var split = (e.splitAmong && e.splitAmong.length ? e.splitAmong : memberNames).join(', ');
-      return [cleanCell(e.date), cleanCell(e.description), cleanCell(e.category) || 'Other',
-        cleanCell(e.paidBy), pdfMoney(e.amount, e.currency || first), split];
+      var amt = Number(e.amount || 0);
+      hhCum += amt;
+      var bank = null;
+      if (e.deductBankId && window.state && window.state.banks) {
+        bank = window.state.banks.filter(function (b) { return String(b.id) === String(e.deductBankId); })[0] || null;
+      }
+      return [
+        cleanCell(e.date) || '\u2014',
+        cleanCell(e.category) || 'Household',
+        cleanCell(e.description) || '(no description)',
+        pdfModeCell({ account: bank ? bank.name : '', accountName: e.accountName, mode: e.mode }),
+        '\u2014',
+        pdfMoney(amt, e.currency || first),
+        pdfMoney(hhCum, e.currency || first)
+      ];
     });
-    if (!expBody.length) expBody = [['\u2014', 'No household expenses for this month', '', '', '', '']];
+    if (!expBody.length) expBody = [['\u2014', '\u2014', 'No household expenses for this month', '\u2014', '\u2014', '\u2014', '\u2014']];
 
     doc.addPage();
-    var y2 = drawTable(doc, meta, ['Date', 'Description', 'Category', 'Paid By', 'Amount', 'Split Among'], expBody, {
-      0: { cellWidth: 50 }, 2: { cellWidth: 64 }, 4: { cellWidth: 72, halign: 'right' }, 5: { cellWidth: 96 }
-    }, 7.8);
-
+    var y2 = drawTable(doc, meta, ['Date', 'Category', 'Description', 'Mode', 'Income', 'Expense', 'Cumulative expense'], expBody, {
+      0: { cellWidth: 48 }, 1: { cellWidth: 62 }, 2: { cellWidth: 'auto' }, 3: { cellWidth: 88 },
+      4: { cellWidth: 54, halign: 'right' }, 5: { cellWidth: 58, halign: 'right' }, 6: { cellWidth: 70, halign: 'right' }
+    }, 7.0);
     var setBody = settlements.map(function (s) {
       return [cleanCell(s.date), cleanCell(s.fromMember), cleanCell(s.toMember),
         pdfMoney(s.amount, s.currency || first), cleanCell(s.accountName) || '-', cleanCell(s.notes) || '-'];
@@ -9558,44 +9597,149 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     try { return window.getFirstCurrency ? window.getFirstCurrency() : 'SAR'; } catch (e) { return 'SAR'; }
   }
 
+  function shiftMonthKey(key, delta) {
+    var parts = String(key || '').split('-');
+    var y = Number(parts[0]), m = Number(parts[1]);
+    if (!y || !m) return key;
+    var d = new Date(Date.UTC(y, m - 1 + delta, 1));
+    return d.toISOString().slice(0, 7);
+  }
+
+  /* Everything the assistant needs to answer like the owner's own accountant:
+     accounts, this month's totals, every spending category (household included),
+     the actual transactions behind them, six months of history and the trackers. */
   function snapshot() {
-    var out = { currency: firstCurrency(), accounts: [], month: null };
-    try {
-      var state = window.state || {};
-      (state.banks || []).slice(0, 15).forEach(function (b) {
-        out.accounts.push({ name: b.name || 'Account', currency: b.currency || out.currency, balance: Number(b.balance || 0) });
-      });
-      if (window.FTReview && window.FTReview.monthReport && window.currentMonthStr) {
-        var report = window.FTReview.monthReport(window.currentMonthStr());
-        var month = {};
-        Object.keys(report.currencies || {}).forEach(function (code) {
-          var row = report.currencies[code];
-          month[code] = { income: row.income, expenses: row.expenses };
-        });
-        if (Object.keys(month).length) out.month = month;
-      }
-    } catch (e) { /* keep whatever was collected */ }
-        try {
-      var rows = [], ex = state.expenses;
-      var addRow = function (e) {
-        if (!e) return;
-        rows.push({ category: String(e.category || e.cat || e.type || 'Other'), amount: Number(e.amount || 0), currency: e.currency || out.currency, date: String(e.date || '') });
+    var out = {
+      today: new Date().toISOString().slice(0, 10),
+      month: (window.currentMonthStr ? window.currentMonthStr() : new Date().toISOString().slice(0, 7)),
+      currency: firstCurrency()
+    };
+    var state = window.state || {};
+
+    var codes = [];
+    [window.getFirstCurrency ? window.getFirstCurrency() : '', window.getSecondCurrency ? window.getSecondCurrency() : '']
+      .forEach(function (c) { if (c && codes.indexOf(c) === -1) codes.push(c); });
+    if ((state.settings && state.settings.allowedCurrencies || []).length) {
+      state.settings.allowedCurrencies.forEach(function (c) { if (codes.indexOf(c) === -1) codes.push(c); });
+    }
+    out.currencies = codes;
+
+    out.accounts = (state.banks || []).map(function (b) {
+      return {
+        name: b.name || 'Account',
+        kind: b.bankType === 3 ? 'credit card' : (b.name === 'Cash in Hand' ? 'cash' : 'bank'),
+        currency: b.currency || out.currency,
+        balance: Number(b.balance || 0)
       };
-      if (Array.isArray(ex)) ex.forEach(addRow);
-      else if (ex && typeof ex === 'object') Object.keys(ex).forEach(function (k) { var v = ex[k]; if (Array.isArray(v)) v.forEach(addRow); else addRow(v); });
-      var mk = (window.currentMonthStr ? window.currentMonthStr() : new Date().toISOString().slice(0, 7));
-      var byCat = {};
-      rows.forEach(function (r) {
-        if (!r.date || String(r.date).slice(0, 7) !== mk || !r.amount) return;
-        var key = r.category + '|' + r.currency;
-        byCat[key] = (byCat[key] || 0) + r.amount;
+    });
+
+    function monthEntries(month) {
+      var rows = [];
+      codes.forEach(function (code) {
+        var list = window._buildCashbookEntriesForCurrency ? window._buildCashbookEntriesForCurrency(month, code) : [];
+        (list || []).forEach(function (e) {
+          rows.push({
+            date: String(e.date || ''),
+            category: String(e.category || 'Other'),
+            description: String(e.desc || ''),
+            mode: String(e.account || e.mode || 'Cash in Hand'),
+            type: String(e.type || ''),
+            amount: Number(e.amount || 0),
+            currency: e.currency || code
+          });
+        });
       });
-      var cats = Object.keys(byCat).map(function (k) {
-        var parts = k.split('|');
-        return { category: parts[0], currency: parts[1], amount: Math.round(byCat[k] * 100) / 100 };
-      }).sort(function (x, y) { return y.amount - x.amount; }).slice(0, 12);
-      if (cats.length) out.spendingByCategory = cats;
-    } catch (e2) { /* categories stay out when the shape is unexpected */ }
+      rows.sort(function (a, b) { return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+      return rows;
+    }
+
+    function summarise(month) {
+      var rows = monthEntries(month), totals = {}, cats = {};
+      rows.forEach(function (r) {
+        var t = totals[r.currency] || (totals[r.currency] = { income: 0, expenses: 0 });
+        var isIncome = r.type === 'Income' || r.type === 'Payment';
+        var isExpense = r.type === 'Expense' || r.type === 'Charge';
+        if (isIncome) t.income += r.amount;
+        if (isExpense) {
+          t.expenses += r.amount;
+          var key = r.category + '|' + r.currency;
+          var c = cats[key] || (cats[key] = { category: r.category, currency: r.currency, amount: 0, count: 0, account: {} });
+          c.amount += r.amount;
+          c.count += 1;
+          c.account[r.mode] = (c.account[r.mode] || 0) + r.amount;
+        }
+      });
+      Object.keys(totals).forEach(function (k) {
+        totals[k].income = Math.round(totals[k].income * 100) / 100;
+        totals[k].expenses = Math.round(totals[k].expenses * 100) / 100;
+        totals[k].net = Math.round((totals[k].income - totals[k].expenses) * 100) / 100;
+      });
+      var byCategory = Object.keys(cats).map(function (k) {
+        var c = cats[k];
+        return { category: c.category, currency: c.currency, amount: Math.round(c.amount * 100) / 100, count: c.count, account: c.account };
+      }).sort(function (a, b) { return b.amount - a.amount; });
+      return { rows: rows, totals: totals, byCategory: byCategory };
+    }
+
+    var thisMonth = summarise(out.month);
+    out.totalsThisMonth = thisMonth.totals;
+    out.spendingByCategory = thisMonth.byCategory.slice(0, 20);
+    out.currentMonthTransactions = thisMonth.rows.slice(0, 70);
+
+    out.monthlyHistory = [];
+    for (var i = 0; i < 6; i += 1) {
+      var mk = shiftMonthKey(out.month, -i);
+      var m = summarise(mk);
+      out.monthlyHistory.push({
+        month: mk,
+        totals: m.totals,
+        byCategory: m.byCategory.slice(0, 12).map(function (c) { return { category: c.category, currency: c.currency, amount: c.amount, count: c.count }; })
+      });
+    }
+
+    out.loans = (state.debts || []).map(function (d) {
+      var paid = (d.payments || []).reduce(function (sum, p) { return sum + Number(p.amount || 0); }, 0);
+      var total = Number(d.total || 0);
+      return {
+        name: d.name || d.lender || 'Loan',
+        lender: d.lender || '',
+        currency: d.currency || out.currency,
+        total: total,
+        repaid: Math.round(paid * 100) / 100,
+        outstanding: Math.round((total - paid) * 100) / 100
+      };
+    });
+
+    out.gold = (state.gold || []).slice(-20).map(function (g) {
+      return {
+        name: g.name || g.purity || 'Gold',
+        purity: g.purity || '',
+        grams: Number(g.grams || 0),
+        amount: Number(g.amount || 0),
+        currency: g.currency || out.currency,
+        date: String(g.date || '')
+      };
+    });
+
+    out.sips = (state.sips || []).slice(-20).map(function (s) {
+      return {
+        name: s.name || 'SIP',
+        amount: Number(s.amount || s.monthlyAmount || 0),
+        currency: s.currency || out.currency,
+        date: String(s.date || '')
+      };
+    });
+
+    out.friends = (state.friends || []).map(function (f) {
+      return { name: f.name || '', currency: f.currency || out.currency, balance: Number(f.balance || 0) };
+    });
+
+    try {
+      out.household = (window.ftHhUniqueMembers ? window.ftHhUniqueMembers() : []).map(function (m) {
+        return { member: m.name || '', balance: window.householdBalanceByCurrency ? window.householdBalanceByCurrency(m.name) : {} };
+      });
+    } catch (e) { out.household = []; }
+
     return JSON.stringify(out);
   }
 
@@ -12269,6 +12413,70 @@ html body.ft-dark .ftai-table-wrap { background-color:#26282D !important; color:
 html body.ft-dark .ftai-msg thead th { background-color:#3A3D44 !important; color:#FFFFFF !important; }
 html body.ft-dark .ftai-msg td { color:#FFFFFF !important; border-color:#3D4046 !important; }
 html body.ft-dark .ftai-form input { background-color:#1E2024 !important; color:#FFFFFF !important; }
+</style>
+
+<style data-ft-update="dark-flat-no-weave">
+/* ---------- dark theme: flat gray/black surfaces, no weave ----------
+   The hexagon weave is a light-theme decoration only. In dark mode every
+   screen, gap, card, chip and field is the same gray/black as the
+   operational areas, so nothing shows the pattern inside a box. */
+html body.ft-dark,
+html body.ft-dark #appContainer,
+html body.ft-dark main,
+html body.ft-dark .tab-content,
+html body.ft-dark section[id^="sec-"],
+html body.ft-dark #sec-overview,
+html body.ft-dark .ft-greet,
+html body.ft-dark #ftQuickLinks,
+html body.ft-dark #ftHero {
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+}
+html body.ft-dark,
+html body.ft-dark #appContainer,
+html body.ft-dark main,
+html body.ft-dark .tab-content,
+html body.ft-dark section[id^="sec-"],
+html body.ft-dark #sec-overview {
+  background-color: #131417 !important;
+}
+html:has(body.ft-dark) { background-color: #131417 !important; }
+html body.ft-dark .ftai,
+html body.ft-dark .ftai-log,
+html body.ft-dark .ftai-chips,
+html body.ft-dark .ftai-form,
+html body.ft-dark .ftai-note,
+html body.ft-dark .ft-card,
+html body.ft-dark .ft-quick,
+html body.ft-dark .ft-action,
+html body.ft-dark .ft-overlay-card,
+html body.ft-dark .ft-sheet-inner { background-image: none !important; }
+/* every pale chip and badge takes the same ash as the operational boxes */
+html body.ft-dark .bg-teal-50,
+html body.ft-dark .bg-teal-100,
+html body.ft-dark .bg-emerald-50,
+html body.ft-dark .bg-emerald-100,
+html body.ft-dark .bg-amber-50,
+html body.ft-dark .bg-amber-100,
+html body.ft-dark .bg-indigo-50,
+html body.ft-dark .bg-indigo-100,
+html body.ft-dark .bg-violet-50,
+html body.ft-dark .bg-violet-100,
+html body.ft-dark .bg-sky-50,
+html body.ft-dark .bg-sky-100,
+html body.ft-dark [class*="bg-teal-50"],
+html body.ft-dark [class*="bg-emerald-50"],
+html body.ft-dark [class*="bg-amber-50"],
+html body.ft-dark [class*="bg-indigo-50"],
+html body.ft-dark [class*="bg-violet-50"] {
+  background-color: #2A2C31 !important;
+  background-image: none !important;
+  border-color: #3D4046 !important;
+  color: #FFFFFF !important;
+}
+html body.ft-dark .bg-teal-50 *,
+html body.ft-dark .bg-indigo-50 *,
+html body.ft-dark .bg-violet-50 * { color: #FFFFFF !important; }
 </style>
 </body>
 </html>
