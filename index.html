@@ -12530,5 +12530,76 @@ html body.ft-dark .bg-emerald-100 { background-color:rgba(16,185,129,.18) !impor
 html body.ft-dark .bg-red-100 { background-color:rgba(239,68,68,.18) !important; border-color:rgba(239,68,68,.45) !important; color:#F87171 !important; }
 html body.ft-dark .bg-emerald-100 *, html body.ft-dark .bg-red-100 * { color:inherit !important; }
 </style>
+<style data-ft-update="dark-blue-boxes">
+/* ===== dark theme: every white box in the app takes the blue action colour (#2563EB) ===== */
+body.ft-dark .ft-blue-box {
+  background-color:#2563EB !important; background-image:none !important;
+  color:#FFFFFF !important; border-color:#3B82F6 !important; box-shadow:none !important;
+}
+body.ft-dark .ft-blue-box * { color:#FFFFFF !important; }
+body.ft-dark .ft-blue-box::placeholder { color:rgba(255,255,255,.78) !important; }
+body.ft-dark .ftcal-field, body.ft-dark .ftcal-input, body.ft-dark .ft-month-select,
+body.ft-dark .ft-cur-btn, body.ft-dark .exp-pm-btn, body.ft-dark .trip-pm-btn,
+body.ft-dark .fs-pm-btn, body.ft-dark .hh-pm-btn, body.ft-dark [data-pm],
+body.ft-dark #commonPurity24K, body.ft-dark #commonPurity22K, body.ft-dark #commonPurity18K,
+body.ft-dark #goldPurityBtn24K, body.ft-dark #goldPurityBtn22K, body.ft-dark #goldPurityBtn18K {
+  background-color:#2563EB !important; background-image:none !important;
+  color:#FFFFFF !important; border:1px solid #3B82F6 !important; box-shadow:none !important;
+}
+body.ft-dark .ftcal-field *, body.ft-dark .ftcal-input *, body.ft-dark .exp-pm-btn *, body.ft-dark .trip-pm-btn *,
+body.ft-dark .fs-pm-btn *, body.ft-dark .hh-pm-btn *, body.ft-dark [data-pm] * { color:#FFFFFF !important; }
+body.ft-dark .exp-pm-btn.active, body.ft-dark .trip-pm-btn.active,
+body.ft-dark .fs-pm-btn.active, body.ft-dark .hh-pm-btn.active, body.ft-dark [data-pm].active {
+  background-color:#1D4ED8 !important; border-color:#93C5FD !important; color:#FFFFFF !important;
+  box-shadow:0 0 0 2px rgba(59,130,246,.5) !important;
+}
+</style>
+<script data-ft-update="dark-blue-boxes">
+(function(){
+  var SEL = 'input,select,textarea,button,[class*="bg-white"],[class*="bg-amber-50"],[class*="bg-slate-50"],[class*="bg-teal-50"],.ftcal-field,.ftcal-input,.ft-month-select,.ft-cur-btn,[data-pm]';
+  var SKIP = '#authContainer,#finpinQuickArea,#ftLaunchSplash,#ftLoginCard,#ftPinGate,#loginScreen';
+  function isNearWhite(el){
+    var c = '';
+    try { c = getComputedStyle(el).backgroundColor || ''; } catch(e){ return false; }
+    var m = c.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/);
+    if(!m) return false;
+    var a = m[4] === undefined ? 1 : parseFloat(m[4]);
+    return a > 0.5 && +m[1] > 230 && +m[2] > 230 && +m[3] > 230;
+  }
+  function paint(){
+    var app = document.getElementById('appContainer');
+    if(!app || app.classList.contains('hidden')) return;
+    if(!document.body.classList.contains('ft-dark')){
+      var done = document.querySelectorAll('.ft-blue-box');
+      for(var d=0; d<done.length; d++) done[d].classList.remove('ft-blue-box');
+      return;
+    }
+    var nodes = document.body.querySelectorAll(SEL);
+    for(var i=0; i<nodes.length; i++){
+      var el = nodes[i];
+      if(el.classList.contains('ft-blue-box')) continue;
+      if(el.closest(SKIP)) continue;
+      var tag = el.tagName;
+      var cls = el.getAttribute('class') || '';
+      var wantsBlue = cls.indexOf('bg-white') > -1 || isNearWhite(el);
+      if(!wantsBlue) continue;
+      if(/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag)) { el.classList.add('ft-blue-box'); continue; }
+      var rect = el.getBoundingClientRect();
+      if(rect.height === 0 || rect.height > 76) continue;
+      if(el.querySelector('table')) continue;
+      el.classList.add('ft-blue-box');
+    }
+  }
+  var queued = false;
+  function queue(){ if(queued) return; queued = true; setTimeout(function(){ queued = false; try { paint(); } catch(e){} }, 70); }
+  function start(){
+    queue();
+    try { new MutationObserver(queue).observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] }); } catch(e){}
+    setInterval(queue, 1400);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
 </body>
 </html>
