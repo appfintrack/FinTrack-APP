@@ -12316,6 +12316,7 @@ html body.ft-dark section[id^="sec-"] {
 html body.ft-dark .bg-white,
 html body.ft-dark [class*="bg-white"],
 html body.ft-dark .bg-slate-50,
+html body.ft-dark [class*="bg-white/70"][class*="inline-flex"],
 html body.ft-dark .bg-slate-100,
 html body.ft-dark .bg-slate-200,
 html body.ft-dark .bg-gray-50,
@@ -12530,75 +12531,211 @@ html body.ft-dark .bg-emerald-100 { background-color:rgba(16,185,129,.18) !impor
 html body.ft-dark .bg-red-100 { background-color:rgba(239,68,68,.18) !important; border-color:rgba(239,68,68,.45) !important; color:#F87171 !important; }
 html body.ft-dark .bg-emerald-100 *, html body.ft-dark .bg-red-100 * { color:inherit !important; }
 </style>
-<style data-ft-update="dark-blue-boxes">
-/* ===== dark theme: every white box in the app takes the blue action colour (#2563EB) ===== */
-body.ft-dark .ft-blue-box {
-  background-color:#2563EB !important; background-image:none !important;
-  color:#FFFFFF !important; border-color:#3B82F6 !important; box-shadow:none !important;
-}
-body.ft-dark .ft-blue-box * { color:#FFFFFF !important; }
-body.ft-dark .ft-blue-box::placeholder { color:rgba(255,255,255,.78) !important; }
-body.ft-dark .ftcal-field, body.ft-dark .ftcal-input, body.ft-dark .ft-month-select,
-body.ft-dark .ft-cur-btn, body.ft-dark .exp-pm-btn, body.ft-dark .trip-pm-btn,
-body.ft-dark .fs-pm-btn, body.ft-dark .hh-pm-btn, body.ft-dark [data-pm],
-body.ft-dark #commonPurity24K, body.ft-dark #commonPurity22K, body.ft-dark #commonPurity18K,
-body.ft-dark #goldPurityBtn24K, body.ft-dark #goldPurityBtn22K, body.ft-dark #goldPurityBtn18K {
-  background-color:#2563EB !important; background-image:none !important;
-  color:#FFFFFF !important; border:1px solid #3B82F6 !important; box-shadow:none !important;
-}
-body.ft-dark .ftcal-field *, body.ft-dark .ftcal-input *, body.ft-dark .exp-pm-btn *, body.ft-dark .trip-pm-btn *,
-body.ft-dark .fs-pm-btn *, body.ft-dark .hh-pm-btn *, body.ft-dark [data-pm] * { color:#FFFFFF !important; }
-body.ft-dark .exp-pm-btn.active, body.ft-dark .trip-pm-btn.active,
-body.ft-dark .fs-pm-btn.active, body.ft-dark .hh-pm-btn.active, body.ft-dark [data-pm].active {
-  background-color:#1D4ED8 !important; border-color:#93C5FD !important; color:#FFFFFF !important;
-  box-shadow:0 0 0 2px rgba(59,130,246,.5) !important;
-}
+<style data-ft-update="blue-boxes">/* one blue box style for every chip and small field, dark and light theme */
+html body.ft-dark .bg-slate-100,
+html body.ft-dark .bg-slate-200,
+html body.ft-dark .bg-stone-100,
+html body.ft-dark .bg-gray-100,
+html body.ft-dark .bg-zinc-100,
+html body.ft-dark .bg-neutral-100,
+html body.ft-dark .bg-emerald-100,
+html body.ft-dark .bg-red-100,
+html body.ft-dark .bg-rose-100,
+html body.ft-dark .bg-amber-100,
+html body.ft-dark .bg-teal-100,
+html body.ft-dark .bg-indigo-100,
+html body.ft-dark .bg-blue-100,
+html body.ft-dark .bg-violet-100,
+html body.ft-dark .bg-purple-100,
+html body.ft-dark .bg-sky-100,
+html body.ft-dark .bg-green-100,
+html body.ft-dark .bg-lime-100,
+html body.ft-dark .bg-yellow-100,
+html body.ft-dark .bg-orange-100,
+html body.ft-dark .bg-cyan-100,
+html body.ft-dark .bg-pink-100,
+html body.ft-dark .bg-fuchsia-100,
+html body.ft-dark [class*="bg-white/70"][class*="inline-flex"],
+html body.ft-dark [class*="bg-white/80"][class*="inline-flex"],
+html body.ft-dark .fs-pm-btn,
+html body.ft-dark .hh-pm-btn,
+html body.ft-dark .exp-pm-btn,
+html body.ft-dark .trip-pm-btn,
+html body.ft-dark .ftcal-field,
+html body.ft-dark .ftcal-input,
+html body.ft-dark .ft-month-select,
+html body.ft-dark .ft-cur-btn,
+html body.ft-dark [data-pm],
+html body.ft-dark .ft-blue-box,
+html body.ft-dark #commonPurity24K,
+html body.ft-dark #commonPurity22K,
+html body.ft-dark #commonPurity18K,
+html body.ft-dark #goldPurityBtn24K,
+html body.ft-dark #goldPurityBtn22K,
+html body.ft-dark #goldPurityBtn18K
+{background-color:#2563EB !important;background-image:none !important;color:#FFFFFF !important;border:1px solid #3B82F6 !important;box-shadow:none !important;}
+html body:not(.ft-dark) .bg-slate-100,
+html body:not(.ft-dark) .bg-slate-200,
+html body:not(.ft-dark) .bg-stone-100,
+html body:not(.ft-dark) .bg-gray-100,
+html body:not(.ft-dark) .bg-zinc-100,
+html body:not(.ft-dark) .bg-neutral-100,
+html body:not(.ft-dark) .bg-emerald-100,
+html body:not(.ft-dark) .bg-red-100,
+html body:not(.ft-dark) .bg-rose-100,
+html body:not(.ft-dark) .bg-amber-100,
+html body:not(.ft-dark) .bg-teal-100,
+html body:not(.ft-dark) .bg-indigo-100,
+html body:not(.ft-dark) .bg-blue-100,
+html body:not(.ft-dark) .bg-violet-100,
+html body:not(.ft-dark) .bg-purple-100,
+html body:not(.ft-dark) .bg-sky-100,
+html body:not(.ft-dark) .bg-green-100,
+html body:not(.ft-dark) .bg-lime-100,
+html body:not(.ft-dark) .bg-yellow-100,
+html body:not(.ft-dark) .bg-orange-100,
+html body:not(.ft-dark) .bg-cyan-100,
+html body:not(.ft-dark) .bg-pink-100,
+html body:not(.ft-dark) .bg-fuchsia-100,
+html body:not(.ft-dark) [class*="bg-white/70"][class*="inline-flex"],
+html body:not(.ft-dark) [class*="bg-white/80"][class*="inline-flex"],
+html body:not(.ft-dark) .fs-pm-btn,
+html body:not(.ft-dark) .hh-pm-btn,
+html body:not(.ft-dark) .exp-pm-btn,
+html body:not(.ft-dark) .trip-pm-btn,
+html body:not(.ft-dark) .ftcal-field,
+html body:not(.ft-dark) .ftcal-input,
+html body:not(.ft-dark) .ft-month-select,
+html body:not(.ft-dark) .ft-cur-btn,
+html body:not(.ft-dark) [data-pm],
+html body:not(.ft-dark) .ft-blue-box,
+html body:not(.ft-dark) #commonPurity24K,
+html body:not(.ft-dark) #commonPurity22K,
+html body:not(.ft-dark) #commonPurity18K,
+html body:not(.ft-dark) #goldPurityBtn24K,
+html body:not(.ft-dark) #goldPurityBtn22K,
+html body:not(.ft-dark) #goldPurityBtn18K
+{background-color:#2563EB !important;background-image:none !important;color:#FFFFFF !important;border:1px solid #3B82F6 !important;box-shadow:none !important;}
+html body.ft-dark .bg-slate-100 *,
+html body.ft-dark .bg-slate-200 *,
+html body.ft-dark .bg-stone-100 *,
+html body.ft-dark .bg-gray-100 *,
+html body.ft-dark .bg-zinc-100 *,
+html body.ft-dark .bg-neutral-100 *,
+html body.ft-dark .bg-emerald-100 *,
+html body.ft-dark .bg-red-100 *,
+html body.ft-dark .bg-rose-100 *,
+html body.ft-dark .bg-amber-100 *,
+html body.ft-dark .bg-teal-100 *,
+html body.ft-dark .bg-indigo-100 *,
+html body.ft-dark .bg-blue-100 *,
+html body.ft-dark .bg-violet-100 *,
+html body.ft-dark .bg-purple-100 *,
+html body.ft-dark .bg-sky-100 *,
+html body.ft-dark .bg-green-100 *,
+html body.ft-dark .bg-lime-100 *,
+html body.ft-dark .bg-yellow-100 *,
+html body.ft-dark .bg-orange-100 *,
+html body.ft-dark .bg-cyan-100 *,
+html body.ft-dark .bg-pink-100 *,
+html body.ft-dark .bg-fuchsia-100 *,
+html body.ft-dark [class*="bg-white/70"][class*="inline-flex"] *,
+html body.ft-dark [class*="bg-white/80"][class*="inline-flex"] *,
+html body.ft-dark .fs-pm-btn *,
+html body.ft-dark .hh-pm-btn *,
+html body.ft-dark .exp-pm-btn *,
+html body.ft-dark .trip-pm-btn *,
+html body.ft-dark .ftcal-field *,
+html body.ft-dark .ftcal-input *,
+html body.ft-dark .ft-month-select *,
+html body.ft-dark .ft-cur-btn *,
+html body.ft-dark [data-pm] *,
+html body.ft-dark .ft-blue-box *,
+html body.ft-dark #commonPurity24K *,
+html body.ft-dark #commonPurity22K *,
+html body.ft-dark #commonPurity18K *,
+html body.ft-dark #goldPurityBtn24K *,
+html body.ft-dark #goldPurityBtn22K *,
+html body.ft-dark #goldPurityBtn18K *,
+html body:not(.ft-dark) .bg-slate-100 *,
+html body:not(.ft-dark) .bg-slate-200 *,
+html body:not(.ft-dark) .bg-stone-100 *,
+html body:not(.ft-dark) .bg-gray-100 *,
+html body:not(.ft-dark) .bg-zinc-100 *,
+html body:not(.ft-dark) .bg-neutral-100 *,
+html body:not(.ft-dark) .bg-emerald-100 *,
+html body:not(.ft-dark) .bg-red-100 *,
+html body:not(.ft-dark) .bg-rose-100 *,
+html body:not(.ft-dark) .bg-amber-100 *,
+html body:not(.ft-dark) .bg-teal-100 *,
+html body:not(.ft-dark) .bg-indigo-100 *,
+html body:not(.ft-dark) .bg-blue-100 *,
+html body:not(.ft-dark) .bg-violet-100 *,
+html body:not(.ft-dark) .bg-purple-100 *,
+html body:not(.ft-dark) .bg-sky-100 *,
+html body:not(.ft-dark) .bg-green-100 *,
+html body:not(.ft-dark) .bg-lime-100 *,
+html body:not(.ft-dark) .bg-yellow-100 *,
+html body:not(.ft-dark) .bg-orange-100 *,
+html body:not(.ft-dark) .bg-cyan-100 *,
+html body:not(.ft-dark) .bg-pink-100 *,
+html body:not(.ft-dark) .bg-fuchsia-100 *,
+html body:not(.ft-dark) [class*="bg-white/70"][class*="inline-flex"] *,
+html body:not(.ft-dark) [class*="bg-white/80"][class*="inline-flex"] *,
+html body:not(.ft-dark) .fs-pm-btn *,
+html body:not(.ft-dark) .hh-pm-btn *,
+html body:not(.ft-dark) .exp-pm-btn *,
+html body:not(.ft-dark) .trip-pm-btn *,
+html body:not(.ft-dark) .ftcal-field *,
+html body:not(.ft-dark) .ftcal-input *,
+html body:not(.ft-dark) .ft-month-select *,
+html body:not(.ft-dark) .ft-cur-btn *,
+html body:not(.ft-dark) [data-pm] *,
+html body:not(.ft-dark) .ft-blue-box *,
+html body:not(.ft-dark) #commonPurity24K *,
+html body:not(.ft-dark) #commonPurity22K *,
+html body:not(.ft-dark) #commonPurity18K *,
+html body:not(.ft-dark) #goldPurityBtn24K *,
+html body:not(.ft-dark) #goldPurityBtn22K *,
+html body:not(.ft-dark) #goldPurityBtn18K *
+{color:#FFFFFF !important;}
+html body.ft-dark .fs-pm-btn.active, html body.ft-dark .hh-pm-btn.active,
+html body.ft-dark .exp-pm-btn.active, html body.ft-dark .trip-pm-btn.active, html body.ft-dark [data-pm].active,
+html body:not(.ft-dark) .fs-pm-btn.active, html body:not(.ft-dark) .hh-pm-btn.active,
+html body:not(.ft-dark) .exp-pm-btn.active, html body:not(.ft-dark) .trip-pm-btn.active,
+html body:not(.ft-dark) [data-pm].active
+{background-color:#1D4ED8 !important;border-color:#93C5FD !important;color:#FFFFFF !important;box-shadow:0 0 0 2px rgba(59,130,246,.45) !important;}
 </style>
-<script data-ft-update="dark-blue-boxes">
+<script data-ft-update="blue-boxes">
 (function(){
-  var SEL = 'input,select,textarea,button,[class*="bg-white"],[class*="bg-amber-50"],[class*="bg-slate-50"],[class*="bg-teal-50"],.ftcal-field,.ftcal-input,.ft-month-select,.ft-cur-btn,[data-pm]';
-  var SKIP = '#authContainer,#finpinQuickArea,#ftLaunchSplash,#ftLoginCard,#ftPinGate,#loginScreen';
-  function isNearWhite(el){
-    var c = '';
-    try { c = getComputedStyle(el).backgroundColor || ''; } catch(e){ return false; }
-    var m = c.match(/rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)(?:,\s*([\d.]+))?/);
-    if(!m) return false;
-    var a = m[4] === undefined ? 1 : parseFloat(m[4]);
-    return a > 0.5 && +m[1] > 230 && +m[2] > 230 && +m[3] > 230;
-  }
+  var SEL='[class*="bg-white"],input,select,textarea,.ftcal-field,.ft-month-select,.ft-cur-btn,[data-pm],.fs-pm-btn,.hh-pm-btn,.exp-pm-btn,.trip-pm-btn';
+  var SKIP='#authContainer,#finpinQuickArea,#ftLaunchSplash,#ftLoginCard,#ftPinGate,#loginScreen';
+  var OKTAG=/^(INPUT|SELECT|TEXTAREA|BUTTON|SPAN|LABEL|SMALL|A|B|STRONG|EM)$/;
   function paint(){
-    var app = document.getElementById('appContainer');
-    if(!app || app.classList.contains('hidden')) return;
-    if(!document.body.classList.contains('ft-dark')){
-      var done = document.querySelectorAll('.ft-blue-box');
-      for(var d=0; d<done.length; d++) done[d].classList.remove('ft-blue-box');
-      return;
-    }
-    var nodes = document.body.querySelectorAll(SEL);
-    for(var i=0; i<nodes.length; i++){
-      var el = nodes[i];
+    var app=document.getElementById('appContainer');
+    if(!app||app.classList.contains('hidden')) return;
+    var nodes=document.body.querySelectorAll(SEL);
+    for(var i=0;i<nodes.length;i++){
+      var el=nodes[i];
       if(el.classList.contains('ft-blue-box')) continue;
       if(el.closest(SKIP)) continue;
-      var tag = el.tagName;
-      var cls = el.getAttribute('class') || '';
-      var wantsBlue = cls.indexOf('bg-white') > -1 || isNearWhite(el);
-      if(!wantsBlue) continue;
-      if(/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(tag)) { el.classList.add('ft-blue-box'); continue; }
-      var rect = el.getBoundingClientRect();
-      if(rect.height === 0 || rect.height > 76) continue;
-      if(el.querySelector('table')) continue;
+      if(!OKTAG.test(el.tagName)) continue;
+      var cls=el.getAttribute('class')||'';
+      if(cls.indexOf('bg-white')<0) continue;
+      if(el.tagName==='INPUT'||el.tagName==='SELECT'||el.tagName==='TEXTAREA'){ el.classList.add('ft-blue-box'); continue; }
+      var r=el.getBoundingClientRect();
+      if(r.height===0||r.height>48) continue;
       el.classList.add('ft-blue-box');
     }
   }
-  var queued = false;
-  function queue(){ if(queued) return; queued = true; setTimeout(function(){ queued = false; try { paint(); } catch(e){} }, 70); }
+  var q=false;
+  function queue(){ if(q) return; q=true; setTimeout(function(){ q=false; try{paint();}catch(e){} },80); }
   function start(){
     queue();
-    try { new MutationObserver(queue).observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] }); } catch(e){}
-    setInterval(queue, 1400);
+    try{ new MutationObserver(queue).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']}); }catch(e){}
+    setInterval(queue,1500);
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
 </script>
 </body>
