@@ -12478,5 +12478,57 @@ html body.ft-dark .bg-teal-50 *,
 html body.ft-dark .bg-indigo-50 *,
 html body.ft-dark .bg-violet-50 * { color: #FFFFFF !important; }
 </style>
+<style data-ft-update="dark-blue-actions">
+/* ---------- dark theme: one blue action style, dark loan cards, live money colours ---------- */
+/* 1. segmented buttons inside the add-expense, split, trip and household forms: white boxes -> blue */
+html body.ft-dark .exp-pm-btn, html body.ft-dark .trip-pm-btn, html body.ft-dark .fs-pm-btn, html body.ft-dark .hh-pm-btn {
+  background:#2563EB !important; border:1px solid #3B82F6 !important; color:#FFFFFF !important;
+  box-shadow:none !important;
+}
+html body.ft-dark .exp-pm-btn.active, html body.ft-dark .trip-pm-btn.active, html body.ft-dark .fs-pm-btn.active, html body.ft-dark .hh-pm-btn.active {
+  background:#1D4ED8 !important; border-color:#93C5FD !important; color:#FFFFFF !important;
+  box-shadow:0 0 0 2px rgba(59,130,246,.45) !important;
+}
+/* 2. gold purity chips (22K / 24K / 18K) -> same blue with white text */
+html body.ft-dark #commonPurity24K, html body.ft-dark #commonPurity22K, html body.ft-dark #commonPurity18K,
+html body.ft-dark #goldPurityBtn24K, html body.ft-dark #goldPurityBtn22K, html body.ft-dark #goldPurityBtn18K,
+html body.ft-dark button[onclick*="setCommonGoldPurity"], html body.ft-dark button[onclick*="setGoldPurity"] {
+  background:#2563EB !important; border-color:#3B82F6 !important; color:#FFFFFF !important;
+}
+html body.ft-dark #commonPurity24K:hover, html body.ft-dark #commonPurity22K:hover, html body.ft-dark #commonPurity18K:hover,
+html body.ft-dark #goldPurityBtn24K:hover, html body.ft-dark #goldPurityBtn22K:hover, html body.ft-dark #goldPurityBtn18K:hover {
+  background:#1D4ED8 !important; color:#FFFFFF !important;
+}
+/* 3. primary add / save buttons everywhere use the same blue as Log Payment and Update All */
+html body.ft-dark button[class*="bg-teal-5"], html body.ft-dark button[class*="bg-teal-6"], html body.ft-dark button[class*="bg-teal-7"],
+html body.ft-dark button[class*="bg-emerald-5"], html body.ft-dark button[class*="bg-rose-5"], html body.ft-dark button[class*="bg-rose-6"], html body.ft-dark button[class*="bg-rose-7"],
+html body.ft-dark button[class*="bg-indigo-5"], html body.ft-dark button[class*="bg-amber-4"], html body.ft-dark button[class*="bg-sky-5"],
+html body.ft-dark button[class*="bg-indigo-6"], html body.ft-dark button[class*="bg-indigo-7"],
+html body.ft-dark button[class*="bg-amber-5"], html body.ft-dark button[class*="bg-amber-6"], html body.ft-dark button[class*="bg-amber-7"],
+html body.ft-dark button[class*="bg-emerald-6"], html body.ft-dark button[class*="bg-emerald-7"],
+html body.ft-dark button[class*="bg-sky-6"], html body.ft-dark button[class*="bg-sky-7"],
+html body.ft-dark button[class*="bg-blue-6"], html body.ft-dark button[class*="bg-blue-7"],
+html body.ft-dark button[class*="bg-violet-6"], html body.ft-dark button[class*="bg-purple-6"] {
+  background:#2563EB !important; color:#FFFFFF !important; border-color:#3B82F6 !important;
+}
+/* 4. any pale box left over (loan cards, chips, panels) is ash, never white or pink */
+html body.ft-dark .bg-red-50, html body.ft-dark .bg-red-50\/50, html body.ft-dark .bg-red-50\/60,
+html body.ft-dark .bg-rose-50, html body.ft-dark .bg-rose-50\/50, html body.ft-dark .bg-blue-50,
+html body.ft-dark .bg-yellow-50, html body.ft-dark .bg-orange-50, html body.ft-dark .bg-cyan-50,
+html body.ft-dark .bg-lime-50, html body.ft-dark .bg-pink-50, html body.ft-dark .bg-purple-50,
+html body.ft-dark .bg-fuchsia-50, html body.ft-dark .bg-stone-50, html body.ft-dark .bg-zinc-50,
+html body.ft-dark .bg-neutral-50, html body.ft-dark .bg-amber-200, html body.ft-dark .bg-emerald-200 {
+  background-color:#2A2C31 !important; background-image:none !important;
+  border-color:#3D4046 !important; color:#FFFFFF !important;
+}
+/* 5. money that moves keeps its green / red shade in dark mode */
+html body.ft-dark .money-income, html body.ft-dark .text-emerald-600, html body.ft-dark .text-emerald-700,
+html body.ft-dark .text-green-600 { color:#34D399 !important; }
+html body.ft-dark .money-expense, html body.ft-dark .text-red-700,
+html body.ft-dark .text-rose-600, html body.ft-dark .text-rose-700 { color:#F87171 !important; }
+html body.ft-dark .bg-emerald-100 { background-color:rgba(16,185,129,.18) !important; border-color:rgba(16,185,129,.45) !important; color:#34D399 !important; }
+html body.ft-dark .bg-red-100 { background-color:rgba(239,68,68,.18) !important; border-color:rgba(239,68,68,.45) !important; color:#F87171 !important; }
+html body.ft-dark .bg-emerald-100 *, html body.ft-dark .bg-red-100 * { color:inherit !important; }
+</style>
 </body>
 </html>
