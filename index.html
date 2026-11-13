@@ -14,7 +14,7 @@
 </script>
 <style id="ftBootStyles">
     html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-    html.ft-booting #authContainer, html.ft-booting #appContainer { visibility: hidden !important; } html.ft-data-pending #appContainer { visibility: hidden !important; }
+    html.ft-booting #authContainer, html.ft-booting #appContainer { visibility: hidden !important; } html.ft-data-pending #appContainer { visibility: hidden !important; } #appContainer.hidden { visibility: hidden !important; }
     #ftLaunchSplash { position: fixed; inset: 0; z-index: 2147483646; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f8fafc; opacity: 1; transition: opacity .35s ease; pointer-events: none; font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif; }
     #ftLaunchSplash .ft-splash-track { margin: 20px auto 0; width: 120px; height: 3px; background: #e2e8f0; border-radius: 2px; overflow: hidden; }
     #ftLaunchSplash .ft-splash-bar { height: 100%; width: 40%; background: #1E3A8A; border-radius: 2px; animation: ftSplashSweep 1s ease-in-out infinite; }
@@ -1104,8 +1104,8 @@ window.handleLogin = async function(e) {
       }
       window._ftFinpinQuickLogin = false;
       document.getElementById('authContainer').classList.add('hidden');
-      document.getElementById('appContainer').classList.remove('hidden');
       if (typeof window.ftShowWelcomeSplash === 'function') window.ftShowWelcomeSplash();
+      document.getElementById('appContainer').classList.remove('hidden');
       document.getElementById('welcomeUser').innerText = currentUser.name ? (currentUser.name.trim().split(/\s+/).slice(0,2).join(' ')) : 'User';
       initUserData(dataKey);
       window._ftManualLogin = false;
@@ -1201,6 +1201,7 @@ window.handleForgotStep1 = async function(e) {
 window.handleOtpVerify = function(e) { e.preventDefault(); const enteredOtp = document.getElementById('otpInput').value.trim(); if (enteredOtp !== FIXED_OTP) { alert("Incorrect OTP. Please enter the correct OTP shared with you on WhatsApp."); return; } document.getElementById('resetForm').reset(); showAuthScreen('resetScreen'); };
 window.handleResetPassword = async function(e) { e.preventDefault(); const newPass = document.getElementById('newPass').value; const confirmPass = document.getElementById('newPassConfirm').value; if (newPass !== confirmPass) { alert("Passwords do not match. Please re-enter."); return; } if (newPass.length < 6) { alert("Password must be at least 6 characters long."); return; } if (!forgotPasswordLoginId) { alert("Session expired. Please start the password reset process again."); showAuthScreen('loginScreen'); return; } try { const snapshot = await get(ref(db, `users/${forgotPasswordLoginId}`)); const user = snapshot.val(); if (!user) { alert("User not found. Please start the password reset process again."); showAuthScreen('loginScreen'); return; } user.password = encodePassword(newPass); await set(ref(db, `users/${forgotPasswordLoginId}`), user); alert("Password reset successful! Please log in with your new password."); forgotPasswordLoginId = null; document.getElementById('loginId').value = ''; document.getElementById('loginPass').value = ''; showAuthScreen('loginScreen'); } catch(err) { console.error("Reset password error:", err); alert("Password reset failed. Please try again."); } };
 window.handleLogout = async function() {
+  document.getElementById('appContainer').classList.add('hidden');
   document.querySelectorAll('[id^="modal"]').forEach(function(el){ el.classList.add('hidden'); });
   var _pp=document.getElementById('modalProfilePanel'); if(_pp) _pp.classList.add('hidden');
   document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.add('hidden'); });
@@ -1372,8 +1373,8 @@ window.ftFinpinUnlockSuccess = function() {
   var pending = window._ftFinpinPendingUser;
   if (!pending) return;
   document.getElementById('authContainer').classList.add('hidden');
-  document.getElementById('appContainer').classList.remove('hidden');
   if (typeof window.ftShowWelcomeSplash === 'function') window.ftShowWelcomeSplash();
+  document.getElementById('appContainer').classList.remove('hidden');
   if (currentUser && currentUser.name) {
     document.getElementById('welcomeUser').innerText = currentUser.name.trim().split(/\s+/).slice(0,2).join(' ');
   }
@@ -1727,8 +1728,8 @@ window.ftRestoreSession = async function (fbUser) {
         window._ftFinpinForgotFlow = false;
       }
       document.getElementById('authContainer').classList.add('hidden');
-      document.getElementById('appContainer').classList.remove('hidden');
       if (typeof window.ftShowWelcomeSplash === 'function') window.ftShowWelcomeSplash();
+      document.getElementById('appContainer').classList.remove('hidden');
       document.getElementById('welcomeUser').innerText = currentUser.name ? (currentUser.name.trim().split(/\s+/).slice(0,2).join(' ')) : 'User';
       initUserData(dataKey);
       subscribeSharedData(fbUser.uid);
@@ -9447,6 +9448,8 @@ body.ft-scroll-lock{overscroll-behavior:none;}
     + '.ft-bal-toggle{position:absolute;right:14px;bottom:12px;display:flex;gap:6px;z-index:3;}'
     + '.ft-bal-pill{border-radius:999px;padding:4px 11px;font-size:10.5px;font-weight:800;letter-spacing:.03em;border:1px solid rgba(255,255,255,.75);background:#FFFFFF;color:#1B326B;cursor:pointer;line-height:1.2;}'
     + '.ft-bal-pill.active{background:#0B2E8C;color:#FFFFFF;border-color:#0B2E8C;}'
+    + '#ftHeroAccount #overviewCardBank #ftBalanceAdd{color:#0B2E8C!important;}'
+    + '#ftHeroAccount #overviewCardBank .ft-bal-pill:not(.active){color:#0B2E8C!important;}'
     + '.ft-month-bar{display:inline-flex;align-items:center;gap:6px;}'
     + 'select.ft-month-select{border:1px solid #E2E8F0!important;background:#FFFFFF!important;color:#1E3A8A!important;font-weight:800!important;border-radius:10px!important;padding:6px 10px!important;font-size:12px!important;}'
     + '.ft-this-month{border:1px solid #C7D7F5!important;background:#F5F8FF!important;color:#1E3A8A!important;font-weight:800!important;border-radius:10px!important;padding:6px 10px!important;font-size:11px!important;cursor:pointer;}'
